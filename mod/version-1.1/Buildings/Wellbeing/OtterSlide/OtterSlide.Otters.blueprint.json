@@ -1,0 +1,314 @@
+{
+  "BuildingSpec": {
+    "SelectionSoundName": "Lido",
+    "LoopingSoundName": "",
+    "BuildingCost": [
+      {
+        "Id": "Log",
+        "Amount": 30
+      },
+      {
+        "Id": "Plank",
+        "Amount": 20
+      }
+    ],
+    "ScienceCost": 200,
+    "PlaceFinished": false,
+    "FinishableWithBeaversOnSite": false,
+    "DrawRangeBoundsOnIt": true
+  },
+  "BuildingModelSpec": {
+    "FinishedModelName": "#Finished",
+    "UnfinishedModelName": "#Unfinished",
+    "FinishedUncoveredModelName": "",
+    "UndergroundModelName": "",
+    "ConstructionModeModel": "Finished",
+    "UndergroundModelDepth": 0
+  },
+  "AttractionSpec": {
+    "Effects": [
+      {
+        "NeedId": "OtterSlide",
+        "PointsPerHour": 0.7,
+        "SatisfyToMaxValue": false
+      },
+      {
+        "NeedId": "OtterMoisture",
+        "PointsPerHour": 1.2,
+        "SatisfyToMaxValue": false
+      }
+    ]
+  },
+  "FixedSlotManagerSpec": {},
+  "EnterableSpec": {
+    "OperatingState": "Finished",
+    "LimitedCapacityFinished": true,
+    "CapacityFinished": 5,
+    "LimitedCapacityUnfinished": false,
+    "CapacityUnfinished": 0
+  },
+  "TemplateSpec": {
+    "TemplateName": "OtterSlide.Otters",
+    "BackwardCompatibleTemplateNames": [],
+    "RequiredFeatureToggle": "",
+    "DisablingFeatureToggle": ""
+  },
+  "BlockObjectSpec": {
+    "Size": {
+      "X": 2,
+      "Y": 3,
+      "Z": 3
+    },
+    "Blocks": [
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "All",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "All",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      }
+    ],
+    "Entrance": {
+      "HasEntrance": true,
+      "Coordinates": {
+        "X": 0,
+        "Y": -1,
+        "Z": 1
+      }
+    },
+    "BaseZ": 1,
+    "Overridable": false,
+    "Flippable": false
+  },
+  "BuildingAccessibleSpec": {
+    "LocalAccess": {
+      "X": 1.0,
+      "Y": 1.0,
+      "Z": 0.2
+    },
+    "ForceOneFinalAccess": false
+  },
+  "PlaceableBlockObjectSpec": {
+    "ToolGroupId": "Wellbeing",
+    "ToolOrder": 16,
+    "ToolShape": "Square",
+    "Layout": "Single",
+    "CustomPivot": {
+      "HasCustomPivot": true,
+      "Coordinates": {
+        "X": 1.0,
+        "Y": 0.5,
+        "Z": 0.0
+      }
+    },
+    "CanBeAttachedToTerrainSide": false,
+    "DevModeTool": false
+  },
+  "LabeledEntitySpec": {
+    "DisplayNameLocKey": "Building.OtterSlide.DisplayName",
+    "DescriptionLocKey": "Building.OtterSlide.Description",
+    "FlavorDescriptionLocKey": "Building.OtterSlide.FlavorDescription",
+    "Icon": "Buildings/Wellbeing/OtterSlide/OtterSlideIcon"
+  },
+  "TransformSlotInitializerSpec": {
+    "Slots": [
+      {
+        "SlotKeyword": "Seat",
+        "Animation": "Sitting",
+        "Inanimate": false,
+        "RandomizeYRotation": false,
+        "WaterSlot": false
+      },
+      {
+        "SlotKeyword": "Floating",
+        "Animation": "Floating",
+        "Inanimate": false,
+        "RandomizeYRotation": false,
+        "WaterSlot": true
+      }
+    ]
+  },
+  "BlockObjectNavMeshSettingsSpec": {
+    "NoAutoWalls": false,
+    "GenerateFloorsOnStackable": true,
+    "EdgeGroups": [],
+    "UnblockedCoordinates": [],
+    "BlockedEdges": []
+  },
+  "TickableWaterBuildingSpec": {
+    "WaterCoordinates": {
+      "X": 1,
+      "Y": 2,
+      "Z": 0
+    },
+    "MinWaterHeight": 0.2,
+    "ChangeRange": 0.05
+  },
+  "EnterableIlluminatorSpec": {},
+  "ConstructionSiteProgressVisualizerSpec": {
+    "ProgressThresholds": []
+  },
+  "Children": {
+    "#Finished": {
+      "TimbermeshSpec": {
+        "Model": "Buildings/Wellbeing/OtterSlide/OtterSlide.Otters.Model"
+      },
+      "CollidersSpec": {
+        "BoxColliders": [
+          {
+            "Center": {
+              "X": 1.0,
+              "Y": 1.15,
+              "Z": 0.5
+            },
+            "Size": {
+              "X": 2.0,
+              "Y": 2.3,
+              "Z": 1.0
+            }
+          },
+          {
+            "Center": {
+              "X": 1.0,
+              "Y": 0.6,
+              "Z": 1.9
+            },
+            "Size": {
+              "X": 0.75,
+              "Y": 1.3,
+              "Z": 1.9
+            }
+          }
+        ],
+        "SphereColliders": [],
+        "CapsuleColliders": []
+      }
+    },
+    "#Unfinished": {
+      "Children": {
+        "ConstructionBase2x2#nested": {
+          "BlueprintPath": "ConstructionBases/ConstructionBase2x2/ConstructionBase2x2.blueprint"
+        }
+      }
+    }
+  }
+}

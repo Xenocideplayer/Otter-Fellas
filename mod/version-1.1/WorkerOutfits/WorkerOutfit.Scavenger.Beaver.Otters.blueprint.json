@@ -1,0 +1,12 @@
+{
+  "WorkerOutfitSpec": {
+    "Id": "Scavenger",
+    "FactionId": "Otters",
+    "WorkerType": "Beaver",
+    "DiffuseTexture": "",
+    "NormalTexture": "",
+    "Attachments": [
+      "ScavengerHat.Beaver.Folktails"
+    ]
+  }
+}

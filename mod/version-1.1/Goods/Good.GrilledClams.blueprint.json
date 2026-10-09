@@ -1,0 +1,34 @@
+{
+  "GoodSpec": {
+    "Id": "GrilledClams",
+    "BackwardCompatibleIds": [],
+    "ConsumptionEffects": [
+      {
+        "NeedId": "Hunger",
+        "Points": 0.3
+      },
+      {
+        "NeedId": "GrilledClams",
+        "Points": 0.2
+      }
+    ],
+    "GoodType": "Box",
+    "StockpileVisualization": "Box",
+    "VisibleContainer": "Box",
+    "ContainerColor": {
+      "r": 0.0509803928,
+      "g": 0.498039216,
+      "b": 0.0509803928,
+      "a": 1.0
+    },
+    "ContainerMaterial": "",
+    "CarryingAnimation": "CarryInHands",
+    "Weight": 1,
+    "GoodGroupId": "Food",
+    "GoodOrder": 9048,
+    "Icon": "Sprites/Goods/GrilledClamsIcon",
+    "ForceImport": true,
+    "DisplayNameLocKey": "Good.GrilledClams.DisplayName",
+    "PluralDisplayNameLocKey": "Good.GrilledClams.PluralDisplayName"
+  }
+}

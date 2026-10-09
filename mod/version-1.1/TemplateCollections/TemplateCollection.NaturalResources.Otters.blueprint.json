@@ -1,0 +1,19 @@
+{
+  "TemplateCollectionSpec": {
+    "CollectionId": "NaturalResources.Otters",
+    "Blueprints": [
+      "NaturalResources/Crops/Carrot/Carrot.Otters.blueprint",
+      "NaturalResources/Crops/Cattail/Cattail.Otters.blueprint",
+      "NaturalResources/Crops/Potato/Potato.Otters.blueprint",
+      "NaturalResources/Crops/Spadderdock/Spadderdock.Otters.blueprint",
+      "NaturalResources/Crops/Sunflower/Sunflower.Otters.blueprint",
+      "NaturalResources/Crops/Wheat/Wheat.Otters.blueprint",
+      "NaturalResources/Crops/WildRice/WildRice.blueprint",
+      "NaturalResources/Crops/WaterTaro/WaterTaro.blueprint",
+      "NaturalResources/Bushes/Dandelion/Dandelion.blueprint",
+      "NaturalResources/Trees/ChestnutTree/ChestnutTree.blueprint",
+      "NaturalResources/Trees/Maple/Maple.blueprint",
+      "NaturalResources/Trees/Mangrove/Mangrove.blueprint"
+    ]
+  }
+}

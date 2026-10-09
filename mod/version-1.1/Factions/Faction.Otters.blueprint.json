@@ -1,0 +1,55 @@
+{
+  "FactionSpec": {
+    "Id": "Otters",
+    "Order": 2,
+    "Avatar": "Sprites/Avatars/OttersAdult",
+    "ChildAvatar": "Sprites/Avatars/OttersChild",
+    "BotAvatar": "Sprites/Avatars/FolktailsBot",
+    "ContaminatedAdultAvatar": "Sprites/Avatars/OttersContaminatedAdult",
+    "ContaminatedChildAvatar": "Sprites/Avatars/OttersContaminatedChild",
+    "Logo": "Sprites/Avatars/OttersLogo",
+    "NewGameFullAvatar": "Sprites/Avatars/OttersFullNewGame",
+    "Textures": [
+      "Characters/Otters/Textures/OtterAdult1",
+      "Characters/Otters/Textures/OtterAdult2",
+      "Characters/Otters/Textures/OtterAdult3",
+      "Characters/Otters/Textures/OtterAdult4"
+    ],
+    "ChildTextures": [
+      "Characters/Otters/Textures/OtterChild1",
+      "Characters/Otters/Textures/OtterChild2",
+      "Characters/Otters/Textures/OtterChild3"
+    ],
+    "MaterialCollectionIds": [
+      "Folktails",
+      "IronTeeth"
+    ],
+    "TemplateCollectionIds": [
+      "Buildings.Otters",
+      "Characters.Otters",
+      "ModularShaftParts.Otters",
+      "NaturalResources.Otters"
+    ],
+    "PathMaterial": "Buildings/Paths/Path/Path.Folktails",
+    "BaseWoodMaterial": "Materials/UberAtlas/Materials/Folktails/BaseWood_White.Folktails",
+    "NeedCollectionIds": [
+      "Otters"
+    ],
+    "GoodCollectionIds": [
+      "Otters"
+    ],
+    "BlueprintModifiers": [],
+    "StartingBuildingId": "DistrictCenter.Otters",
+    "SoundId": "Common",
+    "DisplayNameLocKey": "Faction.Otters.DisplayName",
+    "DescriptionLocKey": "Faction.Otters.Description",
+    "GameOverMessageLocKey": "Faction.Otters.GameOver.Message",
+    "GameOverFlavorLocKey": "Faction.Otters.GameOver.Flavor"
+  },
+  "FactionWonderSpec": {
+    "WonderCompletionImage": "UI/Images/WonderCompletion/wonder-completion-folktails",
+    "WonderLaunchSound": "UI.Buildings.Wonder.EarthRecultivator",
+    "WonderCompletionFlavorLocKey": "Faction.Otters.WonderCompletionFlavor",
+    "WonderCompletionMessageLocKey": "Faction.Otters.WonderCompletionMessage"
+  }
+}

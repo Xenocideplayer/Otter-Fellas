@@ -1,0 +1,25 @@
+{
+  "GoodSpec": {
+    "Id": "WildRice",
+    "BackwardCompatibleIds": [],
+    "ConsumptionEffects": [],
+    "GoodType": "Box",
+    "StockpileVisualization": "Box",
+    "VisibleContainer": "Box",
+    "ContainerColor": {
+      "r": 0.07450981,
+      "g": 0.6313726,
+      "b": 0.294117659,
+      "a": 1.0
+    },
+    "ContainerMaterial": "",
+    "CarryingAnimation": "CarryInHands",
+    "Weight": 1,
+    "GoodGroupId": "Ingredients",
+    "GoodOrder": 8027,
+    "Icon": "Sprites/Goods/WildRiceIcon",
+    "ForceImport": false,
+    "DisplayNameLocKey": "Good.WildRice.DisplayName",
+    "PluralDisplayNameLocKey": "Good.WildRice.PluralDisplayName"
+  }
+}

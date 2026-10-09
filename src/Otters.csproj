@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Builds Otters.dll against the game's own assemblies.
+    Point GameManaged at <Timberborn install>/Timberborn_Data/Managed, e.g.
+      dotnet build -c Release -p:GameManaged="C:\Program Files (x86)\Steam\steamapps\common\Timberborn\Timberborn_Data\Managed"
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Otters</AssemblyName>
+    <RootNamespace>Otters</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GameManaged Condition="'$(GameManaged)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Timberborn\Timberborn_Data\Managed</GameManaged>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(GameManaged)\Timberborn.*.dll" Private="false" />
+    <Reference Include="$(GameManaged)\Bindito.Core.dll" Private="false" />
+    <Reference Include="$(GameManaged)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(GameManaged)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(GameManaged)\System.Collections.Immutable.dll" Private="false" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+{
+  "WorkerOutfitSpec": {
+    "Id": "Builder",
+    "FactionId": "Otters",
+    "WorkerType": "Bot",
+    "DiffuseTexture": "",
+    "NormalTexture": "",
+    "Attachments": [
+      "HammerBack.Bot"
+    ]
+  }
+}
