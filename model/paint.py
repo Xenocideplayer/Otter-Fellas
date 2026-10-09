@@ -139,6 +139,12 @@ def lerp(a, b, w):
     return a * (1 - w[..., None]) + b * w[..., None]
 
 
+# The base fur carries only the otters' badge and a light strap: the game's job outfits (hats, aprons, tools) are put
+# on over it, and a fully painted outfit underneath clashed with them.
+SIMPLE_OUTFIT = True
+STRAP_WIDTH = 0.6        # share of the full strap width kept in the simple outfit
+
+
 def regions(P, N, L):
     """Masks shared by colour, normal and gloss maps."""
     x, y, z = P[..., 0], P[..., 1], P[..., 2]
@@ -152,6 +158,8 @@ def regions(P, N, L):
     if L.get("sash"):
         front = smoothstep(0.05, 0.35, nz)
         y0, k, w = L["sash"]
+        if SIMPLE_OUTFIT:
+            w = w * STRAP_WIDTH
         across = ((y - y0) - k * x) / np.sqrt(1 + k * k)
         along = (x + k * (y - y0)) / np.sqrt(1 + k * k)
         torso = smoothstep(0.125 * s, 0.11 * s, np.abs(x)) * smoothstep(0.12 * s, 0.15 * s, y) * smoothstep(0.40 * s, 0.37 * s, y)
@@ -202,6 +210,9 @@ def regions(P, N, L):
         hx = L["hand_x"]
         R["cuff_cloth"] = smoothstep(hx - 0.042 * s, hx - 0.038 * s, ax_) * smoothstep(hx - 0.02 * s, hx - 0.024 * s, ax_) * arm
         R["cuff_leather"] = smoothstep(hx - 0.024 * s, hx - 0.02 * s, ax_) * smoothstep(hx - 0.01 * s, hx - 0.014 * s, ax_) * arm
+    if SIMPLE_OUTFIT:
+        for k in ("buckle", "apron", "apron_stitch", "belt", "belt_edge", "rivet", "cuff_cloth", "cuff_leather"):
+            R[k] = Z.copy()
     # where the beaver's detail doesn't fit: the new tail and the otter face
     tail = smoothstep(L["tail_start_z"], L["tail_start_z"] - 0.03 * s, z) * smoothstep(0.24 * s, 0.18 * s, y)
     mc = np.array(L["muzzle_c"])
@@ -336,7 +347,7 @@ def paint(P, N, M, A, L, back, belly, R, detail):
         leather = np.array([0.36, 0.21, 0.12]) * (0.85 + 0.3 * n1[..., None])
         col = lerp(col, leather, np.maximum(R["cuff_leather"], R["belt"]))
         col = lerp(col, np.array([0.2, 0.11, 0.06]), R["belt_edge"] * 0.8)
-        col = lerp(col, leather * 1.05, R["sash"])
+        col = lerp(col, leather * (1.25 if SIMPLE_OUTFIT else 1.05), R["sash"] * (0.85 if SIMPLE_OUTFIT else 1.0))
         col = lerp(col, np.array([0.2, 0.11, 0.06]), R["sash_edge"] * 0.85)
         col = lerp(col, np.array([0.78, 0.66, 0.48]), R["weave"] * 0.8)
         gold = np.array([0.86, 0.66, 0.26])
