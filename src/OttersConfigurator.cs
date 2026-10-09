@@ -52,6 +52,16 @@ namespace Otters
     public void StartMod(IModEnvironment modEnvironment)
     {
       Debug.Log("[Otters] Code loaded from " + modEnvironment.ModPath);
+      // The two otter body models are large and were left out of the small update zips; a clean install without
+      // them crashes the game while it builds the otter prefabs, so say so plainly in Player.log.
+      foreach (string model in new[] { "OtterAdult", "OtterChild" })
+      {
+        string path = System.IO.Path.Combine(modEnvironment.ModPath, "Characters", "Otters", model + ".Model.timbermesh");
+        if (!System.IO.File.Exists(path))
+        {
+          Debug.LogError("[Otters] Missing " + path + " - reinstall the full Otters zip (the body models are not in the update-only zips).");
+        }
+      }
     }
   }
 }

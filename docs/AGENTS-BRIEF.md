@@ -2,7 +2,7 @@
 
 ## Environment (cloud container, no game runtime — nothing can be playtested; correctness comes from reading the
 ## game's real code and from the checkers below)
-- Game: Timberborn 1.1.2.x. Game assemblies: `/mnt/user-data/uploads/Timberborn_Data/Managed` (259 DLLs; a few,
+- Game: Timberborn 1.1.2.x. Game assemblies: `/root/managed_full` (all 660 files from the player's PC; the older partial copy at /mnt/user-data/uploads/Timberborn_Data/Managed lacks ~100,
   e.g. Timberborn.MechanicalSystem, Timberborn.Tubes, Timberborn.SlotSystem, are NOT there).
 - Decompiled game source, one .cs per assembly: `/root/gamesrc` (decompiler: `/root/decomp/App/bin/Release/net8.0/App <managed> /root/gamesrc <dlls>`).
 - Vanilla blueprints (from the game's Blueprints.zip): `/root/vanilla/bp` (`*.blueprint.json`).
@@ -14,7 +14,7 @@
   - `build_mod.py` generates every blueprint from vanilla ones. Run:
     `cd /home/claude/otters && rm -rf dist/Otters/version-1.1 && python3 build_mod.py /root/vanilla/bp dist/Otters build/Otters.dll model_out && python3 art/make_art.py dist/Otters/version-1.1 dist/Otters model_out/portraits && cp model_out/thumbnail.png dist/Otters/thumbnail.png`
   - C# (`Otters.dll`, netstandard2.1) in `src/`. Build:
-    `cd /home/claude/otters && dotnet build src/Otters.csproj -c Release -nologo -v q -p:GameManaged=/mnt/user-data/uploads/Timberborn_Data/Managed -o build`
+    `cd /home/claude/otters && dotnet build src/Otters.csproj -c Release -nologo -v q -p:GameManaged=/root/managed_full -o build`
   - Models: `model/` (procedural props: `procmesh.py`, `make_props.py`, `make_fishing_dock.py`, `make_splash_pool.py`;
     timbermesh read/write: `timbermesh.py`; flat preview render: `building_preview.py model.timbermesh out.png`).
     Built models go to `model_out/buildings/`. Game model space = Unity: x right, y up, z = grid +Y (back);
