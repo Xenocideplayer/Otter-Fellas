@@ -16,7 +16,9 @@ bu.reset_scene()
 def add(npz, tex, loc, rot_z):
     o = np.load(npz)
     ob = bu.mesh_from_unity("O", o["pos"], o["tris"], uvs={"uv0": o["uv0"]})
-    ob.data.materials.append(bu.image_material("m" + tex[-6:], tex, "uv0"))
+    pre = tex.rsplit("/", 1)[0] + "/" + ("OtterAdult" if "Adult" in tex else "OtterChild")
+    ob.data.materials.append(bu.full_material("m" + tex[-6:], tex, "uv0", ao=pre + "AO.png", gloss=pre + "Gloss.png",
+                                              normal_ts=pre + "NormalTS_blender_preview.png"))
     ob.location = loc
     ob.rotation_euler = (0, 0, rot_z)
     return ob

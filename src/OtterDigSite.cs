@@ -17,6 +17,10 @@ namespace Otters
     /// <summary>How many blocks of terrain one dig site removes.</summary>
     [Serialize]
     public int Depth { get; init; }
+
+    /// <summary>Dirt dropped for every block dug out (builders haul it to storage).</summary>
+    [Serialize]
+    public int DirtPerBlock { get; init; }
   }
 
   /// <summary>
@@ -31,13 +35,15 @@ namespace Otters
     private readonly IBlockService _blockService;
     private readonly EntityService _entityService;
     private readonly CharacterPopulation _characterPopulation;
+    private readonly OtterDirtDropper _dirtDropper;
 
     private BlockObject _blockObject;
     private OtterDigSiteSpec _spec;
 
     public OtterDigSite(ITerrainService terrainService, IBlockService blockService, EntityService entityService,
-                        CharacterPopulation characterPopulation)
+                        CharacterPopulation characterPopulation, OtterDirtDropper dirtDropper)
     {
+      _dirtDropper = dirtDropper;
       _terrainService = terrainService;
       _blockService = blockService;
       _entityService = entityService;
@@ -105,6 +111,7 @@ namespace Otters
       if (depth > 0)
       {
         _terrainService.UnsetTerrain(below, depth);
+        _dirtDropper.Drop(below.XY().ToVector3Int(below.z - depth + 1), "Dirt", depth * (_spec?.DirtPerBlock ?? 0));
       }
       GetComponent<Deconstructible>()?.DisableDeconstruction();
       _entityService.Delete(this);

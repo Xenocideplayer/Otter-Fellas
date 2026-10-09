@@ -11,15 +11,19 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | | |
 |---|---|
 | **Water experts** | Levee, Floodgate, Aquatic Farmhouse and Shower need no science; bigger floodgates, valves, the Large Water Pump and the Lido are cheaper. |
-| **Water crops** | Cattail and Spadderdock grow about 25% faster. |
-| **Dig Site** | Available from the start, free, no explosives. Removes one block of terrain once built. |
-| **Reed Filter** | Available from the start (20 logs). Turns badwater into clean water where it stands. |
+| **Aquatic farming** | Cattail and Spadderdock grow ~40% faster. Two new aquatic crops, **Wild Rice** and **Water Taro**, cooked at the Grill into new foods. |
+| **Mangroves** | Otters can plant Mangrove trees in water for logs and mangrove fruit. |
+| **River Holts** | Otter dens that must stand in water (3 and 6 residents); residents' fur stays wet while they sleep. |
+| **Dig Site** | From the start, free, no explosives: builders slowly dig out a block by paw and leave 1 dirt behind. Terrain Blocks (4 dirt) need no science. |
+| **Reed Filter** | A Folktails water pump with reeds at its feet that turns badwater into clean water where it stands. |
 | **On land / in water** | Walk ~15% slower than beavers, swim much faster. |
-| **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 15% slower. Swimming, the Shower, the Lido and the Domed Garden refill it. |
+| **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 15% slower. Swimming, the Shower, the Lido, the Domed Garden and River Holts refill it. |
 | **Rinse Pod** | 550 science. Uses clean water to wash badwater contamination out of otters (no Herbalist/Antidote). |
-| **Their own bodies** | Custom 3D adult and kit models with otter faces, long tails and webbed feet, 4 adult and 3 kit fur colours, and every beaver animation carried over. |
+| **Their own look** | Custom 3D adult and kit bodies with fur detail baked from the game's own beaver textures, a woven reed sash, 4 adult and 3 kit fur colours, every beaver animation carried over, game-style icons, logo and portraits. |
 
-![Adult otter](docs/images/otter-adult.png)
+![Preview](docs/images/preview.png)
+
+*Motto: Clean water, warm dens, and a good swim.*
 
 ## Install
 

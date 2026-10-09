@@ -14,6 +14,8 @@ namespace Otters
       Bind<OtterDigSite>().AsTransient();
       Bind<ReedFilter>().AsTransient();
       Bind<OtterMaterial>().AsTransient();
+      Bind<OtterDirtDropper>().AsSingleton();
+      Bind<RiverHoltPlacement>().AsTransient();
       MultiBind<TemplateModule>().ToProvider(ProvideTemplateModule).AsSingleton();
     }
 
@@ -24,6 +26,7 @@ namespace Otters
       builder.AddDecorator<OtterDigSiteSpec, OtterDigSite>();
       builder.AddDecorator<ReedFilterSpec, ReedFilter>();
       builder.AddDecorator<OtterMaterialSpec, OtterMaterial>();
+      builder.AddDecorator<RiverHoltSpec, RiverHoltPlacement>();
       return builder.Build();
     }
   }

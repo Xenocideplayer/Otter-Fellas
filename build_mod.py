@@ -55,9 +55,10 @@ ADULT_TEXTURES = [f"Characters/Otters/Textures/OtterAdult{i}" for i in range(1, 
 CHILD_TEXTURES = [f"Characters/Otters/Textures/OtterChild{i}" for i in range(1, 4)]
 # The beaver material's normal/AO/metal maps are painted for the beaver's UV layout; otters swap in neutral ones
 # (their painted fur already carries the shading).
-OTTER_MATERIAL = {"NormalMap": "Characters/Otters/Textures/OtterFlatNormal",
-                  "OcclusionMap": "Characters/Otters/Textures/OtterNoOcclusion",
-                  "MetallicMap": "Characters/Otters/Textures/OtterNoMetal"}
+OTTER_MATERIAL = {c: {"NormalMap": f"Characters/Otters/Textures/{n}Normal",
+                      "OcclusionMap": f"Characters/Otters/Textures/{n}AO",
+                      "MetallicMap": f"Characters/Otters/Textures/{n}Gloss"}
+                  for c, n in (("BeaverAdult", "OtterAdult"), ("BeaverChild", "OtterChild"))}
 
 MOISTURE_DAILY_DELTA = -0.3          # full to bone dry in about 3.3 days without water
 MOISTURE_SOAK_PER_HOUR = 1.0         # an hour in the water refills it
@@ -80,10 +81,26 @@ MOISTURE_SOURCES = {                 # attractions that also refill otter moistu
     "Buildings/Wellbeing/Lido/Lido.Folktails.blueprint": 0.8,
     "Buildings/Wellbeing/DomedGarden/DomedGarden.Folktails.blueprint": 0.6,
 }
-CROP_GROWTH_DAYS = {                 # aquatic crops grow ~25% faster for otters
-    "NaturalResources/Crops/Cattail/Cattail.blueprint": 6.0,      # vanilla 8
-    "NaturalResources/Crops/Spadderdock/Spadderdock.blueprint": 9.0,  # vanilla 12
+CROP_GROWTH_DAYS = {                 # aquatic crops grow ~40% faster for otters
+    "NaturalResources/Crops/Cattail/Cattail.blueprint": 5.0,      # vanilla 8
+    "NaturalResources/Crops/Spadderdock/Spadderdock.blueprint": 7.5,  # vanilla 12
 }
+DIG_SITE_HOURS = 12.0                # builder-hours to dig one block out by paw (slow on purpose)
+DIRT_PER_DUG_BLOCK = 1               # a terrain block costs 4 dirt, so digging returns a quarter
+FREE_FOLKTAILS_BUILDINGS = ["Buildings/Landscaping/TerrainBlock/TerrainBlock.Folktails.blueprint"]  # no science
+
+# New aquatic crops: (template, model source, growth days, yield good, yield amount, cooked good, order)
+NEW_CROPS = [
+    ("WildRice", "NaturalResources/Crops/Wheat/Wheat.blueprint", 7.0, "WildRice", 3, "CookedWildRice", 7),
+    ("WaterTaro", "NaturalResources/Crops/Cassava/Cassava.blueprint", 9.0, "TaroRoot", 3, "RoastedTaro", 8),
+]
+EXTRA_TEMPLATES = ["NaturalResources/Trees/Mangrove/Mangrove.blueprint"]   # Iron Teeth's water tree
+EXTRA_GOODS = ["MangroveFruit"]
+EXTRA_NEEDS = ["MangroveFruit"]
+NATURAL_RESOURCES = "TemplateCollections/TemplateCollection.NaturalResources.Otters.blueprint"
+RIVER_HOLT = "Buildings/Housing/RiverHolt/RiverHolt.Otters.blueprint"
+BIG_RIVER_HOLT = "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint"
+HOLT_MOISTURE_PER_HOUR = 0.5         # residents' fur stays wet while they sleep
 REMOVED_FOLKTAILS_BUILDINGS = ["Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint"]
 REMOVED_GOODS = ["Antidote"]
 REMOVED_NEEDS = ["Antidote"]
@@ -96,7 +113,7 @@ TEXT = {
     "Faction.Otters.DisplayName": "Otters",
     "Faction.Otters.Description": "Sleek river folk who would rather swim than walk. Otters dig, filter and farm the "
                                   "water from day one, but they are slow on land and work slower once their fur "
-                                  "dries out.",
+                                  "dries out.\nTheir motto: <i>Clean water, warm dens, and a good swim.</i>",
     "Faction.Otters.GameOver.Message": "The rivers ran dry, and your Otters with them. This is the end.",
     "Faction.Otters.GameOver.Flavor": "No current runs forever.",
     "Faction.Otters.WonderCompletionMessage": "Congratulations! You mastered the Otters' water-bound ways and used "
@@ -105,18 +122,41 @@ TEXT = {
     "Need.OtterMoisture.DisplayName": "Moisture",
     "Status.Need.OtterMoisture": "Dry fur: works slower until wet again.",
     "Building.OtterDigSite.DisplayName": "Dig Site",
-    "Building.OtterDigSite.Description": "Builders dig out the block of terrain underneath. No explosives, and the "
-                                         "digging waits until nobody is standing on the spot.",
     "Building.OtterDigSite.FlavorDescription": "\"Why blow it up when you can just dig?\"",
     "Building.ReedFilter.DisplayName": "Reed Filter",
-    "Building.ReedFilter.Description": "Turns badwater at its intake into clean water without lowering the river. "
-                                       "Cleans faster the dirtier the water is.",
+    "Building.ReedFilter.Description": "A water pump with a bed of reeds at its feet. Turns badwater at its intake "
+                                       "into clean water without lowering the river; cleans faster the dirtier the "
+                                       "water is.",
     "Building.ReedFilter.FlavorDescription": "The reeds don't mind the taste.",
     "Building.RinsePod.DisplayName": "Rinse Pod",
     "Building.RinsePod.Description": "A long soak in clean water that washes badwater contamination out of an "
                                      "otter's fur. Uses water.",
     "Building.RinsePod.FlavorDescription": "In through the badwater, out through the rinse.",
     "Recipe.OtterWaterFiltering": "Filtering water",
+    "Building.OtterDigSite.Description": "Builders slowly dig out the block of terrain underneath by paw and leave "
+                                         "1 dirt behind for every block. No explosives, and the digging waits until "
+                                         "nobody is standing on the spot.",
+    "Building.RiverHolt.DisplayName": "River Holt",
+    "Building.RiverHolt.Description": "A cosy otter den built out in the water. Must be placed with at least two "
+                                      "tiles in water. Residents' fur stays wet while they sleep.",
+    "Building.RiverHolt.FlavorDescription": "Front door: the river.",
+    "Building.BigRiverHolt.DisplayName": "Big River Holt",
+    "Building.BigRiverHolt.Description": "A two-storey otter den out in the water for six. Must be placed with at "
+                                         "least three tiles in water. Residents' fur stays wet while they sleep.",
+    "Building.BigRiverHolt.FlavorDescription": "Room for the whole raft.",
+    "Building.RiverHolt.NeedsWater": "Must stand in water",
+    "NaturalResource.WildRice.DisplayName": "Wild rice",
+    "NaturalResource.WildRice.FlavorDescription": "Grows with its feet in the water and its head in the sun.",
+    "NaturalResource.WaterTaro.DisplayName": "Water taro",
+    "NaturalResource.WaterTaro.FlavorDescription": "Big leaves above, starchy roots below.",
+    "Good.WildRice.DisplayName": "Wild rice",
+    "Good.WildRice.PluralDisplayName": "Wild rice",
+    "Good.CookedWildRice.DisplayName": "Cooked wild rice",
+    "Good.CookedWildRice.PluralDisplayName": "Cooked wild rice",
+    "Good.TaroRoot.DisplayName": "Taro root",
+    "Good.TaroRoot.PluralDisplayName": "Taro roots",
+    "Good.RoastedTaro.DisplayName": "Roasted taro",
+    "Good.RoastedTaro.PluralDisplayName": "Roasted taro",
 }
 
 
@@ -143,7 +183,7 @@ def build_faction(modifiers):
         # The pod model is the Iron Teeth one, so their materials are needed too.
         "MaterialCollectionIds": ["Folktails", "IronTeeth"],
         "TemplateCollectionIds": ["Buildings.Otters", "Characters.Folktails", "ModularShaftParts.Folktails",
-                                  "NaturalResources.Folktails"],
+                                  "NaturalResources.Folktails", "NaturalResources.Otters"],
         "NeedCollectionIds": ["Otters"],
         "GoodCollectionIds": ["Otters"],
         "BlueprintModifiers": [{"Original": o, "Modifier": m} for o, m in modifiers],
@@ -163,18 +203,23 @@ def build_faction(modifiers):
 def build_collections():
     buildings = load("TemplateCollections/TemplateCollection.Buildings.Folktails.blueprint")["TemplateCollectionSpec"]
     blueprints = [b for b in buildings["Blueprints"] if b not in REMOVED_FOLKTAILS_BUILDINGS]
-    blueprints += [DIG_SITE, REED_FILTER, RINSE_POD]
+    blueprints += [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT]
     write("TemplateCollections/TemplateCollection.Buildings.Otters.blueprint.json",
           {"TemplateCollectionSpec": {"CollectionId": "Buildings.Otters", "Blueprints": blueprints}})
 
     goods = load("GoodCollections/GoodCollection.Folktails.blueprint")["GoodCollectionSpec"]["Goods"]
     write("GoodCollections/GoodCollection.Otters.blueprint.json",
-          {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": [g for g in goods if g not in REMOVED_GOODS]}})
+          {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": [g for g in goods if g not in REMOVED_GOODS]
+                                  + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]}})
 
     needs = load("NeedCollections/NeedCollection.Folktails.blueprint")["NeedCollectionSpec"]["Needs"]
-    needs = [n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"]
+    needs = [n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"] + EXTRA_NEEDS + [c[5] for c in NEW_CROPS]
     write("NeedCollections/NeedCollection.Otters.blueprint.json",
           {"NeedCollectionSpec": {"CollectionId": "Otters", "Needs": sorted(needs)}})
+
+    crops = [f"NaturalResources/Crops/{c[0]}/{c[0]}.blueprint" for c in NEW_CROPS]
+    write(NATURAL_RESOURCES + ".json", {"TemplateCollectionSpec": {"CollectionId": "NaturalResources.Otters",
+                                                                   "Blueprints": crops + EXTRA_TEMPLATES}})
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -226,8 +271,8 @@ def build_dig_site():
     bp["TemplateSpec"]["TemplateName"] = "OtterDigSite.Otters"
     bp["TemplateSpec"]["BackwardCompatibleTemplateNames"] = []
     del bp["DynamiteSpec"]
-    bp["OtterDigSiteSpec"] = {"Depth": 1}
-    bp["ConstructionSiteBuildTimeSpec"] = {"ConstructionTimeInHours": 4.0}
+    bp["OtterDigSiteSpec"] = {"Depth": 1, "DirtPerBlock": DIRT_PER_DUG_BLOCK}
+    bp["ConstructionSiteBuildTimeSpec"] = {"ConstructionTimeInHours": DIG_SITE_HOURS}
     bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 79
     labeled(bp["LabeledEntitySpec"], "OtterDigSite", "Buildings/Landscaping/OtterDigSite/OtterDigSiteIcon")
     # Look: a marked plot of ground instead of a stick of dynamite. The finished state lasts a moment.
@@ -243,10 +288,12 @@ def build_dig_site():
 
 
 def build_reed_filter():
-    bp = copy.deepcopy(load("Buildings/Water/BadwaterPump/BadwaterPump.Folktails.blueprint"))
+    bp = copy.deepcopy(load("Buildings/Water/WaterPump/WaterPump.Folktails.blueprint"))
     bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 20}], "ScienceCost": 0})
     bp["ManufactorySpec"]["ProductionRecipeIds"] = ["OtterWaterFiltering"]
-    del bp["ManufactoryWaterContaminationConsumerSpec"]
+    del bp["ManufactoryWaterConsumerSpec"]
+    if MODEL_DIR:
+        bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Water/ReedFilter/ReedFilter.Otters.Model"
     bp["ReedFilterSpec"] = {"WaterPerCycle": 1.0, "MinimumContamination": 0.01}
     bp["TemplateSpec"]["TemplateName"] = "ReedFilter.Otters"
     bp["TemplateSpec"]["BackwardCompatibleTemplateNames"] = []
@@ -288,6 +335,61 @@ def build_rinse_pod():
     write(RINSE_POD + ".json", order_specs(bp))
 
 
+def build_crops():
+    cattail = load("NaturalResources/Crops/Cattail/Cattail.blueprint")
+    for name, source, days, good, amount, cooked, order in NEW_CROPS:
+        bp = copy.deepcopy(load(source))
+        bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
+        bp["NaturalResourceSpec"]["Order"] = order
+        bp["GrowableSpec"]["GrowthTimeInDays"] = days
+        bp["PlantableSpec"]["ResourceGroup"] = "AquaticFarmhouse"
+        bp["CuttableSpec"]["Yielder"]["Yield"] = {"Id": good, "Amount": amount}
+        bp["CuttableSpec"]["Yielder"]["ResourceGroup"] = "AquaticFarmhouse"
+        bp["FloodableNaturalResourceSpec"] = copy.deepcopy(cattail["FloodableNaturalResourceSpec"])
+        bp["LabeledEntitySpec"] = {"DisplayNameLocKey": f"NaturalResource.{name}.DisplayName", "DescriptionLocKey": "",
+                                   "FlavorDescriptionLocKey": f"NaturalResource.{name}.FlavorDescription",
+                                   "Icon": f"NaturalResources/Crops/{name}/{name}Icon"}
+        write(f"NaturalResources/Crops/{name}/{name}.blueprint.json", order_specs(bp))
+
+        raw = copy.deepcopy(load("Goods/Good.Spadderdock.blueprint"))
+        raw["GoodSpec"].update({"Id": good, "Icon": f"Sprites/Goods/{good}Icon", "GoodOrder": 8020 + order,
+                                "DisplayNameLocKey": f"Good.{good}.DisplayName",
+                                "PluralDisplayNameLocKey": f"Good.{good}.PluralDisplayName"})
+        write(f"Goods/Good.{good}.blueprint.json", raw)
+
+        food = copy.deepcopy(load("Goods/Good.GrilledSpadderdock.blueprint"))
+        food["GoodSpec"].update({"Id": cooked, "Icon": f"Sprites/Goods/{cooked}Icon", "GoodOrder": 9050 + order,
+                                 "ConsumptionEffects": [{"NeedId": "Hunger", "Points": 0.3}, {"NeedId": cooked, "Points": 0.2}],
+                                 "DisplayNameLocKey": f"Good.{cooked}.DisplayName",
+                                 "PluralDisplayNameLocKey": f"Good.{cooked}.PluralDisplayName"})
+        write(f"Goods/Good.{cooked}.blueprint.json", food)
+
+        need = copy.deepcopy(load("Needs/Need.Beaver.GrilledSpadderdock.blueprint"))
+        need["NeedSpec"].update({"Id": cooked, "Order": 50 + order, "DisplayNameLocKey": f"Good.{cooked}.PluralDisplayName"})
+        write(f"Needs/Need.Beaver.{cooked}.blueprint.json", need)
+
+        recipe = copy.deepcopy(load("Recipes/Recipe.GrilledSpadderdock.blueprint"))
+        recipe["RecipeSpec"].update({"Id": cooked, "DisplayLocKey": f"Good.{cooked}.PluralDisplayName",
+                                     "Ingredients": [{"Id": good, "Amount": 1}], "Products": [{"Id": cooked, "Amount": 2}],
+                                     "Icon": f"Sprites/Goods/{cooked}Icon"})
+        write(f"Recipes/Recipe.{cooked}.blueprint.json", recipe)
+
+
+def build_river_holts():
+    for path, source, key, min_tiles, order in [(RIVER_HOLT, "Buildings/Housing/Lodge/Lodge.Folktails.blueprint", "RiverHolt", 2, 21),
+                                                (BIG_RIVER_HOLT, "Buildings/Housing/DoubleLodge/DoubleLodge.Folktails.blueprint", "BigRiverHolt", 3, 31)]:
+        bp = copy.deepcopy(load(source))
+        name = path.split("/")[-1].replace(".blueprint", "")
+        bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
+        bp["BuildingSpec"]["ScienceCost"] = 0
+        bp["DwellingSpec"]["SleepEffects"].append({"NeedId": "OtterMoisture", "PointsPerHour": HOLT_MOISTURE_PER_HOUR,
+                                                   "SatisfyToMaxValue": False})
+        bp["RiverHoltSpec"] = {"MinimumWaterTiles": min_tiles, "WarningLocKey": "Building.RiverHolt.NeedsWater"}
+        bp["PlaceableBlockObjectSpec"]["ToolOrder"] = order
+        labeled(bp["LabeledEntitySpec"], key, f"Buildings/Housing/{key}/{key}Icon")
+        write(path + ".json", order_specs(bp))
+
+
 def order_specs(bp):
     # Keep Children last, as the game's own files do.
     children = bp.pop("Children", None)
@@ -314,7 +416,7 @@ def build_modifiers():
             "OtterSwimmerSpec": {"SwimSpeedMultiplier": SWIM_SPEED_MULTIPLIER},
         }
         if MODEL_DIR:
-            content["OtterMaterialSpec"] = OTTER_MATERIAL
+            content["OtterMaterialSpec"] = OTTER_MATERIAL[character]
             content["Children"] = {"Model_Preserved": {"TimbermeshSpec": {"Model": OTTER_MODELS[character]}}}
         add(f"Characters/Beaver/{character}.blueprint", f"Characters/{character}", content)
 
@@ -330,6 +432,12 @@ def build_modifiers():
                 {"NeedId": "OtterMoisture", "PointsPerHour": MOISTURE_SOURCES[original], "SatisfyToMaxValue": False}]}
         name = original.split("/")[-1].replace(".blueprint", "")
         add(original, f"Buildings/{name}", content)
+
+    add("Buildings/Food/Grill/Grill.Folktails.blueprint", "Buildings/Grill.Folktails",
+        {"ManufactorySpec": {"ProductionRecipeIds#append": [c[5] for c in NEW_CROPS]}})
+    for original in FREE_FOLKTAILS_BUILDINGS:
+        name = original.split("/")[-1].replace(".blueprint", "")
+        add(original, f"Buildings/{name}", {"BuildingSpec": {"ScienceCost": 0}})
 
     for original, days in CROP_GROWTH_DAYS.items():
         name = original.split("/")[-1].replace(".blueprint", "")
@@ -379,15 +487,18 @@ def copy_models():
         name = tex.split("/")[-1] + ".png"
         shutil.copy(os.path.join(MODEL_DIR, "textures", name), os.path.join(dst, "Textures", name))
         written.append(f"{tex}.png")
-    maps = {"OtterFlatNormal": ((128, 128, 255, 255), {"isNormalMap": True}),
-            "OtterNoOcclusion": ((255, 255, 255, 255), {"linear": True}),
-            "OtterNoMetal": ((0, 0, 0, 0), {"linear": True})}
-    for name, (rgba, meta) in maps.items():
-        path = os.path.join(dst, "Textures", name + ".png")
-        Image.new("RGBA", (4, 4), rgba).save(path)
-        with open(path + ".meta.json", "w") as f:
-            json.dump(meta, f, indent=2)
-        written.append(f"Characters/Otters/Textures/{name}.png")
+    for who in ("OtterAdult", "OtterChild"):
+        for suffix, meta in (("Normal", {"isNormalMap": True}), ("AO", {"linear": True}), ("Gloss", {"linear": True})):
+            name = who + suffix + ".png"
+            path = os.path.join(dst, "Textures", name)
+            shutil.copy(os.path.join(MODEL_DIR, "textures", name), path)
+            with open(path + ".meta.json", "w") as f:
+                json.dump(meta, f, indent=2)
+            written.append(f"Characters/Otters/Textures/{name}")
+    reed = os.path.join(OUT, "Buildings", "Water", "ReedFilter")
+    os.makedirs(reed, exist_ok=True)
+    shutil.copy(os.path.join(MODEL_DIR, "buildings", "ReedFilter.Otters.Model.timbermesh"), reed)
+    written.append("Buildings/Water/ReedFilter/ReedFilter.Otters.Model.timbermesh")
 
 
 def main():
@@ -401,6 +512,8 @@ def main():
     build_dig_site()
     build_reed_filter()
     build_rinse_pod()
+    build_crops()
+    build_river_holts()
     build_localization()
     build_manifest()
     if MODEL_DIR:

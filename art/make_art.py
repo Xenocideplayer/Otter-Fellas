@@ -270,19 +270,38 @@ def avatar(name, make_svg, w, h):
         render(make_svg(), path, w, h)
 
 
+def save_icon(img, rel, root=None):
+    path = os.path.join(root or OUT, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    img.save(path)
+    with open(path + ".meta.json", "w") as f:
+        json.dump({"isSprite": True}, f, indent=2)
+
+
 def main():
+    import icons as I
     avatar("OttersAdult", portrait, 128, 128)
     avatar("OttersChild", lambda: portrait(pup=True), 128, 128)
     avatar("OttersContaminatedAdult", lambda: portrait(contaminated=True), 128, 128)
     avatar("OttersContaminatedChild", lambda: portrait(contaminated=True, pup=True), 128, 128)
-    render(logo(), os.path.join(OUT, "Sprites", "Avatars", "OttersLogo.png"), 128, 128)
     avatar("OttersFullNewGame", full_avatar, 420, 560)
-    render(dry_fur_status(), os.path.join(OUT, "Sprites", "StatusIcons", "OtterDryFur.png"), 128, 128)
-    b = os.path.join(OUT, "Buildings")
-    render(dig_site_icon(), os.path.join(b, "Landscaping", "OtterDigSite", "OtterDigSiteIcon.png"), 112, 112)
-    render(reed_filter_icon(), os.path.join(b, "Water", "ReedFilter", "ReedFilterIcon.png"), 112, 112)
-    render(rinse_pod_icon(), os.path.join(b, "Wellbeing", "RinsePod", "RinsePodIcon.png"), 112, 112)
-    render(thumbnail(), os.path.join(ROOT, "thumbnail.png"), 960, 540, sprite=False)
+    save_icon(I.logo(), "Sprites/Avatars/OttersLogo.png")
+    save_icon(I.status_icon(I.dry_fur_symbol(), 512), "Sprites/StatusIcons/OtterDryFur.png")
+    b = I.line_icon
+    save_icon(b(I.dig_site(), 112), "Buildings/Landscaping/OtterDigSite/OtterDigSiteIcon.png")
+    save_icon(b(I.reed_filter(), 112), "Buildings/Water/ReedFilter/ReedFilterIcon.png")
+    save_icon(b(I.rinse_pod(), 112), "Buildings/Wellbeing/RinsePod/RinsePodIcon.png")
+    save_icon(b(I.river_holt(), 112), "Buildings/Housing/RiverHolt/RiverHoltIcon.png")
+    save_icon(b(I.river_holt(True), 112), "Buildings/Housing/BigRiverHolt/BigRiverHoltIcon.png")
+    save_icon(b(I.wild_rice_crop(), 112), "NaturalResources/Crops/WildRice/WildRiceIcon.png")
+    save_icon(b(I.taro_crop(), 112), "NaturalResources/Crops/WaterTaro/WaterTaroIcon.png")
+    g = lambda body: I.line_icon(body, 80, view=80, stroke=3.0)
+    save_icon(g(I.wild_rice_good()), "Sprites/Goods/WildRiceIcon.png")
+    save_icon(g(I.cooked_rice_good()), "Sprites/Goods/CookedWildRiceIcon.png")
+    save_icon(g(I.taro_root_good()), "Sprites/Goods/TaroRootIcon.png")
+    save_icon(g(I.roasted_taro_good()), "Sprites/Goods/RoastedTaroIcon.png")
+    if not (PORTRAITS and os.path.exists(os.path.join(PORTRAITS, "..", "thumbnail.png"))):
+        render(thumbnail(), os.path.join(ROOT, "thumbnail.png"), 960, 540, sprite=False)
 
 
 if __name__ == "__main__":

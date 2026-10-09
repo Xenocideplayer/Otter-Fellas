@@ -1,0 +1,10 @@
+{
+  "TemplateCollectionSpec": {
+    "CollectionId": "NaturalResources.Otters",
+    "Blueprints": [
+      "NaturalResources/Crops/WildRice/WildRice.blueprint",
+      "NaturalResources/Crops/WaterTaro/WaterTaro.blueprint",
+      "NaturalResources/Trees/Mangrove/Mangrove.blueprint"
+    ]
+  }
+}

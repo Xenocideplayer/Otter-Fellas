@@ -59,12 +59,45 @@ def image_material(name, image_path, uv_name=None):
     return mat
 
 
+def full_material(name, image_path, uv_name, normal_os=None, ao=None, gloss=None, normal_ts=None):
+    """Diffuse (x AO) + object-space normal + roughness from gloss, for previews close to the game look."""
+    mat = image_material(name, image_path, uv_name)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    uvn = [n for n in nt.nodes if n.type == "UVMAP"][0]
+    tex = [n for n in nt.nodes if n.type == "TEX_IMAGE"][0]
+    if ao:
+        ai = nt.nodes.new("ShaderNodeTexImage"); ai.image = bpy.data.images.load(ao); ai.image.colorspace_settings.name = "Non-Color"
+        nt.links.new(uvn.outputs["UV"], ai.inputs["Vector"])
+        mix = nt.nodes.new("ShaderNodeMix"); mix.data_type = "RGBA"; mix.blend_type = "MULTIPLY"
+        mix.inputs["Factor"].default_value = 1.0
+        nt.links.new(tex.outputs["Color"], mix.inputs[6]); nt.links.new(ai.outputs["Color"], mix.inputs[7])
+        nt.links.new(mix.outputs[2], bsdf.inputs["Base Color"])
+    if normal_os:
+        ni = nt.nodes.new("ShaderNodeTexImage"); ni.image = bpy.data.images.load(normal_os); ni.image.colorspace_settings.name = "Non-Color"
+        nt.links.new(uvn.outputs["UV"], ni.inputs["Vector"])
+        nm = nt.nodes.new("ShaderNodeNormalMap"); nm.space = "OBJECT"
+        nt.links.new(ni.outputs["Color"], nm.inputs["Color"]); nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+    if normal_ts:
+        ni = nt.nodes.new("ShaderNodeTexImage"); ni.image = bpy.data.images.load(normal_ts); ni.image.colorspace_settings.name = "Non-Color"
+        nt.links.new(uvn.outputs["UV"], ni.inputs["Vector"])
+        nm = nt.nodes.new("ShaderNodeNormalMap"); nm.space = "TANGENT"; nm.uv_map = uv_name
+        nt.links.new(ni.outputs["Color"], nm.inputs["Color"]); nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+    if gloss:
+        gi = nt.nodes.new("ShaderNodeTexImage"); gi.image = bpy.data.images.load(gloss); gi.image.colorspace_settings.name = "Non-Color"
+        nt.links.new(uvn.outputs["UV"], gi.inputs["Vector"])
+        inv = nt.nodes.new("ShaderNodeMath"); inv.operation = "SUBTRACT"; inv.inputs[0].default_value = 1.0
+        nt.links.new(gi.outputs["Alpha"], inv.inputs[1]); nt.links.new(inv.outputs[0], bsdf.inputs["Roughness"])
+    return mat
+
+
 def color_material(name, rgb, roughness=0.8):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
     bsdf.inputs["Roughness"].default_value = roughness
+    mat.diffuse_color = (*rgb, 1.0)
     return mat
 
 

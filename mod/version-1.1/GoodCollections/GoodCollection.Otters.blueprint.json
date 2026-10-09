@@ -1,0 +1,39 @@
+{
+  "GoodCollectionSpec": {
+    "CollectionId": "Otters",
+    "Goods": [
+      "Biofuel",
+      "Book",
+      "BotChassis",
+      "BotHead",
+      "BotLimb",
+      "Bread",
+      "Carrot",
+      "Catalyst",
+      "CattailCracker",
+      "CattailFlour",
+      "CattailRoot",
+      "Chestnut",
+      "Dandelion",
+      "GrilledChestnut",
+      "GrilledPotato",
+      "GrilledSpadderdock",
+      "MaplePastry",
+      "MapleSyrup",
+      "Paper",
+      "Potato",
+      "PunchCard",
+      "Spadderdock",
+      "SunflowerSeeds",
+      "TreatedPlank",
+      "Water",
+      "Wheat",
+      "WheatFlour",
+      "MangroveFruit",
+      "WildRice",
+      "CookedWildRice",
+      "TaroRoot",
+      "RoastedTaro"
+    ]
+  }
+}

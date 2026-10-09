@@ -1,0 +1,26 @@
+{
+  "RecipeSpec": {
+    "Id": "CookedWildRice",
+    "BackwardCompatibleIds": [],
+    "DisplayLocKey": "Good.CookedWildRice.PluralDisplayName",
+    "CycleDurationInHours": 0.4,
+    "Ingredients": [
+      {
+        "Id": "WildRice",
+        "Amount": 1
+      }
+    ],
+    "Products": [
+      {
+        "Id": "CookedWildRice",
+        "Amount": 2
+      }
+    ],
+    "ProducedSciencePoints": 0,
+    "Fuel": "Log",
+    "CyclesFuelLasts": 10,
+    "FuelCapacity": 5,
+    "CyclesCapacity": 30,
+    "Icon": "Sprites/Goods/CookedWildRiceIcon"
+  }
+}

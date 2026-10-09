@@ -18,3 +18,14 @@ def tangents(pos, uv, tris, nrm, group=None):
     bad = np.linalg.norm(T,axis=1)<1e-9
     T[bad] = np.cross(nrm[bad],[0,1,0.001])
     return T/np.linalg.norm(T,axis=1,keepdims=True)
+def uv_bitangents(pos, uv, tris, nrm):
+    """Per-vertex direction of increasing V (for Blender-convention preview normal maps)."""
+    p0,p1,p2 = pos[tris[:,0]],pos[tris[:,1]],pos[tris[:,2]]
+    u0,u1,u2 = uv[tris[:,0]],uv[tris[:,1]],uv[tris[:,2]]
+    e1,e2 = p1-p0,p2-p0; d1,d2 = u1-u0,u2-u0
+    r = d1[:,0]*d2[:,1]-d2[:,0]*d1[:,1]; r = np.where(np.abs(r)<1e-12,1e-12,r)
+    b = (e2*d1[:,0:1]-e1*d2[:,0:1])/r[:,None]
+    B = np.zeros_like(pos)
+    for k in range(3): np.add.at(B, tris[:,k], b)
+    B = B - nrm*np.sum(B*nrm,1,keepdims=True)
+    return B/np.maximum(np.linalg.norm(B,axis=1,keepdims=True),1e-9)

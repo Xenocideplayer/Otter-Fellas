@@ -1,0 +1,42 @@
+{
+  "NeedCollectionSpec": {
+    "CollectionId": "Otters",
+    "Needs": [
+      "Agora",
+      "BeaverStatue",
+      "BeeSting",
+      "Biofuel",
+      "Books",
+      "BrazierOfBonding",
+      "Bread",
+      "BulletinPole",
+      "Carousel",
+      "Carrots",
+      "Catalyst",
+      "CattailCracker",
+      "ContemplationSpot",
+      "CookedWildRice",
+      "DanceHall",
+      "Detailer",
+      "DomedGarden",
+      "EarthRecultivator",
+      "FarmerMonument",
+      "FountainOfJoy",
+      "GrilledChestnuts",
+      "GrilledPotatoes",
+      "GrilledSpadderdock",
+      "HallOfAbundance",
+      "Lido",
+      "MangroveFruit",
+      "MaplePastry",
+      "MudPit",
+      "OtterMoisture",
+      "PunchCard",
+      "RoastedTaro",
+      "Sauna",
+      "Scarecrow",
+      "SunflowerSeeds",
+      "Weathervane"
+    ]
+  }
+}
