@@ -1,9 +1,0 @@
-{
-  "ManufactorySpec": {
-    "ProductionRecipeIds#append": [
-      "CookedWildRice",
-      "RoastedTaro",
-      "GrilledFish"
-    ]
-  }
-}

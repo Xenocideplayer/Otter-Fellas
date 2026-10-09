@@ -85,7 +85,9 @@ namespace Otters
     private WaterOutput _waterOutput;
     private StatusToggle _brokenStatus;
     private StatusToggle _noRoomStatus;
+    private StatusToggle _closedStatus;
     private List<WaterTubeOutlet> _outlets = new List<WaterTubeOutlet>();
+    private bool _networkBlocked;
     private int _outletsVersion = -1;
     private readonly List<WaterTubeOutlet> _eligible = new List<WaterTubeOutlet>();
 
@@ -119,25 +121,27 @@ namespace Otters
         _loc.T(_spec.BrokenStatusLocKey), _loc.T(_spec.BrokenAlertLocKey));
       _noRoomStatus = StatusToggle.CreateNormalStatusWithAlert("OtterWellNoRoom",
         _loc.T("Status.ArtesianWell.NoRoom"), _loc.T("Status.ArtesianWell.NoRoom.Short"), 1f);
+      _closedStatus = StatusToggle.CreateNormalStatusWithAlert("OtterWellNoRoom",
+        _loc.T("Status.ArtesianWell.Closed"), _loc.T("Status.ArtesianWell.Closed.Short"), 1f);
     }
 
     /// <summary>Tells the player when the water has nowhere to go (level ground behind, full outlets).</summary>
     public override void Tick()
     {
-      bool noRoom = !IsBroken && _blockObject.IsFinished && !HasRoom(0f);
-      if (noRoom)
-      {
-        _noRoomStatus.Activate();
-      }
-      else
-      {
-        _noRoomStatus.Deactivate();
-      }
+      RefreshOutlets();
+      bool stuck = !IsBroken && _blockObject.IsFinished && !HasRoom(0f);
+      bool closed = stuck && _outlets.Count == 0 && _networkBlocked;
+      _closedStatus.Toggle(closed);
+      _noRoomStatus.Toggle(stuck && !closed);
     }
 
     private bool HasRoom(float offset)
     {
       IReadOnlyList<WaterTubeOutlet> outlets = ConnectedOutlets;
+      if (outlets.Count == 0 && _networkBlocked)
+      {
+        return false;  // every outlet is closed off by a valve or paused: the water waits in the well
+      }
       if (outlets.Count > 0)
       {
         foreach (WaterTubeOutlet outlet in outlets)
@@ -156,6 +160,7 @@ namespace Otters
     {
       GetComponent<StatusSubject>().RegisterStatus(_brokenStatus);
       GetComponent<StatusSubject>().RegisterStatus(_noRoomStatus);
+      GetComponent<StatusSubject>().RegisterStatus(_closedStatus);
       _manufactory.ProductionProgressed += OnProductionProgressed;
       UpdateStatus();
     }
@@ -190,26 +195,30 @@ namespace Otters
       return false;
     }
 
-    /// <summary>The outlets currently plugged into this well through finished tubes.</summary>
-    public IReadOnlyList<WaterTubeOutlet> ConnectedOutlets
+    /// <summary>The outlets currently plugged into this well through finished tubes and open valves, as of
+    /// this well's last simulation tick.</summary>
+    public IReadOnlyList<WaterTubeOutlet> ConnectedOutlets => _outlets;
+
+    /// <summary>
+    /// Re-traces the tube network when it changed. Only called from the simulation tick, so the outlets (and
+    /// the valve and pause states they depend on) are read at the same moment on every computer in co-op.
+    /// </summary>
+    private void RefreshOutlets()
     {
-      get
+      if (_outletsVersion == _tubes.Version)
       {
-        if (_outletsVersion != _tubes.Version)
-        {
-          _outletsVersion = _tubes.Version;
-          var ports = new List<Vector3Int>();
-          if (!_spec.TubePorts.IsDefault)
-          {
-            foreach (Vector3Int port in _spec.TubePorts)
-            {
-              ports.Add(_blockObject.TransformCoordinates(port));
-            }
-          }
-          _outlets = _tubes.FindOutlets(ports);
-        }
-        return _outlets;
+        return;
       }
+      _outletsVersion = _tubes.Version;
+      var ports = new List<Vector3Int>();
+      if (!_spec.TubePorts.IsDefault)
+      {
+        foreach (Vector3Int port in _spec.TubePorts)
+        {
+          ports.Add(_blockObject.TransformCoordinates(port));
+        }
+      }
+      _outlets = _tubes.FindOutlets(ports, out _networkBlocked);
     }
 
     public float ProductionEfficiency()
@@ -235,6 +244,7 @@ namespace Otters
       {
         return;
       }
+      RefreshOutlets();  // production only moves on in the simulation
       float hours = e.ProductionProgressChange * _manufactory.CurrentRecipe.CycleDurationInHours;
       if (IsBroken)
       {
@@ -250,7 +260,10 @@ namespace Otters
       IReadOnlyList<WaterTubeOutlet> outlets = ConnectedOutlets;
       if (outlets.Count == 0)
       {
-        _waterOutput.AddCleanWater(water);
+        if (!_networkBlocked)
+        {
+          _waterOutput.AddCleanWater(water);
+        }
         return;
       }
       _eligible.Clear();

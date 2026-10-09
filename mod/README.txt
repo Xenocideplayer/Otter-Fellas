@@ -56,6 +56,17 @@ WHAT OTTERS DO
                   otters' best food (its own need, like bread).
   Otter Slide     200 science. A slide tower on the bank with a chute into the river.
                   Fun (its own need) and a big soak for otters. Needs water at the bottom.
+  Tube Valve      No science. A tube piece that shuts the line when paused (or switched
+                  off by automation). Paused Tube Outlets get no water either.
+  Clam Bed        80 science. Built half on the bank, half in shallow water (0.5+ deep).
+                  One otter rakes up clams from the bed; only in clean water (full speed
+                  at 0% badwater, nothing at 20%+). Clams are food, and the Grill makes
+                  Grilled Clams.
+  Slipway         No science. A mud-and-log ramp from the riverbed up the bank (works like
+                  stairs). Lets otters take to the river and swim along the bottom instead
+                  of walking around.
+  The Wellspring  The otters' own wonder: a great tiered fountain crowned with a holt.
+                  Needs Extract and Smoked Fish to run.
   Clean water     Crops planted by otters grow 1.5x faster while their water is 100%
                   clean: aquatic crops standing in water with no badwater, land crops on
                   irrigated soil with no contamination. Stacks with the faster aquatic
@@ -70,13 +81,15 @@ LOOKS
   chopping, sleeping...), so hats, tools and carried goods still line up.
 
 CO-OP (TIMBER TOGETHER / BEAVERBUDDIES)
-  Every computer needs the same Otters version. Shared-colony games and separate-colony
-  games where everyone plays Otters work; the Trading Post and Power Export appear for
-  otters too. Mixed factions with Otters aren't supported yet (see the repository's
-  docs/TIMBER-TOGETHER.md).
+  Every computer needs the same Otters version. Shared-colony games and all-otter
+  separate colonies work with Timber Together as released (no Trading Post for otters
+  there). Mixed factions with Otters, and the otter Trading Post, need the Timber
+  Together build from the otters-mixed-factions branch (1.4.0-rc33 or later).
 
 KNOWN LIMITS
-  - Otters are built on the Folktails economy and buildings (the Herbalist is hidden).
+  - Otters are a self-contained faction built on the Folktails economy: their own copies
+    of the Folktails buildings, characters, crops, outfits and shaft parts (no Herbalist).
+    Saves from Otters 1.x don't load in 2.0.
   - The Fishing Dock is the Folktails water-pump hut refitted with a rod and a fish rack,
     the Artesian Well is the Aquifer Drill with tube sockets, a thatched cap and pennant,
     and the Smokehouse is the Bakery with fish racks and a sign. The Splash Pool and

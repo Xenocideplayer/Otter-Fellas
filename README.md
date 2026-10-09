@@ -25,8 +25,13 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | **Water Tubes** | The game's tube pieces carrying water: plug them into the well's walls and end them at a **Tube Outlet** to put the water anywhere. |
 | **Smokehouse** | Fish into Smoked Fish, the otters' best food. |
 | **Otter Slide** | A slide tower with a chute into the river: fun, and a big soak. |
+| **Tube Valve** | Shuts a water tube line when paused or switched off by automation. |
+| **Clam Bed** | Otters rake clams from clean, shallow riverbeds; Grilled Clams at the Grill. |
+| **Slipway** | A mud-and-log ramp into the river so otters can swim instead of walking around. |
+| **The Wellspring** | The otters' own wonder. |
 | **Clean water** | Crops planted by otters grow 1.5x faster while their water is 100% clean. |
-| **Co-op** | Works with Timber Together for shared colonies and all-otter separate colonies; see [docs/TIMBER-TOGETHER.md](docs/TIMBER-TOGETHER.md). |
+| **Own faction** | Otters have their own copies of every building, character, crop, outfit and shaft part (no changes to Folktails content), so they can share a map with other factions in co-op. |
+| **Co-op** | Works with Timber Together; mixed factions need the Timber Together fix described in [docs/TIMBER-TOGETHER.md](docs/TIMBER-TOGETHER.md). |
 | **Their own look** | Custom 3D adult and kit bodies with fur detail baked from the game's own beaver textures, a woven reed sash, 4 adult and 3 kit fur colours, every beaver animation carried over, game-style icons and a shell logo; faction art painted for the mod. |
 
 ![Preview](docs/images/preview.png)

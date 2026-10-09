@@ -1,0 +1,12 @@
+{
+  "WorkerOutfitSpec": {
+    "Id": "Forester",
+    "FactionId": "Otters",
+    "WorkerType": "Bot",
+    "DiffuseTexture": "",
+    "NormalTexture": "",
+    "Attachments": [
+      "ForesterHat.Bot.Folktails"
+    ]
+  }
+}

@@ -169,3 +169,28 @@ for name, model in (("ArtesianWellExtras.Otters.Model", well()), ("SmokehouseExt
                     ("TubeOutletExtras.Otters.Model", outlet()), ("OtterSlide.Otters.Model", otter_slide())):
     tm.write(model, os.path.join(out, name + ".timbermesh"))
     print(name, sum(n.vertex_count for n in model.nodes), "verts")
+
+
+# ------------------------------------------------------------------------------------------------- slipway
+def slipway():
+    """A muddy log ramp from the riverbed up the bank: two side logs, cross planks, a slick of mud down the middle.
+    Same footprint as the game's stairs (1 x 1 x 2, low end at z = 0, top edge at the front, y = 1)."""
+    m = pm.Mesh()
+    lo = np.array([0.5, 0.0, 0.95]); hi = np.array([0.5, 1.0, 0.0])   # back-bottom to front-top
+    for dx in (-0.36, 0.36):
+        pm.cylinder(m, BROWN, lo + (dx, 0.06, 0.05), hi + (dx, -0.02, 0.0), 0.07, seg=8)
+    n = 7
+    for i in range(n):
+        t = (i + 0.5) / n
+        p = lo + (hi - lo) * t
+        pm.box(m, LIGHT, (0.16, p[1] - 0.03, p[2] - 0.055), (0.84, p[1] + 0.02, p[2] + 0.055), uv_offset=(0.13 * i, 0.0))
+    mud = (0.42, 0.30, 0.20, 1)
+    pm.beam(m, WHITE, lo + (0, 0.035, 0.02), hi + (0, 0.035, 0.02), 0.34, 0.012, color=mud)
+    for z, s in ((0.15, 0.9), (0.6, 0.7)):          # a couple of stakes holding it in the bank
+        pm.cylinder(m, BROWN, (0.08, 0.0, z), (0.08, 0.35 * s + 0.2, z), 0.035, seg=6)
+        pm.cylinder(m, BROWN, (0.92, 0.0, z), (0.92, 0.35 * s + 0.2, z), 0.035, seg=6)
+    return pm.single_node_model("Slipway.Otters", m)
+
+
+tm.write(slipway(), os.path.join(out, "Slipway.Otters.Model.timbermesh"))
+print("Slipway.Otters.Model done")

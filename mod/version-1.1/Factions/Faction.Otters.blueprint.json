@@ -25,11 +25,9 @@
       "IronTeeth"
     ],
     "TemplateCollectionIds": [
-      "Buildings.Folktails",
       "Buildings.Otters",
-      "Characters.Folktails",
-      "ModularShaftParts.Folktails",
-      "NaturalResources.Folktails",
+      "Characters.Otters",
+      "ModularShaftParts.Otters",
       "NaturalResources.Otters"
     ],
     "PathMaterial": "Buildings/Paths/Path/Path.Folktails",
@@ -40,97 +38,8 @@
     "GoodCollectionIds": [
       "Otters"
     ],
-    "BlueprintModifiers": [
-      {
-        "Original": "Characters/Beaver/BeaverAdult.blueprint",
-        "Modifier": "OttersModifiers/Characters/BeaverAdult.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Characters/Beaver/BeaverChild.blueprint",
-        "Modifier": "OttersModifiers/Characters/BeaverChild.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Food/AquaticFarmhouse/AquaticFarmhouse.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/AquaticFarmhouse.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/DoubleFloodgate/DoubleFloodgate.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/DoubleFloodgate.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/FillValve/FillValve.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/FillValve.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/Floodgate/Floodgate.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Floodgate.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/Levee/Levee.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Levee.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/ThrottlingValve/ThrottlingValve.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/ThrottlingValve.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/TripleFloodgate/TripleFloodgate.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/TripleFloodgate.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Water/LargeWaterPump/LargeWaterPump.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/LargeWaterPump.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Wellbeing/DomedGarden/DomedGarden.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/DomedGarden.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Wellbeing/Lido/Lido.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Lido.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Wellbeing/Shower/Shower.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Shower.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Food/Grill/Grill.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Grill.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Landscaping/TerrainBlock/TerrainBlock.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/TerrainBlock.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint",
-        "Modifier": "OttersModifiers/Buildings/Herbalist.Folktails.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Carrot/Carrot.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Carrot.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Cattail/Cattail.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Cattail.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Potato/Potato.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Potato.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Spadderdock/Spadderdock.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Spadderdock.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Sunflower/Sunflower.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Sunflower.Otters.optional.blueprint"
-      },
-      {
-        "Original": "NaturalResources/Crops/Wheat/Wheat.blueprint",
-        "Modifier": "OttersModifiers/NaturalResources/Wheat.Otters.optional.blueprint"
-      }
-    ],
-    "StartingBuildingId": "DistrictCenter.Folktails",
+    "BlueprintModifiers": [],
+    "StartingBuildingId": "DistrictCenter.Otters",
     "SoundId": "Common",
     "DisplayNameLocKey": "Faction.Otters.DisplayName",
     "DescriptionLocKey": "Faction.Otters.Description",

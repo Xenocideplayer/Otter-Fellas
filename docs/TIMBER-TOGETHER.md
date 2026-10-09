@@ -4,6 +4,22 @@
 computer runs the same simulation from the same save, and only player actions go over the network. So a mod
 works in co-op as long as its simulation is deterministic and every player has the same version.
 
+## Status (Otters 2.0.0)
+
+Otters 2.0 is a self-contained faction: collections `Buildings.Otters`, `Characters.Otters` (`OtterAdult`,
+`OtterChild`, `Bot.Otters`), `ModularShaftParts.Otters`, `NaturalResources.Otters`, worker outfits with
+`FactionId: "Otters"`, starting building `DistrictCenter.Otters`, and no faction blueprint modifiers. The only
+templates shared with other factions are the map plants (Dandelion, Chestnut Tree, Maple with Folktails;
+Mangrove with Iron Teeth) and the two dev-mode objects every faction lists. `check_faction.py` checks all of this.
+
+| Mode | Timber Together rc32 (released) | Timber Together rc33 (branch `otters-mixed-factions`) |
+|---|---|---|
+| Shared colony, Otters | Works | Works |
+| Separate colonies, all Otters | Works, no Trading Post for otters | Works, with an Otters Trading Post and Power Export |
+| Mixed factions (any, Otters installed) | Crashes at load | Fixed (see that branch's docs/MIXED-FACTIONS-FIX.md); untested in game |
+
+The rest of this page is the 1.2 analysis, kept for reference.
+
 ## What works now (Otters 1.2.0)
 
 | Mode | Status |

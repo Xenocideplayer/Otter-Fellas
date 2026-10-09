@@ -15,6 +15,7 @@
       "Carrots",
       "Catalyst",
       "CattailCracker",
+      "Clams",
       "ContemplationSpot",
       "CookedWildRice",
       "DanceHall",
@@ -25,6 +26,7 @@
       "Fish",
       "FountainOfJoy",
       "GrilledChestnuts",
+      "GrilledClams",
       "GrilledFish",
       "GrilledPotatoes",
       "GrilledSpadderdock",
@@ -42,7 +44,8 @@
       "SmokedFish",
       "SplashPool",
       "SunflowerSeeds",
-      "Weathervane"
+      "Weathervane",
+      "Wellspring"
     ]
   }
 }

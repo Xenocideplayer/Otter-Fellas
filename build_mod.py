@@ -5,9 +5,14 @@
 The optional model dir is the output of model/build_models.py (otter bodies, fur textures). Without it the
 otters keep the beaver body.
 
-New buildings start as copies of vanilla ones (so models, colliders and nav meshes are the game's own), and
-otter-only tweaks to vanilla content are written as faction blueprint modifiers, which the game applies only in
-Otter colonies.
+Otters are a self-contained faction, separated from Folktails and Iron Teeth exactly as those two are from each
+other: every Folktails building (bar the Herbalist), the characters, the bot, the worker outfits, the power-shaft
+parts and the Folktails crops are written as otter copies (`<Name>.Otters`, models still the Folktails ones) with the
+otter tweaks applied directly, so no faction blueprint modifiers are needed and no template is listed by two factions
+except natural resources that maps place (as the vanilla factions share theirs). New buildings start as copies of
+vanilla ones too (so models, colliders and nav meshes are the game's own).
+
+An optional build_extras.py next to this file adds more content (see run_extras()).
 """
 import copy
 import csv
@@ -24,9 +29,9 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "1.2.0"
+MOD_VERSION = "2.0.0"
 MOD_ID = "Otters.WaterFaction"
-MODIFIERS = "OttersModifiers"
+FACTION_ID = "Otters"
 
 written = []
 
@@ -88,23 +93,44 @@ CROP_GROWTH_DAYS = {                 # aquatic crops grow ~40% faster for otters
 DIG_SITE_HOURS = 12.0                # builder-hours to dig one block out by paw (slow on purpose)
 DIRT_PER_DUG_BLOCK = 1               # a terrain block costs 4 dirt, so digging returns a quarter
 FREE_FOLKTAILS_BUILDINGS = ["Buildings/Landscaping/TerrainBlock/TerrainBlock.Folktails.blueprint"]  # no science
+GRILL = "Buildings/Food/Grill/Grill.Folktails.blueprint"   # otter copy also grills the otter foods
 
 # New aquatic crops: (template, model source, growth days, yield good, yield amount, cooked good, order)
 NEW_CROPS = [
     ("WildRice", "NaturalResources/Crops/Wheat/Wheat.blueprint", 7.0, "WildRice", 3, "CookedWildRice", 7),
     ("WaterTaro", "NaturalResources/Crops/Cassava/Cassava.blueprint", 9.0, "TaroRoot", 3, "RoastedTaro", 8),
 ]
-EXTRA_TEMPLATES = ["NaturalResources/Trees/Mangrove/Mangrove.blueprint"]   # Iron Teeth's water tree
+EXTRA_TEMPLATES = ["NaturalResources/Trees/Mangrove/Mangrove.blueprint"]   # Iron Teeth's water tree (shared)
 EXTRA_GOODS = ["MangroveFruit"]
 EXTRA_NEEDS = ["MangroveFruit"]
 NATURAL_RESOURCES = "TemplateCollections/TemplateCollection.NaturalResources.Otters.blueprint"
 RIVER_HOLT = "Buildings/Housing/RiverHolt/RiverHolt.Otters.blueprint"
 BIG_RIVER_HOLT = "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint"
 HOLT_MOISTURE_PER_HOUR = 0.5         # residents' fur stays wet while they sleep
-# Otters build from the Folktails building list itself (so buildings other mods add to Folktails, like Timber
-# Together's Trading Post, show up for otters too) plus their own list. Folktails buildings otters shouldn't have are
-# hidden from the toolbar instead of removed.
-HIDDEN_FOLKTAILS_BUILDINGS = ["Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint"]  # Rinse Pod instead
+
+# --- Faction separation -----------------------------------------------------------------------------------
+# Template collections (ids are what the FactionSpec lists; Timber Together reads them too).
+COLLECTION_IDS = {
+    "buildings": "Buildings.Otters",
+    "characters": "Characters.Otters",
+    "shafts": "ModularShaftParts.Otters",
+    "natural": "NaturalResources.Otters",
+}
+FOLKTAILS_COLLECTION = "TemplateCollections/TemplateCollection.{}.Folktails.blueprint"
+# Folktails buildings otters don't get at all (no otter copy is written).
+OMITTED_FOLKTAILS_BUILDINGS = {"Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint"}  # Rinse Pod instead
+# Folktails buildings Iron Teeth list too (the dev-mode power generator and water source) are listed by otters as
+# well, as vanilla does, instead of being copied (see folktails_buildings()).
+# Characters: otter copies of the beaver adult and child (otter body, speeds, swimming) and of the Folktails bot.
+CHARACTERS = {   # vanilla blueprint -> (otter blueprint, otter template name)
+    "Characters/Beaver/BeaverAdult.blueprint": ("Characters/Otters/OtterAdult.blueprint", "OtterAdult"),
+    "Characters/Beaver/BeaverChild.blueprint": ("Characters/Otters/OtterChild.blueprint", "OtterChild"),
+    "Characters/Bot/Bot.Folktails.blueprint": ("Characters/Bot/Bot.Otters.blueprint", "Bot.Otters"),
+}
+SHAFT_PARTS = ("Buildings/Power/PowerShaft/Models/ModularShaftParts.Folktails.blueprint",
+               "Buildings/Power/PowerShaft/Models/ModularShaftParts.Otters.blueprint")
+# Spec fields that name other templates: a Folktails building name there is replaced by its otter copy's name.
+TEMPLATE_NAME_FIELDS = {"TunnelSupportTemplateName", "UnderstructureTemplateNames"}
 REMOVED_GOODS = []
 REMOVED_NEEDS = []
 CLEAN_WATER_GROWTH = 1.5             # otter crops grow 1.5x faster while their water is 100% clean
@@ -137,6 +163,10 @@ SMOKEHOUSE_SCIENCE = 150
 OTTER_SLIDE = "Buildings/Wellbeing/OtterSlide/OtterSlide.Otters.blueprint"
 SLIDE_MOISTURE = 1.2
 SLIDE_SCIENCE = 200
+# Slipway: a cheap mud-and-log ramp from the riverbed up the bank, so otters can take to the water and swim along
+# the bottom (the game's navigation already follows the ground under water; height steps are what block it).
+SLIPWAY = "Buildings/Paths/Slipway/Slipway.Otters.blueprint"
+SLIPWAY_CLIMB_COST = 0.3             # the vertical edge; the game's stairs use 0.4 (lower = faster)
 
 DIG_SITE = "Buildings/Landscaping/OtterDigSite/OtterDigSite.Otters.blueprint"
 REED_FILTER = "Buildings/Water/ReedFilter/ReedFilter.Otters.blueprint"
@@ -244,6 +274,11 @@ TEXT = {
                                        "chute.",
     "Building.OtterSlide.FlavorDescription": "Again! Again!",
     "Need.OtterSlide.DisplayName": "Otter Slide",
+    "Building.Slipway.DisplayName": "Slipway",
+    "Building.Slipway.Description": "A mud-and-log ramp down the bank. Build it on the riverbed against the bank, "
+                                    "facing the bank, and otters can slip into the river and swim along the bottom "
+                                    "instead of walking around. Works like stairs for everyone.",
+    "Building.Slipway.FlavorDescription": "Wheee-splash.",
 }
 
 
@@ -253,15 +288,11 @@ TEXT = {
 CLEAN_WATER_SPEC = {"GrowthMultiplier": CLEAN_WATER_GROWTH, "CleanThreshold": CLEAN_WATER_THRESHOLD}
 
 
-def modifier_path(original, name):
-    return f"{MODIFIERS}/{name}.Otters.optional.blueprint"
-
-
-def build_faction(modifiers):
+def build_faction(wonder_override=None):
     folk = load("Factions/Faction.Folktails.blueprint")
     f = copy.deepcopy(folk["FactionSpec"])
     f.update({
-        "Id": "Otters",
+        "Id": FACTION_ID,
         "Order": 2,
         "Avatar": "Sprites/Avatars/OttersAdult",
         "ChildAvatar": "Sprites/Avatars/OttersChild",
@@ -272,11 +303,11 @@ def build_faction(modifiers):
         "NewGameFullAvatar": "Sprites/Avatars/OttersFullNewGame",
         # The pod model is the Iron Teeth one, so their materials are needed too.
         "MaterialCollectionIds": ["Folktails", "IronTeeth"],
-        "TemplateCollectionIds": ["Buildings.Folktails", "Buildings.Otters", "Characters.Folktails", "ModularShaftParts.Folktails",
-                                  "NaturalResources.Folktails", "NaturalResources.Otters"],
+        "TemplateCollectionIds": [COLLECTION_IDS[k] for k in ("buildings", "characters", "shafts", "natural")],
         "NeedCollectionIds": ["Otters"],
         "GoodCollectionIds": ["Otters"],
-        "BlueprintModifiers": [{"Original": o, "Modifier": m} for o, m in modifiers],
+        "BlueprintModifiers": [],
+        "StartingBuildingId": otter_template_name(folk["FactionSpec"]["StartingBuildingId"]),
         **({"Textures": ADULT_TEXTURES, "ChildTextures": CHILD_TEXTURES} if MODEL_DIR else {}),
         "DisplayNameLocKey": "Faction.Otters.DisplayName",
         "DescriptionLocKey": "Faction.Otters.Description",
@@ -286,31 +317,44 @@ def build_faction(modifiers):
     wonder = copy.deepcopy(folk["FactionWonderSpec"])
     wonder["WonderCompletionFlavorLocKey"] = "Faction.Otters.WonderCompletionFlavor"
     wonder["WonderCompletionMessageLocKey"] = "Faction.Otters.WonderCompletionMessage"
+    if wonder_override:
+        wonder.update(wonder_override)
     write("Factions/Faction.Otters.blueprint.json",
           {"FactionSpec": f, "StartingFactionSpec": {}, "FactionWonderSpec": wonder})
 
 
-def build_collections():
-    blueprints = [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT, FISHING_DOCK, SPLASH_POOL,
-                  ARTESIAN_WELL, WATER_TUBE, TUBE_OUTLET, SMOKEHOUSE, OTTER_SLIDE]
+def unique(items):
+    seen = set()
+    return [i for i in items if not (i in seen or seen.add(i))]
+
+
+def build_collections(building_copies, natural_resources, extras):
+    blueprints = unique(building_copies + [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT, FISHING_DOCK,
+                                           SPLASH_POOL, ARTESIAN_WELL, WATER_TUBE, TUBE_OUTLET, SMOKEHOUSE, OTTER_SLIDE,
+                                           SLIPWAY]
+                        + list(extras.get("buildings", [])))
     write("TemplateCollections/TemplateCollection.Buildings.Otters.blueprint.json",
-          {"TemplateCollectionSpec": {"CollectionId": "Buildings.Otters", "Blueprints": blueprints}})
+          {"TemplateCollectionSpec": {"CollectionId": COLLECTION_IDS["buildings"], "Blueprints": blueprints}})
+    write("TemplateCollections/TemplateCollection.Characters.Otters.blueprint.json",
+          {"TemplateCollectionSpec": {"CollectionId": COLLECTION_IDS["characters"],
+                                      "Blueprints": [otter for otter, _ in CHARACTERS.values()]}})
+    write("TemplateCollections/TemplateCollection.ModularShaftParts.Otters.blueprint.json",
+          {"TemplateCollectionSpec": {"CollectionId": COLLECTION_IDS["shafts"], "Blueprints": [SHAFT_PARTS[1]]}})
 
     goods = load("GoodCollections/GoodCollection.Folktails.blueprint")["GoodCollectionSpec"]["Goods"]
     write("GoodCollections/GoodCollection.Otters.blueprint.json",
-          {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": [g for g in goods if g not in REMOVED_GOODS]
-                                  + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]
-                                  + ["Fish", "GrilledFish", "SmokedFish"]}})
+          {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": unique(
+              [g for g in goods if g not in REMOVED_GOODS] + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]
+              + ["Fish", "GrilledFish", "SmokedFish"] + list(extras.get("goods", [])))}})
 
     needs = load("NeedCollections/NeedCollection.Folktails.blueprint")["NeedCollectionSpec"]["Needs"]
     needs = ([n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"] + EXTRA_NEEDS + [c[5] for c in NEW_CROPS]
-             + ["Fish", "GrilledFish", "SmokedFish", "SplashPool", "OtterSlide"])
+             + ["Fish", "GrilledFish", "SmokedFish", "SplashPool", "OtterSlide"] + list(extras.get("needs", [])))
     write("NeedCollections/NeedCollection.Otters.blueprint.json",
-          {"NeedCollectionSpec": {"CollectionId": "Otters", "Needs": sorted(needs)}})
+          {"NeedCollectionSpec": {"CollectionId": "Otters", "Needs": sorted(set(needs))}})
 
-    crops = [f"NaturalResources/Crops/{c[0]}/{c[0]}.blueprint" for c in NEW_CROPS]
-    write(NATURAL_RESOURCES + ".json", {"TemplateCollectionSpec": {"CollectionId": "NaturalResources.Otters",
-                                                                   "Blueprints": crops + EXTRA_TEMPLATES}})
+    write(NATURAL_RESOURCES + ".json", {"TemplateCollectionSpec": {"CollectionId": COLLECTION_IDS["natural"],
+                                                                   "Blueprints": natural_resources}})
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -720,6 +764,20 @@ def build_otter_slide():
     write("Needs/Need.Beaver.OtterSlide.blueprint.json", need)
 
 
+def build_slipway():
+    bp = copy.deepcopy(load("Buildings/Paths/Stairs/Stairs.Folktails.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "Slipway.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 2}], "ScienceCost": 0})
+    for group in bp["BlockObjectNavMeshSettingsSpec"]["EdgeGroups"]:
+        if any(e["Start"]["Z"] != e["End"]["Z"] for e in group["AddedEdges"]):
+            group["Cost"] = SLIPWAY_CLIMB_COST
+    if MODEL_DIR:
+        bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Paths/Slipway/Slipway.Otters.Model"
+    bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 21
+    labeled(bp["LabeledEntitySpec"], "Slipway", "Buildings/Paths/Slipway/SlipwayIcon")
+    write(SLIPWAY + ".json", order_specs(bp))
+
+
 def order_specs(bp):
     # Keep Children last, as the game's own files do.
     children = bp.pop("Children", None)
@@ -729,59 +787,165 @@ def order_specs(bp):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# Otter-only tweaks to vanilla content (faction blueprint modifiers)
+# Otter copies of Folktails and shared vanilla content, with the otter tweaks applied directly
 # ---------------------------------------------------------------------------------------------------------
-def build_modifiers():
-    mods = []
+def otter_template_name(name):
+    assert name.endswith(".Folktails"), name
+    return name[:-len(".Folktails")] + ".Otters"
 
-    def add(original, name, content):
-        path = modifier_path(original, name)
-        load(original)  # fail loudly if the vanilla blueprint moved
-        write(path + ".json", content)
-        mods.append((original, path))
 
-    for character, (walk, slowed) in LAND_SPEED.items():
-        content = {
-            "WalkerSpeedManagerSpec": {"BaseWalkingSpeed": walk, "BaseSlowedSpeed": slowed},
-            "OtterSwimmerSpec": {"SwimSpeedMultiplier": SWIM_SPEED_MULTIPLIER},
-        }
-        if MODEL_DIR:
-            content["OtterMaterialSpec"] = OTTER_MATERIAL[character]
-            content["Children"] = {"Model_Preserved": {"TimbermeshSpec": {"Model": OTTER_MODELS[character]}}}
-        add(f"Characters/Beaver/{character}.blueprint", f"Characters/{character}", content)
+def otter_blueprint_path(path):
+    assert path.endswith(".Folktails.blueprint"), path
+    return path[:-len(".Folktails.blueprint")] + ".Otters.blueprint"
 
-    buildings = sorted(set(SCIENCE_DISCOUNTS) | set(MOISTURE_SOURCES))
-    for original in buildings:
-        content = {}
-        if original in SCIENCE_DISCOUNTS:
-            content["BuildingSpec"] = {"ScienceCost": SCIENCE_DISCOUNTS[original]}
-        if original in MOISTURE_SOURCES:
-            vanilla_effects = load(original)["AttractionSpec"]["Effects"]
-            assert vanilla_effects, original
-            content["AttractionSpec"] = {"Effects#append": [
-                {"NeedId": "OtterMoisture", "PointsPerHour": MOISTURE_SOURCES[original], "SatisfyToMaxValue": False}]}
-        name = original.split("/")[-1].replace(".blueprint", "")
-        add(original, f"Buildings/{name}", content)
 
-    add("Buildings/Food/Grill/Grill.Folktails.blueprint", "Buildings/Grill.Folktails",
-        {"ManufactorySpec": {"ProductionRecipeIds#append": [c[5] for c in NEW_CROPS] + ["GrilledFish"]}})
-    for original in FREE_FOLKTAILS_BUILDINGS:
-        name = original.split("/")[-1].replace(".blueprint", "")
-        add(original, f"Buildings/{name}", {"BuildingSpec": {"ScienceCost": 0}})
+def collection_blueprints(path):
+    return list(load(path)["TemplateCollectionSpec"]["Blueprints"])
 
-    for original in HIDDEN_FOLKTAILS_BUILDINGS:
-        name = original.split("/")[-1].replace(".blueprint", "")
-        add(original, f"Buildings/{name}", {"PlaceableBlockObjectSpec": {"DevModeTool": True}})
 
-    folktails_crops = [b for b in load("TemplateCollections/TemplateCollection.NaturalResources.Folktails.blueprint")
-                       ["TemplateCollectionSpec"]["Blueprints"] if "/Crops/" in b]
-    for original in folktails_crops:
-        content = {"CleanWaterGrowthSpec": CLEAN_WATER_SPEC}
-        if original in CROP_GROWTH_DAYS:
-            content["GrowableSpec"] = {"GrowthTimeInDays": CROP_GROWTH_DAYS[original]}
-        name = original.split("/")[-1].replace(".blueprint", "")
-        add(original, f"NaturalResources/{name}", content)
-    return mods
+def folktails_buildings():
+    """(Folktails buildings to copy, buildings Iron Teeth list too and otters share as they are)."""
+    folk = collection_blueprints(FOLKTAILS_COLLECTION.format("Buildings"))
+    iron = set(collection_blueprints(FOLKTAILS_COLLECTION.format("Buildings").replace("Folktails", "IronTeeth")))
+    shared = [b for b in folk if b in iron]
+    return [b for b in folk if b not in iron and b not in OMITTED_FOLKTAILS_BUILDINGS], shared
+
+
+def otterize_template_refs(node, names):
+    """Points spec fields that name other templates at the otter copies (e.g. the Detonator's dynamite, the
+    Tunnel's platform). Other strings that happen to equal a template name (sounds, recipe ids) are left alone."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in TEMPLATE_NAME_FIELDS:
+                if isinstance(value, str):
+                    node[key] = names.get(value, value)
+                elif isinstance(value, list):
+                    node[key] = [names.get(v, v) if isinstance(v, str) else v for v in value]
+            else:
+                otterize_template_refs(value, names)
+    elif isinstance(node, list):
+        for value in node:
+            otterize_template_refs(value, names)
+
+
+def build_building_copies(extra_grill_recipes=(), omitted=()):
+    """Every Folktails building as `<Name>.Otters` next to the original (models, materials and nested construction
+    bases stay the Folktails ones). Returns the otter blueprint paths, in the Folktails order, plus the shared ones."""
+    sources, shared = folktails_buildings()
+    sources = [s for s in sources if s not in omitted]
+    for table in (SCIENCE_DISCOUNTS, MOISTURE_SOURCES, FREE_FOLKTAILS_BUILDINGS, [GRILL]):
+        missing = [b for b in table if b not in sources]
+        assert not missing, f"tuned Folktails buildings not in the copy list: {missing}"
+    blueprints = {s: copy.deepcopy(load(s)) for s in sources}
+    names = {bp["TemplateSpec"]["TemplateName"]: otter_template_name(bp["TemplateSpec"]["TemplateName"])
+             for bp in blueprints.values()}
+    paths = []
+    for source, bp in blueprints.items():
+        bp["TemplateSpec"]["TemplateName"] = names[bp["TemplateSpec"]["TemplateName"]]
+        # Old names belong to the Folktails buildings; otter saves never used them.
+        bp["TemplateSpec"]["BackwardCompatibleTemplateNames"] = []
+        otterize_template_refs(bp, names)
+        if source in SCIENCE_DISCOUNTS:
+            bp["BuildingSpec"]["ScienceCost"] = SCIENCE_DISCOUNTS[source]
+        if source in FREE_FOLKTAILS_BUILDINGS:
+            bp["BuildingSpec"]["ScienceCost"] = 0
+        if source in MOISTURE_SOURCES:
+            effects = bp["AttractionSpec"]["Effects"]
+            assert effects, source
+            effects.append({"NeedId": "OtterMoisture", "PointsPerHour": MOISTURE_SOURCES[source],
+                            "SatisfyToMaxValue": False})
+        if source == GRILL:
+            recipes = bp["ManufactorySpec"]["ProductionRecipeIds"]
+            recipes.extend(r for r in [c[5] for c in NEW_CROPS] + ["GrilledFish"] + list(extra_grill_recipes)
+                           if r not in recipes)
+        path = otter_blueprint_path(source)
+        write(path + ".json", order_specs(bp))
+        paths.append(path)
+    return paths + shared
+
+
+def build_characters():
+    """Otter adult and child (otter body and fur maps, land and swim speeds) and the otter bot."""
+    for source, (path, name) in CHARACTERS.items():
+        bp = copy.deepcopy(load(source))
+        bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
+        character = source.split("/")[-1].replace(".blueprint", "")
+        if character in LAND_SPEED:
+            walk, slowed = LAND_SPEED[character]
+            bp["WalkerSpeedManagerSpec"].update({"BaseWalkingSpeed": walk, "BaseSlowedSpeed": slowed})
+            bp["OtterSwimmerSpec"] = {"SwimSpeedMultiplier": SWIM_SPEED_MULTIPLIER}
+            if MODEL_DIR:
+                bp["OtterMaterialSpec"] = dict(OTTER_MATERIAL[character])
+                bp["Children"]["Model_Preserved"]["TimbermeshSpec"]["Model"] = OTTER_MODELS[character]
+        write(path + ".json", order_specs(bp))
+
+
+def build_worker_outfits():
+    """The Folktails worker outfits (same textures and attachments) owned by Otters."""
+    folder = os.path.join(VANILLA, "WorkerOutfits")
+    count = 0
+    for name in sorted(os.listdir(folder)):
+        if not name.endswith(".Folktails.blueprint.json"):
+            continue
+        bp = copy.deepcopy(load("WorkerOutfits/" + name[:-len(".json")]))
+        assert bp["WorkerOutfitSpec"]["FactionId"] == "Folktails", name
+        bp["WorkerOutfitSpec"]["FactionId"] = FACTION_ID
+        write("WorkerOutfits/" + name.replace(".Folktails.blueprint.json", ".Otters.blueprint.json"), bp)
+        count += 1
+    assert count, "no Folktails worker outfits found"
+
+
+def build_shaft_parts():
+    write(SHAFT_PARTS[1] + ".json", copy.deepcopy(load(SHAFT_PARTS[0])))
+
+
+def build_natural_resources():
+    """Otter copies of the Folktails crops (faster aquatic growth, clean-water bonus; same yields), the otter crops,
+    and the trees and bushes otters share with the vanilla factions. Returns the NaturalResources.Otters list."""
+    folk = collection_blueprints(FOLKTAILS_COLLECTION.format("NaturalResources"))
+    for b in CROP_GROWTH_DAYS:
+        assert b in folk, b
+    crops, shared = [], []
+    for source in folk:
+        if "/Crops/" not in source:
+            shared.append(source)          # Dandelion, Chestnut, Maple: unchanged for otters, listed as they are
+            continue
+        bp = copy.deepcopy(load(source))
+        name = bp["TemplateSpec"]["TemplateName"] + ".Otters"
+        bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
+        if source in CROP_GROWTH_DAYS:
+            bp["GrowableSpec"]["GrowthTimeInDays"] = CROP_GROWTH_DAYS[source]
+        bp["CleanWaterGrowthSpec"] = dict(CLEAN_WATER_SPEC)
+        path = source[:-len(".blueprint")] + ".Otters.blueprint"
+        write(path + ".json", order_specs(bp))
+        crops.append(path)
+    new = [f"NaturalResources/Crops/{c[0]}/{c[0]}.blueprint" for c in NEW_CROPS]
+    return crops + new + shared + EXTRA_TEMPLATES
+
+
+# ---------------------------------------------------------------------------------------------------------
+# build_extras.py (written separately): more buildings, goods, needs and an otter wonder
+# ---------------------------------------------------------------------------------------------------------
+EXTRAS_KEYS = {"buildings", "goods", "needs", "grill_recipes", "text", "models", "wonder", "omit_folktails",
+               "icons"}  # icons are rendered by art/make_art.py from art/icons_extras.ICONS
+
+
+def run_extras():
+    """Runs build_extras.build_all(this module) when build_extras.py sits next to this file (skip it with
+    OTTERS_NO_EXTRAS=1). It returns {buildings: [blueprint paths without .json], goods, needs, grill_recipes,
+    text: {loc key: text}, models: [(folder, file in model_out/buildings)], wonder: FactionWonderSpec fields or None,
+    omit_folktails: [Folktails building blueprints otters should not get a copy of] (optional)}."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if os.environ.get("OTTERS_NO_EXTRAS") or not os.path.exists(os.path.join(here, "build_extras.py")):
+        return {}
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import build_extras
+    extras = build_extras.build_all(sys.modules[__name__]) or {}
+    unknown = set(extras) - EXTRAS_KEYS
+    if unknown:
+        print(f"warning: build_extras returned keys this build ignores: {sorted(unknown)}", file=sys.stderr)
+    return extras
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -815,7 +979,7 @@ def build_manifest():
     })
 
 
-def copy_models():
+def copy_models(extra_models=()):
     """Otter bodies (.timbermesh), fur textures and the neutral material maps."""
     from PIL import Image
     dst = os.path.join(OUT, "Characters", "Otters")
@@ -844,7 +1008,9 @@ def copy_models():
                          ("Buildings/Water/ArtesianWell", "ArtesianWellExtras.Otters.Model.timbermesh"),
                          ("Buildings/Water/TubeOutlet", "TubeOutletExtras.Otters.Model.timbermesh"),
                          ("Buildings/Food/Smokehouse", "SmokehouseExtras.Otters.Model.timbermesh"),
-                         ("Buildings/Wellbeing/OtterSlide", "OtterSlide.Otters.Model.timbermesh")):
+                         ("Buildings/Wellbeing/OtterSlide", "OtterSlide.Otters.Model.timbermesh"),
+                         ("Buildings/Paths/Slipway", "Slipway.Otters.Model.timbermesh"),
+                         *[tuple(m) for m in extra_models]):
         os.makedirs(os.path.join(OUT, folder), exist_ok=True)
         shutil.copy(os.path.join(MODEL_DIR, "buildings", name), os.path.join(OUT, folder, name))
         written.append(f"{folder}/{name}")
@@ -854,9 +1020,6 @@ def main():
     if os.path.exists(OUT):
         shutil.rmtree(OUT)
     os.makedirs(OUT)
-    modifiers = build_modifiers()
-    build_faction(modifiers)
-    build_collections()
     build_moisture_need()
     build_dig_site()
     build_reed_filter()
@@ -869,10 +1032,20 @@ def main():
     build_water_tubes()
     build_smokehouse()
     build_otter_slide()
+    build_slipway()
+    extras = run_extras()
+    TEXT.update(extras.get("text") or {})
+    building_copies = build_building_copies(extras.get("grill_recipes") or (), set(extras.get("omit_folktails") or ()))
+    build_characters()
+    build_worker_outfits()
+    build_shaft_parts()
+    natural_resources = build_natural_resources()
+    build_faction(extras.get("wonder"))
+    build_collections(building_copies, natural_resources, extras)
     build_localization()
     build_manifest()
     if MODEL_DIR:
-        copy_models()
+        copy_models(extras.get("models") or ())
     shutil.copy(DLL, os.path.join(OUT, "Otters.dll"))
     written.append("Otters.dll")
     print("\n".join(sorted(written)))

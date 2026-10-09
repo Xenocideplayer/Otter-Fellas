@@ -1,0 +1,26 @@
+{
+  "RecipeSpec": {
+    "Id": "GrilledClams",
+    "BackwardCompatibleIds": [],
+    "DisplayLocKey": "Good.GrilledClams.PluralDisplayName",
+    "CycleDurationInHours": 0.5,
+    "Ingredients": [
+      {
+        "Id": "Clams",
+        "Amount": 2
+      }
+    ],
+    "Products": [
+      {
+        "Id": "GrilledClams",
+        "Amount": 3
+      }
+    ],
+    "ProducedSciencePoints": 0,
+    "Fuel": "Log",
+    "CyclesFuelLasts": 10,
+    "FuelCapacity": 5,
+    "CyclesCapacity": 30,
+    "Icon": "Sprites/Goods/GrilledClamsIcon"
+  }
+}

@@ -308,3 +308,12 @@ def no_room_symbol():
     return ('<path d="M56 26 q-14 17 -14 26 a14 14 0 0 0 28 0 q0 -9 -14 -26 z" stroke-width="0"/>'
             '<path d="M30 78 h52" fill="none" stroke-width="7"/>'
             '<path d="M38 88 l6 -6 M52 88 l6 -6 M66 88 l6 -6" fill="none" stroke-width="3.5"/>')
+
+
+def slipway():
+    # a ramp sliding down into the water with a splash
+    return ('<path d="M16 40 h22 l44 40"/>'
+            '<path d="M16 48 h18 l40 36" stroke-width="2.4"/>'
+            '<path d="M30 46 l6 -6 M44 58 l6 -6 M58 70 l6 -6" stroke-width="2.4"/>'
+            '<path d="M84 76 q4 -10 10 -12 M90 80 q6 -6 12 -6" stroke-width="2.6"/>'
+            + WAVES)

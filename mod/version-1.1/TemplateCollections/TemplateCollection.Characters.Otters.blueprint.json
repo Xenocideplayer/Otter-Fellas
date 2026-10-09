@@ -1,0 +1,10 @@
+{
+  "TemplateCollectionSpec": {
+    "CollectionId": "Characters.Otters",
+    "Blueprints": [
+      "Characters/Otters/OtterAdult.blueprint",
+      "Characters/Otters/OtterChild.blueprint",
+      "Characters/Bot/Bot.Otters.blueprint"
+    ]
+  }
+}

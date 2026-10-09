@@ -1,9 +1,0 @@
-{
-  "CleanWaterGrowthSpec": {
-    "GrowthMultiplier": 1.5,
-    "CleanThreshold": 0.0005
-  },
-  "GrowableSpec": {
-    "GrowthTimeInDays": 5.0
-  }
-}

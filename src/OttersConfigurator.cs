@@ -21,6 +21,8 @@ namespace Otters
       Bind<WaterTubeRegistry>().AsSingleton();
       Bind<WaterTube>().AsTransient();
       Bind<WaterTubeOutlet>().AsTransient();
+      Bind<WaterTubeValve>().AsTransient();
+      Bind<ClamBed>().AsTransient();
       Bind<CleanWaterGrowth>().AsTransient();
       MultiBind<TemplateModule>().ToProvider(ProvideTemplateModule).AsSingleton();
     }
@@ -37,6 +39,8 @@ namespace Otters
       builder.AddDecorator<FishingDockSpec, FishingDock>();
       builder.AddDecorator<WaterTubeSpec, WaterTube>();
       builder.AddDecorator<WaterTubeOutletSpec, WaterTubeOutlet>();
+      builder.AddDecorator<WaterTubeValveSpec, WaterTubeValve>();
+      builder.AddDecorator<ClamBedSpec, ClamBed>();
       builder.AddDecorator<CleanWaterGrowthSpec, CleanWaterGrowth>();
       return builder.Build();
     }

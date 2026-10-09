@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
+using Timberborn.BlockingSystem;
 using Timberborn.BlueprintSystem;
 using Timberborn.Buildings;
 using Timberborn.EntitySystem;
@@ -101,6 +102,16 @@ namespace Otters
     /// </summary>
     public List<WaterTubeOutlet> FindOutlets(IEnumerable<Vector3Int> startTiles)
     {
+      return FindOutlets(startTiles, out _);
+    }
+
+    /// <summary>
+    /// Like <see cref="FindOutlets(IEnumerable{Vector3Int})"/>, but closed valves stop the search and paused
+    /// outlets are left out; <paramref name="blocked"/> tells whether anything was cut off that way.
+    /// </summary>
+    public List<WaterTubeOutlet> FindOutlets(IEnumerable<Vector3Int> startTiles, out bool blocked)
+    {
+      blocked = false;
       var outlets = new List<WaterTubeOutlet>();
       var seen = new HashSet<Vector3Int>();
       var queue = new Queue<Vector3Int>();
@@ -109,7 +120,14 @@ namespace Otters
         WaterTube tube = TubeAt(start);
         if (tube != null && tube.IsFinished && !tube.IsDeleted && seen.Add(start))
         {
-          queue.Enqueue(start);
+          if (tube.IsOpen)
+          {
+            queue.Enqueue(start);
+          }
+          else
+          {
+            blocked = true;
+          }
         }
       }
       while (queue.Count > 0)
@@ -122,13 +140,27 @@ namespace Otters
           {
             if (outlet.IsFinished && !outlet.IsDeleted && outlet.AcceptsTubeAt(tile) && !outlets.Contains(outlet))
             {
-              outlets.Add(outlet);
+              if (outlet.IsOpen)
+              {
+                outlets.Add(outlet);
+              }
+              else
+              {
+                blocked = true;
+              }
             }
           }
           WaterTube tube = TubeAt(next);
           if (tube != null && tube.IsFinished && !tube.IsDeleted && seen.Add(next))
           {
-            queue.Enqueue(next);
+            if (tube.IsOpen)
+            {
+              queue.Enqueue(next);
+            }
+            else
+            {
+              blocked = true;
+            }
           }
         }
       }
@@ -159,6 +191,7 @@ namespace Otters
     private readonly PreviewBlockService _previewBlocks;
     private BlockObject _blockObject;
     private WaterTubeSpec _spec;
+    private WaterTubeValve _valve;
     private readonly Dictionary<string, Transform> _variants = new Dictionary<string, Transform>();
     private bool _listening;
 
@@ -174,10 +207,14 @@ namespace Otters
 
     public Vector3Int Coordinates => _blockObject.Coordinates;
 
+    /// <summary>Whether water gets through: always for plain tubes, only while open for a valve.</summary>
+    public bool IsOpen => _valve == null || _valve.IsOpen;
+
     public void Awake()
     {
       _blockObject = GetComponent<BlockObject>();
       _spec = GetComponent<WaterTubeSpec>();
+      _valve = GetComponent<WaterTubeValve>();
     }
 
     public void OnPrePreviewShown()
@@ -329,10 +366,11 @@ namespace Otters
 
   /// <summary>The open end of a tube line: pours whatever the network carries out of its spout.</summary>
   public class WaterTubeOutlet : BaseComponent, IAwakableComponent, IWaterTubeEndpoint, IPostInitializableEntity,
-                                 IDeletableEntity, IFinishedStateListener
+                                 IDeletableEntity, IFinishedStateListener, IFinishedPausable
   {
     private readonly WaterTubeRegistry _registry;
     private BlockObject _blockObject;
+    private BlockableObject _blockableObject;
     private WaterOutput _waterOutput;
     private WaterTubeOutletSpec _spec;
 
@@ -345,6 +383,10 @@ namespace Otters
 
     public bool IsDeleted { get; private set; }
 
+    /// <summary>False while the outlet is paused (the game's own pause button, or switched off by automation).
+    /// </summary>
+    public bool IsOpen => _blockableObject == null || _blockableObject.IsUnblocked;
+
     /// <summary>How much more water the spout can pour before the water below it is almost up to it.</summary>
     public float AvailableSpace => _waterOutput != null ? _waterOutput.AvailableSpace : 0f;
 
@@ -353,6 +395,19 @@ namespace Otters
       _blockObject = GetComponent<BlockObject>();
       _waterOutput = GetComponent<WaterOutput>();
       _spec = GetComponent<WaterTubeOutletSpec>();
+      _blockableObject = GetComponent<BlockableObject>();
+      if (_blockableObject != null)
+      {
+        // Pausing reaches the simulation through the game's own (co-op synced) pause action; the network version
+        // then moves on in the next tick on every computer.
+        _blockableObject.ObjectBlocked += OnBlockedChanged;
+        _blockableObject.ObjectUnblocked += OnBlockedChanged;
+      }
+    }
+
+    private void OnBlockedChanged(object sender, EventArgs e)
+    {
+      _registry.MarkDirty();
     }
 
     public bool AcceptsTubeAt(Vector3Int tubeCoordinates)
@@ -390,6 +445,123 @@ namespace Otters
     public void OnExitFinishedState()
     {
       _registry.MarkDirty();
+    }
+  }
+
+  public record WaterTubeValveSpec : ComponentSpec
+  {
+    /// <summary>Model node shown while the valve is open (searched for under the finished model).</summary>
+    [Serialize]
+    public string OpenMarkerName { get; init; }
+
+    /// <summary>Model node shown while the valve is closed.</summary>
+    [Serialize]
+    public string ClosedMarkerName { get; init; }
+  }
+
+  /// <summary>
+  /// A tube piece with a hand wheel. Pausing it with the game's own pause button (which Timber Together already
+  /// syncs, and which automation can drive too) closes it: the tube network ends there. Wells re-trace their
+  /// network in the next simulation tick.
+  /// </summary>
+  public class WaterTubeValve : BaseComponent, IAwakableComponent, IFinishedPausable, IPostInitializableEntity,
+                                IDeletableEntity, IPrePreviewShownListener
+  {
+    private readonly WaterTubeRegistry _registry;
+    private BlockableObject _blockableObject;
+    private WaterTubeValveSpec _spec;
+    private GameObject _openMarker;
+    private GameObject _closedMarker;
+    private bool _markersSearched;
+
+    public WaterTubeValve(WaterTubeRegistry registry)
+    {
+      _registry = registry;
+    }
+
+    public bool IsOpen => _blockableObject == null || _blockableObject.IsUnblocked;
+
+    public void Awake()
+    {
+      _spec = GetComponent<WaterTubeValveSpec>();
+      _blockableObject = GetComponent<BlockableObject>();
+      if (_blockableObject != null)
+      {
+        _blockableObject.ObjectBlocked += OnBlockedChanged;
+        _blockableObject.ObjectUnblocked += OnBlockedChanged;
+      }
+    }
+
+    public void PostInitializeEntity()
+    {
+      UpdateMarkers();
+    }
+
+    public void OnPrePreviewShown()
+    {
+      UpdateMarkers();
+    }
+
+    public void DeleteEntity()
+    {
+      if (_blockableObject != null)
+      {
+        _blockableObject.ObjectBlocked -= OnBlockedChanged;
+        _blockableObject.ObjectUnblocked -= OnBlockedChanged;
+      }
+    }
+
+    private void OnBlockedChanged(object sender, EventArgs e)
+    {
+      _registry.MarkDirty();
+      UpdateMarkers();
+    }
+
+    /// <summary>Purely visual: a teal tag on the wheel while open, a red one while closed.</summary>
+    private void UpdateMarkers()
+    {
+      if (!_markersSearched)
+      {
+        GameObject model = GetComponent<BuildingModel>()?.FinishedModel;
+        if (model == null)
+        {
+          return;
+        }
+        _markersSearched = true;
+        _openMarker = Find(model.transform, _spec?.OpenMarkerName);
+        _closedMarker = Find(model.transform, _spec?.ClosedMarkerName);
+      }
+      bool open = IsOpen;
+      if (_openMarker != null)
+      {
+        _openMarker.SetActive(open);
+      }
+      if (_closedMarker != null)
+      {
+        _closedMarker.SetActive(!open);
+      }
+    }
+
+    private static GameObject Find(Transform parent, string name)
+    {
+      if (string.IsNullOrEmpty(name))
+      {
+        return null;
+      }
+      for (int i = 0; i < parent.childCount; i++)
+      {
+        Transform child = parent.GetChild(i);
+        if (child.name == name)
+        {
+          return child.gameObject;
+        }
+        GameObject found = Find(child, name);
+        if (found != null)
+        {
+          return found;
+        }
+      }
+      return null;
     }
   }
 }

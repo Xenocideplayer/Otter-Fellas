@@ -304,6 +304,7 @@ def main():
     save_icon(b(I.tube_outlet(), 112), "Buildings/Water/TubeOutlet/TubeOutletIcon.png")
     save_icon(b(I.smokehouse(), 112), "Buildings/Food/Smokehouse/SmokehouseIcon.png")
     save_icon(b(I.otter_slide(), 112), "Buildings/Wellbeing/OtterSlide/OtterSlideIcon.png")
+    save_icon(b(I.slipway(), 112), "Buildings/Paths/Slipway/SlipwayIcon.png")
     g = lambda body: I.line_icon(body, 80, view=80, stroke=3.0)
     save_icon(g(I.wild_rice_good()), "Sprites/Goods/WildRiceIcon.png")
     save_icon(g(I.cooked_rice_good()), "Sprites/Goods/CookedWildRiceIcon.png")
@@ -312,6 +313,9 @@ def main():
     save_icon(g(I.fish_good()), "Sprites/Goods/FishIcon.png")
     save_icon(g(I.grilled_fish_good()), "Sprites/Goods/GrilledFishIcon.png")
     save_icon(g(I.smoked_fish_good()), "Sprites/Goods/SmokedFishIcon.png")
+    import icons_extras
+    for name, size, rel in icons_extras.ICONS:
+        save_icon(icons_extras.render(name, size), rel)
     if not (PORTRAITS and os.path.exists(os.path.join(PORTRAITS, "..", "thumbnail.png"))):
         render(thumbnail(), os.path.join(ROOT, "thumbnail.png"), 960, 540, sprite=False)
 
