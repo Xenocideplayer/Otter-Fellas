@@ -196,10 +196,10 @@ ADULT_FEATURES = dict(
     neck=((0, 0.365, 0.045), (0.088, 0.055, 0.085)),
     tail_pts=[(0, 0.085, -0.15), (0, 0.06, -0.24), (0, 0.035, -0.33), (0, 0.025, -0.42), (0, 0.03, -0.49), (0, 0.045, -0.535)],
     tail_r=[0.064, 0.052, 0.04, 0.029, 0.019, 0.011],
-    whisker=((0.033, 0.418, 0.183), (0.036, 0.03, 0.03)),
-    nose=((0, 0.441, 0.214), (0.019, 0.014, 0.016)),
+    whisker=((0.034, 0.418, 0.183), (0.04, 0.033, 0.032)),
+    nose=((0, 0.443, 0.216), (0.026, 0.019, 0.02)),
     chin=((0, 0.395, 0.16), (0.04, 0.022, 0.035)),
-    ear=((0.083, 0.495, 0.035), (0.016, 0.02, 0.012)),
+    ear=((0.088, 0.503, 0.03), (0.024, 0.026, 0.013)),
     foot=((0.118, 0.012, -0.03), (0.05, 0.012, 0.07)),
     head_scale=((0.0, 0.45, 0.09), 1.09, 0.36, 0.42),
     eye_bulge=((0.039, 0.496, 0.133), 0.019),
@@ -208,11 +208,10 @@ ADULT_FEATURES = dict(
         ((0.084, 0.432, 0.112), (0.128, 0.414, 0.098), 0.018, True),    # cheek ruff
         ((0.078, 0.408, 0.122), (0.117, 0.386, 0.112), 0.016, True),
         ((0.088, 0.455, 0.088), (0.124, 0.452, 0.07), 0.015, True),
-        ((0.0, 0.505, 0.07), (0.0, 0.535, 0.035), 0.018, False),        # one soft crown swoosh
     ],
 )
 
-ADULT_PARAMS = dict(slim=0.09, belly=0.10, head_widen=0.05, erode=0.0015, features=ADULT_FEATURES)
+ADULT_PARAMS = dict(slim=0.02, belly=0.0, head_widen=0.05, erode=0.0015, features=ADULT_FEATURES)
 
 
 def build(pos, tris, params=ADULT_PARAMS):
@@ -276,7 +275,7 @@ CHILD_FEATURES = dict(
     whisker=_hfeat(A["whisker"]),
     nose=_hfeat(A["nose"], True),
     chin=_hfeat(A["chin"], True),
-    ear=((0.048, 0.305, 0.03), (0.011, 0.013, 0.008)),
+    ear=((0.051, 0.31, 0.027), (0.015, 0.016, 0.009)),
     foot=((0.066, 0.008, -0.025), (0.03, 0.008, 0.042)),
 )
 CHILD_FEATURES.update(
@@ -285,4 +284,4 @@ CHILD_FEATURES.update(
     tufts=[(_hfeat((b, (1, 1, 1)))[0] if b[1] > 0.3 else _body(b), _hfeat((t, (1, 1, 1)))[0] if b[1] > 0.3 else _body(t),
             r * 0.62, m) for b, t, r, m in A["tufts"]],
 )
-CHILD_PARAMS = dict(slim=0.07, belly=0.08, head_widen=0.04, erode=0.001, features=CHILD_FEATURES)
+CHILD_PARAMS = dict(slim=0.02, belly=0.0, head_widen=0.04, erode=0.001, features=CHILD_FEATURES)

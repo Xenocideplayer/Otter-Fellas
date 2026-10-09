@@ -171,3 +171,21 @@ def roasted_taro_good():
     return ('<path d="M18 50 q0 -12 14 -14 h16 q14 2 14 14 q-4 10 -22 10 q-18 0 -22 -10 z"/>'
             '<path d="M26 44 l6 -6 M36 46 l8 -8 M48 46 l6 -6" stroke-width="2.4"/>'
             '<path d="M30 28 q-4 -5 0 -10 q4 -5 0 -10 M44 26 q-4 -5 0 -10 q4 -5 0 -10" stroke-width="2.4"/>')
+
+
+def shell_logo(color=OTTER_TEAL, size=98):
+    """Rounded diamond with a solid scallop shell inside (the clasp on the otters' strap)."""
+    import numpy as np
+    ribs = "".join(f'<path d="M49 66 L{49 + 19 * __import__("math").cos(a):.1f} {60 - 19 * __import__("math").sin(a):.1f}" '
+                   f'stroke="#000" stroke-width="2.2" stroke-linecap="round"/>'
+                   for a in [__import__("math").radians(d) for d in (25, 52, 77, 103, 128, 155)])
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 98" width="{size}" height="{size}">'
+           f'<rect x="27" y="27" width="44" height="44" rx="7" transform="rotate(45 49 49)" fill="none" stroke="{color}" stroke-width="5"/>'
+           f'<path d="M49 68 L33 54 Q31 38 49 34 Q67 38 65 54 Z" fill="{color}"/>'          # fan
+           f'<path d="M43 66 h12 l-2 5 h-8 z" fill="{color}"/>'                               # hinge
+           f'{ribs}</svg>')
+    img = _png(svg, size, size)
+    arr = np.array(img)
+    dark = (arr[..., 0] < 60) & (arr[..., 1] < 60) & (arr[..., 3] > 0)
+    arr[dark, 3] = 0
+    return Image.fromarray(arr)

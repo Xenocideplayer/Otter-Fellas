@@ -115,20 +115,20 @@ def dilate(img, mask, steps=12):
 
 
 # palette: (back, belly) per variant; warm and saturated like the game's painted beavers
-ADULT_VARIANTS = [
-    ((0.40, 0.24, 0.13), (0.62, 0.42, 0.26)),
-    ((0.31, 0.185, 0.105), (0.55, 0.37, 0.23)),
-    ((0.48, 0.29, 0.15), (0.70, 0.48, 0.29)),
-    ((0.36, 0.23, 0.15), (0.58, 0.41, 0.28)),
+ADULT_VARIANTS = [   # red-brown river otters, like the reference painting
+    ((0.52, 0.24, 0.12), (0.66, 0.36, 0.20)),
+    ((0.45, 0.21, 0.11), (0.60, 0.33, 0.19)),
+    ((0.58, 0.29, 0.14), (0.72, 0.42, 0.24)),
+    ((0.42, 0.22, 0.13), (0.57, 0.33, 0.21)),
 ]
 CHILD_VARIANTS = [
-    ((0.50, 0.32, 0.18), (0.74, 0.54, 0.34)),
-    ((0.43, 0.27, 0.15), (0.68, 0.48, 0.30)),
-    ((0.56, 0.36, 0.20), (0.78, 0.58, 0.37)),
+    ((0.68, 0.38, 0.20), (0.82, 0.54, 0.33)),
+    ((0.62, 0.33, 0.18), (0.78, 0.49, 0.30)),
+    ((0.72, 0.42, 0.22), (0.86, 0.58, 0.36)),
 ]
 SICK_VARIANT = ((0.30, 0.31, 0.2), (0.45, 0.46, 0.32))
-CREAM = np.array([0.91, 0.77, 0.56])
-DARK = np.array([0.11, 0.08, 0.07])
+CREAM = np.array([0.95, 0.87, 0.72])
+DARK = np.array([0.27, 0.14, 0.11])
 STRAW_A = np.array([0.83, 0.70, 0.38])
 STRAW_B = np.array([0.62, 0.50, 0.25])
 STRAW_EDGE = np.array([0.30, 0.21, 0.10])
@@ -145,32 +145,63 @@ def regions(P, N, L):
     nz = N[..., 2]
     s = L["scale"]
     R = {}
-    # woven reed sash: a diagonal band over the torso, front and back
+    Z = np.zeros(P.shape[:2])
+    for k in ("sash", "sash_edge", "weave", "shell", "shell_rib", "shell_rim", "buckle", "apron", "apron_stitch",
+              "apron_patch", "belt", "belt_edge", "rivet", "cuff_cloth", "cuff_leather"):
+        R[k] = Z.copy()
     if L.get("sash"):
+        front = smoothstep(0.05, 0.35, nz)
         y0, k, w = L["sash"]
         across = ((y - y0) - k * x) / np.sqrt(1 + k * k)
         along = (x + k * (y - y0)) / np.sqrt(1 + k * k)
         torso = smoothstep(0.125 * s, 0.11 * s, np.abs(x)) * smoothstep(0.12 * s, 0.15 * s, y) * smoothstep(0.40 * s, 0.37 * s, y)
+        # leather crossbelt with stitched edges ("sash" = strap; "weave" = stitches/grain)
         R["sash"] = smoothstep(w * 0.5 + 0.0015, w * 0.5 - 0.0015, np.abs(across)) * torso
-        R["sash_edge"] = smoothstep(0.003, 0.0, np.abs(np.abs(across) - w * 0.5)) * torso
-        # braided straw: chevron strands running along the band
-        braid = np.sin(2 * np.pi * (along / 0.011 + np.abs(across) / (w * 0.55)))
-        R["weave"] = smoothstep(-0.6, 0.6, braid) * (0.75 + 0.25 * smoothstep(w * 0.5, w * 0.3, np.abs(across)))
-        # shell clasp where the band crosses the front of the chest
+        R["sash_edge"] = smoothstep(0.0025, 0.0, np.abs(np.abs(across) - w * 0.5)) * torso
+        dash = np.sin(along * 2 * np.pi / 0.007) > 0.1
+        R["weave"] = smoothstep(0.0013, 0.0004, np.abs(np.abs(across) - (w * 0.5 - 0.0042))) * dash * R["sash"]
+        # gold buckle up near the shoulder
+        bx = L["buckle_x"]
+        ab = (bx + k * (k * bx)) / np.sqrt(1 + k * k)
+        ring = np.maximum(np.abs(along - ab) / 0.011, np.abs(across) / (w * 0.5 + 0.004))
+        R["buckle"] = smoothstep(1.0, 0.92, ring) * smoothstep(0.62, 0.72, ring) * torso * front
+        # gold diamond badge with a scallop shell where the strap crosses the chest
         c = np.array([L["clasp_x"], y0 + k * L["clasp_x"], 0.0])
-        d = np.linalg.norm((P - c)[..., :2], axis=-1)
-        front = smoothstep(0.1, 0.4, nz)
-        rs = 0.027 * s
-        # scallop shell: fan-shaped (round top, pinched hinge at the bottom) with radial ribs
-        dy = P[..., 1] - c[1]
-        fan = d * (1.0 + 0.45 * smoothstep(0.0, -rs, dy))
-        R["shell"] = smoothstep(rs, rs * 0.9, fan) * front
-        ang = np.arctan2(dy + rs * 0.8, P[..., 0] - c[0])
-        R["shell_rib"] = (0.5 + 0.5 * np.cos(ang * 22)) * R["shell"]
-        R["shell_rim"] = smoothstep(0.004 * s, 0.0, np.abs(fan - rs * 0.95)) * front
-    else:
-        for k in ("sash", "sash_edge", "weave", "shell", "shell_rib", "shell_rim"):
-            R[k] = np.zeros(P.shape[:2])
+        dx, dy = x - c[0], y - c[1]
+        dia = (np.abs(dx) + np.abs(dy)) / (0.038 * s)
+        R["shell_rim"] = smoothstep(1.0, 0.93, dia) * front                       # gold frame
+        R["shell"] = smoothstep(0.78, 0.7, dia) * front                            # inner plate
+        fan = np.hypot(dx, dy + 0.011 * s) * (1.0 + 0.5 * smoothstep(0.0, -0.015 * s, dy))
+        shell = smoothstep(0.021 * s, 0.0185 * s, fan) * (dy > -0.015 * s) * front
+        ang = np.arctan2(dy + 0.011 * s, dx)
+        R["shell_rib"] = shell * (0.55 + 0.45 * np.cos(ang * 18))
+        # patchwork apron over the belly and thighs (front only)
+        ax_ = np.abs(x)
+        top = L["apron_top"] - 0.25 * (ax_ / s) ** 2
+        apron = smoothstep(0.05, 0.2, nz) * smoothstep(top + 0.002, top - 0.002, y) * smoothstep(0.035 * s, 0.05 * s, y)
+        apron *= smoothstep(0.112 * s, 0.1 * s, ax_)
+        R["apron"] = apron
+        seeds = np.array([[-0.06, 0.22], [0.03, 0.235], [0.075, 0.17], [-0.03, 0.15], [0.02, 0.1], [-0.07, 0.08],
+                          [0.07, 0.07], [-0.01, 0.045], [0.05, 0.13], [-0.075, 0.16]]) * [s, s]
+        dd = np.stack([np.hypot(x - sx, (y - sy) * 1.15) for sx, sy in seeds], -1)
+        order = np.sort(dd, -1)
+        R["apron_patch"] = np.argmin(dd, -1).astype(np.float64)
+        seam = smoothstep(0.0022 * s, 0.0008 * s, order[..., 1] - order[..., 0])
+        stitch = np.sin((x + y) * 2 * np.pi / (0.006 * s)) > 0.2
+        edge_d = np.minimum(np.abs(y - top), np.abs(ax_ - 0.106 * s))
+        border = smoothstep(0.0015 * s, 0.0004 * s, np.abs(edge_d - 0.005 * s)) * (np.sin(y * 2 * np.pi / (0.006 * s)) > 0.2)
+        R["apron_stitch"] = np.clip((seam * stitch + border), 0, 1) * apron
+        # leather belt round the waist with two gold rivets in front
+        by = L["belt_y"]
+        R["belt"] = smoothstep(0.0105 * s, 0.0085 * s, np.abs(y - by)) * smoothstep(0.128 * s, 0.115 * s, ax_)
+        R["belt_edge"] = smoothstep(0.002, 0.0, np.abs(np.abs(y - by) - 0.0095 * s)) * R["belt"]
+        for rx in (-0.032, 0.032):
+            R["rivet"] = np.maximum(R["rivet"], smoothstep(0.0045 * s, 0.0032 * s, np.hypot(x - rx * s, y - by)) * front)
+        # wrist cuffs: green cloth with a leather band nearest the paw
+        arm = smoothstep(0.1 * s, 0.13 * s, y)
+        hx = L["hand_x"]
+        R["cuff_cloth"] = smoothstep(hx - 0.042 * s, hx - 0.038 * s, ax_) * smoothstep(hx - 0.02 * s, hx - 0.024 * s, ax_) * arm
+        R["cuff_leather"] = smoothstep(hx - 0.024 * s, hx - 0.02 * s, ax_) * smoothstep(hx - 0.01 * s, hx - 0.014 * s, ax_) * arm
     # where the beaver's detail doesn't fit: the new tail and the otter face
     tail = smoothstep(L["tail_start_z"], L["tail_start_z"] - 0.03 * s, z) * smoothstep(0.24 * s, 0.18 * s, y)
     mc = np.array(L["muzzle_c"])
@@ -215,17 +246,19 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     darker = np.clip(np.maximum(paws * 0.35, tailtip * 0.4), 0, 1)
     col = col * (1 - darker[..., None])
 
-    # ears: dark rim, slightly pink inside
+    # ears: darker rim, warm pink inside (front-facing side)
     for sgn in (-1, 1):
         e = np.array(L["ear"]) * [sgn, 1, 1]
         de = np.linalg.norm(P - e, axis=-1)
-        col = col * (1 - 0.5 * smoothstep(0.03 * s, 0.015 * s, de))[..., None]
+        col = col * (1 - 0.25 * smoothstep(0.034 * s, 0.022 * s, de))[..., None]
+        inner = smoothstep(0.02 * s, 0.012 * s, de) * smoothstep(0.0, 0.4, nz)
+        col = lerp(col, np.array([0.74, 0.46, 0.40]), inner * 0.85)
 
     # nose: dark leathery rhinarium, wider at the top (rounded triangle), with a highlight and a mouth line below
     nc = np.array(L["nose"])
     rel = P - nc
-    half_w = (0.017 + 0.35 * np.clip(rel[..., 1], -0.03, 0.03)) * s
-    inside = (np.abs(rel[..., 0]) / np.maximum(half_w, 1e-4)) ** 2 + (rel[..., 1] / (0.013 * s)) ** 2
+    half_w = (0.025 + 0.4 * np.clip(rel[..., 1], -0.03, 0.03)) * s
+    inside = (np.abs(rel[..., 0]) / np.maximum(half_w, 1e-4)) ** 2 + (rel[..., 1] / (0.018 * s)) ** 2
     nose_w = smoothstep(1.25, 0.85, inside) * smoothstep(-0.1, 0.3, nz) * (rel[..., 2] > -0.02 * s)
     col = lerp(col, DARK, nose_w)
     hl = smoothstep(0.006 * s, 0.0015 * s, np.linalg.norm(P - (nc + [0.006 * s, 0.006 * s, 0.01 * s]), axis=-1))
@@ -233,10 +266,21 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     # philtrum + little smile (soft lines so they don't stair-step)
     mx = np.abs(rel[..., 0])
     ph = smoothstep(0.0024 * s, 0.0009 * s, mx) * smoothstep(-0.026 * s, -0.022 * s, rel[..., 1]) * smoothstep(-0.009 * s, -0.012 * s, rel[..., 1])
-    curve = -0.024 * s - 0.25 * mx + 9.0 * mx * mx / s
-    smile = smoothstep(0.0024 * s, 0.0009 * s, np.abs(rel[..., 1] - curve)) * smoothstep(0.022 * s, 0.017 * s, mx)
+    curve = -0.031 * s + 40.0 * (mx - 0.009 * s) ** 2 / s          # a soft "ω" smile
+    smile = smoothstep(0.0024 * s, 0.0009 * s, np.abs(rel[..., 1] - curve)) * smoothstep(0.021 * s, 0.018 * s, mx)
     mouth = np.maximum(ph, smile) * smoothstep(0.15, 0.35, nz) * (np.abs(rel[..., 2]) < 0.03 * s)
     col = col * (1 - 0.55 * mouth[..., None])
+
+    # whiskers: thin light strokes fanning out across the cheeks
+    for sgn in (-1, 1):
+        base = np.array(L["whisker"]) + [sgn * 0.02 * s, -0.002 * s, 0]
+        for ang in (-18, -6, 6, 16):
+            dvec = np.array([sgn * np.cos(np.radians(ang)), np.sin(np.radians(ang))])
+            q = (P[..., :2] - base[:2])
+            t = np.clip(q @ dvec, 0, 0.075 * s)
+            dist = np.linalg.norm(q - t[..., None] * dvec, axis=-1)
+            wsk = smoothstep(0.0016 * s, 0.0006 * s, dist) * (t > 0.004 * s) * smoothstep(0.0, 0.25, nz)
+            col = lerp(col, np.array([0.97, 0.95, 0.9]), wsk * 0.85)
 
     # whisker dots on the pads
     for sgn in (-1, 1):
@@ -260,7 +304,7 @@ def paint(P, N, M, A, L, back, belly, R, detail):
         brow = smoothstep(er * 1.25, er * 0.7, bd) * front_face
         col = col * (1 - 0.45 * brow[..., None])
         rim = smoothstep(er * 1.22, er * 1.05, d2) * (rel2[..., 1] < -0.15 * er) * front_face
-        col = lerp(col, np.array([0.93, 0.88, 0.78]), rim * 0.85)
+        col = lerp(col, np.array([0.93, 0.88, 0.78]), rim * 0.0)
         eye = smoothstep(er * 1.04, er * 0.9, d2) * front_face
         col = lerp(col, np.array([0.03, 0.02, 0.02]), eye)
         iris = smoothstep(er * 0.86, er * 0.7, d2) * front_face
@@ -279,13 +323,27 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     det = detail * (1 - proc) + (0.86 + 0.28 * n2) * proc
     col = col * det[..., None] ** 1.35
 
-    # woven reed sash with a shell clasp (adults)
-    straw = lerp(STRAW_B[None, None] * np.ones_like(col), STRAW_A, R["weave"]) * (0.9 + 0.2 * n1[..., None])
-    col = lerp(col, straw, R["sash"])
-    col = lerp(col, STRAW_EDGE, R["sash_edge"] * 0.8)
-    shell = SHELL * (0.82 + 0.18 * R["shell_rib"][..., None])
-    col = lerp(col, shell, R["shell"])
-    col = lerp(col, np.array([0.45, 0.3, 0.25]), R["shell_rim"] * 0.8)
+    # outfit (adults): patchwork apron, belt, leather strap with buckle, gold shell badge, wrist cuffs
+    if L.get("sash"):
+        patches = np.array([[0.33, 0.50, 0.60], [0.42, 0.58, 0.50], [0.50, 0.63, 0.67], [0.30, 0.45, 0.52],
+                            [0.45, 0.60, 0.56], [0.36, 0.53, 0.63], [0.52, 0.64, 0.58], [0.31, 0.47, 0.55],
+                            [0.40, 0.56, 0.64], [0.46, 0.62, 0.52]])
+        cloth = patches[R["apron_patch"].astype(int) % len(patches)] * (0.85 + 0.3 * n1[..., None])
+        col = lerp(col, cloth, R["apron"])
+        col = lerp(col, np.array([0.90, 0.86, 0.74]), R["apron_stitch"] * 0.9)
+        cuff = np.array([0.50, 0.55, 0.36]) * (0.85 + 0.3 * n1[..., None])
+        col = lerp(col, cuff, R["cuff_cloth"])
+        leather = np.array([0.36, 0.21, 0.12]) * (0.85 + 0.3 * n1[..., None])
+        col = lerp(col, leather, np.maximum(R["cuff_leather"], R["belt"]))
+        col = lerp(col, np.array([0.2, 0.11, 0.06]), R["belt_edge"] * 0.8)
+        col = lerp(col, leather * 1.05, R["sash"])
+        col = lerp(col, np.array([0.2, 0.11, 0.06]), R["sash_edge"] * 0.85)
+        col = lerp(col, np.array([0.78, 0.66, 0.48]), R["weave"] * 0.8)
+        gold = np.array([0.86, 0.66, 0.26])
+        col = lerp(col, gold * (0.85 + 0.25 * n1[..., None]), np.maximum(R["buckle"], R["rivet"]))
+        col = lerp(col, gold, R["shell_rim"])
+        col = lerp(col, np.array([0.55, 0.38, 0.14]), R["shell"])
+        col = lerp(col, np.array([0.95, 0.89, 0.76]) * (0.82 + 0.18 * (R["shell_rib"] > 0.5)[..., None]), (R["shell_rib"] > 0).astype(float))
 
     # painted fur clumps: soft vertical streaks with lighter tips, like hand-painted strokes
     clump = np.zeros(M.shape); clump[M] = fbm(flat * [1.0, 0.28, 1.0], 55.0, 21, 3)
@@ -307,7 +365,7 @@ def gloss_map(P, N, L, R):
         g = np.maximum(g, 0.85 * smoothstep(L["eye_r"] * 1.05, L["eye_r"] * 0.85, d2) * smoothstep(0.0, 0.35, N[..., 2]))
     nd = np.linalg.norm(P - np.array(L["nose"]), axis=-1)
     g = np.maximum(g, 0.55 * smoothstep(0.02 * s, 0.012 * s, nd))
-    g = np.maximum(g, 0.6 * R["shell"])
+    g = np.maximum(g, 0.7 * np.maximum(R["shell_rim"], np.maximum(R["buckle"], R["rivet"])))
     return g
 
 

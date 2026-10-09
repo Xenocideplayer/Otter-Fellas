@@ -285,7 +285,7 @@ def main():
     avatar("OttersContaminatedAdult", lambda: portrait(contaminated=True), 128, 128)
     avatar("OttersContaminatedChild", lambda: portrait(contaminated=True, pup=True), 128, 128)
     avatar("OttersFullNewGame", full_avatar, 420, 560)
-    save_icon(I.logo(), "Sprites/Avatars/OttersLogo.png")
+    save_icon(I.shell_logo(), "Sprites/Avatars/OttersLogo.png")
     save_icon(I.status_icon(I.dry_fur_symbol(), 512), "Sprites/StatusIcons/OtterDryFur.png")
     b = I.line_icon
     save_icon(b(I.dig_site(), 112), "Buildings/Landscaping/OtterDigSite/OtterDigSiteIcon.png")

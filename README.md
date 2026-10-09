@@ -19,7 +19,7 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | **On land / in water** | Walk ~15% slower than beavers, swim much faster. |
 | **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 15% slower. Swimming, the Shower, the Lido, the Domed Garden and River Holts refill it. |
 | **Rinse Pod** | 550 science. Uses clean water to wash badwater contamination out of otters (no Herbalist/Antidote). |
-| **Their own look** | Custom 3D adult and kit bodies with fur detail baked from the game's own beaver textures, a woven reed sash, 4 adult and 3 kit fur colours, every beaver animation carried over, game-style icons, logo and portraits. |
+| **Their own look** | Custom 3D adult and kit bodies with fur detail baked from the game's own beaver textures, a woven reed sash, 4 adult and 3 kit fur colours, every beaver animation carried over, game-style icons and a shell logo; faction art painted for the mod. |
 
 ![Preview](docs/images/preview.png)
 
