@@ -2,7 +2,8 @@
   "ManufactorySpec": {
     "ProductionRecipeIds#append": [
       "CookedWildRice",
-      "RoastedTaro"
+      "RoastedTaro",
+      "GrilledFish"
     ]
   }
 }

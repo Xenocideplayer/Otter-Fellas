@@ -24,7 +24,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "1.0.0"
+MOD_VERSION = "1.1.0"
 MOD_ID = "Otters.WaterFaction"
 MODIFIERS = "OttersModifiers"
 
@@ -105,6 +105,22 @@ REMOVED_FOLKTAILS_BUILDINGS = ["Buildings/Wellbeing/Herbalist/Herbalist.Folktail
 REMOVED_GOODS = ["Antidote"]
 REMOVED_NEEDS = ["Antidote"]
 
+# Fishing: a fisher on a dock pulls fish out of clean water; badwater spoils the catch. Fish are eaten raw or
+# grilled at the ordinary Grill.
+FISHING_DOCK = "Buildings/Food/FishingDock/FishingDock.Otters.blueprint"
+FISH_HOURS = 2.5                     # one fish per 2.5 work-hours in clean water
+FISH_MAX_CONTAMINATION = 0.5         # half badwater or worse: nothing bites
+# Splash Pool: a free log-framed swimming hole set into the river; fun for everyone, wet fur for otters.
+SPLASH_POOL = "Buildings/Wellbeing/SplashPool/SplashPool.Otters.blueprint"
+SPLASH_POOL_MOISTURE = 1.5           # moisture points per hour
+# Artesian Well: water from deep underground, anywhere, even in droughts -- but it eats 750 hp and breaks down.
+ARTESIAN_WELL = "Buildings/Water/ArtesianWell/ArtesianWell.Otters.blueprint"
+WELL_POWER = 750
+WELL_WATER_PER_HOUR = 12.0           # cubic blocks of clean water per hour at full power (a water pump moves 0.6)
+WELL_BREAKDOWN_CHANCE = 0.02         # per running hour: on average a breakdown every ~50 working hours
+WELL_REPAIR_HOURS = 6.0              # operator work-hours to get it running again
+WELL_SCIENCE = 600
+
 DIG_SITE = "Buildings/Landscaping/OtterDigSite/OtterDigSite.Otters.blueprint"
 REED_FILTER = "Buildings/Water/ReedFilter/ReedFilter.Otters.blueprint"
 RINSE_POD = "Buildings/Wellbeing/RinsePod/RinsePod.Otters.blueprint"
@@ -157,6 +173,33 @@ TEXT = {
     "Good.TaroRoot.PluralDisplayName": "Taro roots",
     "Good.RoastedTaro.DisplayName": "Roasted taro",
     "Good.RoastedTaro.PluralDisplayName": "Roasted taro",
+    "Building.FishingDock.DisplayName": "Fishing Dock",
+    "Building.FishingDock.Description": "A fisher drops a line into the water below and brings up fish. Needs water "
+                                        "under the line; the more badwater in it, the fewer fish bite, and none at all "
+                                        "in half-badwater. Takes no water from the river.",
+    "Building.FishingDock.FlavorDescription": "Patience, a long rod, and a longer lunch.",
+    "Recipe.OtterFishing": "Fishing",
+    "Good.Fish.DisplayName": "Fish",
+    "Good.Fish.PluralDisplayName": "Fish",
+    "Good.GrilledFish.DisplayName": "Grilled fish",
+    "Good.GrilledFish.PluralDisplayName": "Grilled fish",
+    "Building.SplashPool.DisplayName": "Splash Pool",
+    "Building.SplashPool.Description": "A log-framed swimming hole set into the river, with a deck, a diving board and "
+                                       "a bench. Fun for everyone; otters' fur gets a good soak. Needs water inside "
+                                       "the frame.",
+    "Building.SplashPool.FlavorDescription": "Last one in is a dry beaver.",
+    "Need.SplashPool.DisplayName": "Splash Pool",
+    "Building.ArtesianWell.DisplayName": "Artesian Well",
+    "Building.ArtesianWell.Description": "Drills deep and brings up clean water out of nowhere: no aquifer needed, and "
+                                         "it keeps flowing through droughts and badtides. Needs an operator and "
+                                         "750 hp of power. Build it with its back to lower ground or open water: the water "
+                                         "spills out over the edge behind it until it is nearly level with the well. "
+                                         "Every so often the pump breaks down and the operator has to spend a few hours "
+                                         "repairing it before water flows again.",
+    "Building.ArtesianWell.FlavorDescription": "Deep down, the river never ends.",
+    "Recipe.ArtesianWater": "Pumping water",
+    "Status.ArtesianWell.Broken": "Broken down: the operator is repairing it. No water until it's fixed.",
+    "Status.ArtesianWell.Broken.Short": "Well broken down",
 }
 
 
@@ -203,17 +246,20 @@ def build_faction(modifiers):
 def build_collections():
     buildings = load("TemplateCollections/TemplateCollection.Buildings.Folktails.blueprint")["TemplateCollectionSpec"]
     blueprints = [b for b in buildings["Blueprints"] if b not in REMOVED_FOLKTAILS_BUILDINGS]
-    blueprints += [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT]
+    blueprints += [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT, FISHING_DOCK, SPLASH_POOL,
+                   ARTESIAN_WELL]
     write("TemplateCollections/TemplateCollection.Buildings.Otters.blueprint.json",
           {"TemplateCollectionSpec": {"CollectionId": "Buildings.Otters", "Blueprints": blueprints}})
 
     goods = load("GoodCollections/GoodCollection.Folktails.blueprint")["GoodCollectionSpec"]["Goods"]
     write("GoodCollections/GoodCollection.Otters.blueprint.json",
           {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": [g for g in goods if g not in REMOVED_GOODS]
-                                  + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]}})
+                                  + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]
+                                  + ["Fish", "GrilledFish"]}})
 
     needs = load("NeedCollections/NeedCollection.Folktails.blueprint")["NeedCollectionSpec"]["Needs"]
-    needs = [n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"] + EXTRA_NEEDS + [c[5] for c in NEW_CROPS]
+    needs = ([n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"] + EXTRA_NEEDS + [c[5] for c in NEW_CROPS]
+             + ["Fish", "GrilledFish", "SplashPool"])
     write("NeedCollections/NeedCollection.Otters.blueprint.json",
           {"NeedCollectionSpec": {"CollectionId": "Otters", "Needs": sorted(needs)}})
 
@@ -390,6 +436,129 @@ def build_river_holts():
         write(path + ".json", order_specs(bp))
 
 
+def build_fishing_dock():
+    bp = copy.deepcopy(load("Buildings/Water/WaterPump/WaterPump.Folktails.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "FishingDock.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 25}], "ScienceCost": 0, "LoopingSoundName": ""})
+    bp["ManufactorySpec"]["ProductionRecipeIds"] = ["OtterFishing"]
+    for spec in ("ManufactoryWaterConsumerSpec", "WorkshopAnimationControllerSpec"):
+        del bp[spec]
+    bp["FishingDockSpec"] = {"MaxContamination": FISH_MAX_CONTAMINATION}
+    if MODEL_DIR:
+        bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Food/FishingDock/FishingDock.Otters.Model"
+    bp["PlaceableBlockObjectSpec"].update({"ToolGroupId": "Food", "ToolOrder": 12})
+    labeled(bp["LabeledEntitySpec"], "FishingDock", "Buildings/Food/FishingDock/FishingDockIcon")
+    write(FISHING_DOCK + ".json", order_specs(bp))
+
+    water = load("Recipes/Recipe.Water.blueprint")["RecipeSpec"]
+    write("Recipes/Recipe.OtterFishing.blueprint.json", {"RecipeSpec": {
+        **copy.deepcopy(water), "Id": "OtterFishing", "BackwardCompatibleIds": [], "DisplayLocKey": "Recipe.OtterFishing",
+        "CycleDurationInHours": FISH_HOURS, "Ingredients": [], "Products": [{"Id": "Fish", "Amount": 1}],
+        "CyclesCapacity": 10, "Icon": "Sprites/Goods/FishIcon"}})
+
+    fish = copy.deepcopy(load("Goods/Good.Carrot.blueprint"))
+    fish["GoodSpec"].update({"Id": "Fish", "Icon": "Sprites/Goods/FishIcon", "GoodOrder": 9015,
+                             "ContainerColor": {"r": 0.62, "g": 0.72, "b": 0.78, "a": 1.0},
+                             "ConsumptionEffects": [{"NeedId": "Hunger", "Points": 0.3}, {"NeedId": "Fish", "Points": 0.2}],
+                             "DisplayNameLocKey": "Good.Fish.DisplayName", "PluralDisplayNameLocKey": "Good.Fish.PluralDisplayName"})
+    write("Goods/Good.Fish.blueprint.json", fish)
+    need = copy.deepcopy(load("Needs/Need.Beaver.Carrots.blueprint"))
+    need["NeedSpec"].update({"Id": "Fish", "Order": 11, "DisplayNameLocKey": "Good.Fish.PluralDisplayName"})
+    write("Needs/Need.Beaver.Fish.blueprint.json", need)
+
+    grilled = copy.deepcopy(load("Goods/Good.GrilledSpadderdock.blueprint"))
+    grilled["GoodSpec"].update({"Id": "GrilledFish", "Icon": "Sprites/Goods/GrilledFishIcon", "GoodOrder": 9049,
+                                "ConsumptionEffects": [{"NeedId": "Hunger", "Points": 0.3}, {"NeedId": "GrilledFish", "Points": 0.2}],
+                                "DisplayNameLocKey": "Good.GrilledFish.DisplayName",
+                                "PluralDisplayNameLocKey": "Good.GrilledFish.PluralDisplayName"})
+    write("Goods/Good.GrilledFish.blueprint.json", grilled)
+    need = copy.deepcopy(load("Needs/Need.Beaver.GrilledSpadderdock.blueprint"))
+    need["NeedSpec"].update({"Id": "GrilledFish", "Order": 56, "DisplayNameLocKey": "Good.GrilledFish.PluralDisplayName"})
+    write("Needs/Need.Beaver.GrilledFish.blueprint.json", need)
+    recipe = copy.deepcopy(load("Recipes/Recipe.GrilledSpadderdock.blueprint"))
+    recipe["RecipeSpec"].update({"Id": "GrilledFish", "DisplayLocKey": "Good.GrilledFish.PluralDisplayName",
+                                 "CycleDurationInHours": 0.5, "Ingredients": [{"Id": "Fish", "Amount": 1}],
+                                 "Products": [{"Id": "GrilledFish", "Amount": 2}], "Icon": "Sprites/Goods/GrilledFishIcon"})
+    write("Recipes/Recipe.GrilledFish.blueprint.json", recipe)
+
+
+def build_splash_pool():
+    bp = copy.deepcopy(load("Buildings/Wellbeing/SwimmingPool/SwimmingPool.IronTeeth.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "SplashPool.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 40}], "ScienceCost": 0})
+    bp["AttractionSpec"]["Effects"] = [
+        {"NeedId": "SplashPool", "PointsPerHour": 0.6, "SatisfyToMaxValue": False},
+        {"NeedId": "OtterMoisture", "PointsPerHour": SPLASH_POOL_MOISTURE, "SatisfyToMaxValue": False}]
+    bp["EnterableSpec"]["CapacityFinished"] = 6
+    del bp["PatrollingSlotInitializerSpec"]
+    bp["TransformSlotInitializerSpec"]["Slots"] = [
+        {"SlotKeyword": "Seat", "Animation": "Sitting", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": False},
+        {"SlotKeyword": "Floating", "Animation": "Floating", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": True}]
+    if MODEL_DIR:
+        bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Wellbeing/SplashPool/SplashPool.Otters.Model"
+    unfinished = bp["Children"]["#Unfinished"]["Children"]
+    unfinished.pop("ConstructionStage0")
+    bp["ConstructionSiteProgressVisualizerSpec"] = {"ProgressThresholds": []}
+    bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 15
+    labeled(bp["LabeledEntitySpec"], "SplashPool", "Buildings/Wellbeing/SplashPool/SplashPoolIcon")
+    write(SPLASH_POOL + ".json", order_specs(bp))
+
+    need = copy.deepcopy(load("Needs/Need.Beaver.SwimmingPool.blueprint"))
+    need["NeedSpec"].update({"Id": "SplashPool", "DisplayNameLocKey": "Need.SplashPool.DisplayName", "Order": 31})
+    write("Needs/Need.Beaver.SplashPool.blueprint.json", need)
+
+
+def build_artesian_well():
+    bp = copy.deepcopy(load("Buildings/Water/AquiferDrill/AquiferDrill.Folktails.blueprint"))
+    obs = load("Buildings/Science/Observatory/Observatory.Folktails.blueprint")
+    bp["TemplateSpec"].update({"TemplateName": "ArtesianWell.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Plank", "Amount": 50}, {"Id": "Gear", "Amount": 30},
+                                                {"Id": "MetalBlock", "Amount": 10}], "ScienceCost": WELL_SCIENCE})
+    for spec in ("UnderstructureConstraintSpec", "UndergroundWaterSourceDrillSpec", "NoPowerStatusAlertDisablerSpec"):
+        del bp[spec]
+    bp["MechanicalNodeSpec"]["PowerInput"] = WELL_POWER
+    # A door at the front for the operator (laid out like the Observatory, the game's 3x3 powered workplace).
+    block = bp["BlockObjectSpec"]
+    block["Entrance"] = {"HasEntrance": True, "Coordinates": {"X": 1, "Y": -1, "Z": 0}}
+    size = block["Size"]
+    front = 0 * size["X"] * size["Y"] + 0 * size["X"] + 1
+    block["Blocks"][front]["Occupations"] = "Bottom, Top, Corners, Path, Middle"
+    # keep the doorstep free: no shaft into the front of the bottom block
+    for t in bp["TransputProviderSpec"]["Transputs"]:
+        if t["Coordinates"] == {"X": 1, "Y": 0, "Z": 0}:
+            t["Directions"] = "Left, Right"
+    for spec in ("WorkplaceSpec", "WorkshopSpec", "EnterableSpec", "BuildingAccessibleSpec", "WorkplaceIlluminatorSpec",
+                 "SimpleManufactoryBehaviorsSpec"):
+        bp[spec] = copy.deepcopy(obs[spec])
+    bp["WorkplaceSpec"].update({"MaxWorkers": 1, "DefaultWorkers": 1,
+                                "WorkerTypeUnlockCosts": [{"WorkerType": "Bot", "ScienceCost": 300}]})
+    bp["EnterableSpec"].update({"LimitedCapacityFinished": True, "CapacityFinished": 1})
+    bp["ManufactorySpec"] = {"ProductionRecipeIds": ["ArtesianWater"]}
+    # Water pours out over the edge behind the well (like the Discharge's spout) and fills the lower ground there
+    # until it is almost level with the well's base, so the well never floods its own door. With level ground
+    # behind it there is nowhere for the water to go and it simply waits.
+    bp["WaterOutputSpec"] = {"WaterCoordinates": {"X": 1, "Y": 3, "Z": 0}, "DistanceToGroundOffset": 0.0,
+                             "OverflowAllowed": False}
+    bp["ArtesianWellSpec"] = {"WaterPerHour": WELL_WATER_PER_HOUR, "BreakdownChancePerHour": WELL_BREAKDOWN_CHANCE,
+                              "RepairHours": WELL_REPAIR_HOURS, "BrokenStatusIcon": "OtterWellBroken",
+                              "BrokenStatusLocKey": "Status.ArtesianWell.Broken",
+                              "BrokenAlertLocKey": "Status.ArtesianWell.Broken.Short"}
+    discharge = load("Buildings/Water/Discharge/Discharge.Folktails.blueprint")
+    for spec in ("WorkshopParticleControllerSpec", "WaterOutputParticleSpec"):
+        bp[spec] = copy.deepcopy(discharge[spec])
+    attach = copy.deepcopy(discharge["TemplateAttachmentsSpec"])
+    attach["Attachments"][0]["Position"] = {"X": 1.5, "Y": 0.3, "Z": 3.05}
+    bp["TemplateAttachmentsSpec"] = attach
+    bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 101
+    labeled(bp["LabeledEntitySpec"], "ArtesianWell", "Buildings/Water/ArtesianWell/ArtesianWellIcon")
+    write(ARTESIAN_WELL + ".json", order_specs(bp))
+
+    write("Recipes/Recipe.ArtesianWater.blueprint.json", {"RecipeSpec": {
+        "Id": "ArtesianWater", "BackwardCompatibleIds": [], "DisplayLocKey": "Recipe.ArtesianWater",
+        "CycleDurationInHours": 1.0, "Ingredients": [], "Products": [], "ProducedSciencePoints": 0, "Fuel": "",
+        "CyclesFuelLasts": 0, "FuelCapacity": 0, "CyclesCapacity": 1, "Icon": "Sprites/Goods/WaterIcon"}})
+
+
 def order_specs(bp):
     # Keep Children last, as the game's own files do.
     children = bp.pop("Children", None)
@@ -434,7 +603,7 @@ def build_modifiers():
         add(original, f"Buildings/{name}", content)
 
     add("Buildings/Food/Grill/Grill.Folktails.blueprint", "Buildings/Grill.Folktails",
-        {"ManufactorySpec": {"ProductionRecipeIds#append": [c[5] for c in NEW_CROPS]}})
+        {"ManufactorySpec": {"ProductionRecipeIds#append": [c[5] for c in NEW_CROPS] + ["GrilledFish"]}})
     for original in FREE_FOLKTAILS_BUILDINGS:
         name = original.split("/")[-1].replace(".blueprint", "")
         add(original, f"Buildings/{name}", {"BuildingSpec": {"ScienceCost": 0}})
@@ -467,9 +636,10 @@ def build_manifest():
         "Version": MOD_VERSION,
         "Id": MOD_ID,
         "MinimumGameVersion": "1.1.2.0",
-        "Description": "A third faction of otters: water specialists who dig, filter badwater and farm aquatic "
-                       "crops from day one. They swim faster than they walk, work slower when their fur dries "
-                       "out, and cure contamination in a clean-water Rinse Pod.",
+        "Description": "A third faction of otters: water specialists who dig, filter badwater, fish and farm "
+                       "aquatic crops from day one. They swim faster than they walk, work slower when their fur dries "
+                       "out, cure contamination in a clean-water Rinse Pod and can drill Artesian Wells that bring "
+                       "up water even in droughts.",
         "RequiredMods": [],
         "OptionalMods": [],
     })
@@ -499,6 +669,11 @@ def copy_models():
     os.makedirs(reed, exist_ok=True)
     shutil.copy(os.path.join(MODEL_DIR, "buildings", "ReedFilter.Otters.Model.timbermesh"), reed)
     written.append("Buildings/Water/ReedFilter/ReedFilter.Otters.Model.timbermesh")
+    for folder, name in (("Buildings/Food/FishingDock", "FishingDock.Otters.Model.timbermesh"),
+                         ("Buildings/Wellbeing/SplashPool", "SplashPool.Otters.Model.timbermesh")):
+        os.makedirs(os.path.join(OUT, folder), exist_ok=True)
+        shutil.copy(os.path.join(MODEL_DIR, "buildings", name), os.path.join(OUT, folder, name))
+        written.append(f"{folder}/{name}")
 
 
 def main():
@@ -514,6 +689,9 @@ def main():
     build_rinse_pod()
     build_crops()
     build_river_holts()
+    build_fishing_dock()
+    build_splash_pool()
+    build_artesian_well()
     build_localization()
     build_manifest()
     if MODEL_DIR:

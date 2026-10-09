@@ -19,6 +19,9 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | **On land / in water** | Walk ~15% slower than beavers, swim much faster. |
 | **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 15% slower. Swimming, the Shower, the Lido, the Domed Garden and River Holts refill it. |
 | **Rinse Pod** | 550 science. Uses clean water to wash badwater contamination out of otters (no Herbalist/Antidote). |
+| **Fishing Dock** | From the start: a fisher brings up fish from the water under the line; badwater spoils the catch. Fish are eaten raw or grilled at the Grill. |
+| **Splash Pool** | From the start: a log-framed swimming hole set into the river. Fun for everyone, a big soak for otter fur. |
+| **Artesian Well** | 600 science, 750 hp and an operator: pours clean water out of nowhere, even in droughts and badtides, over the edge behind it. Breaks down now and then and has to be repaired. |
 | **Their own look** | Custom 3D adult and kit bodies with fur detail baked from the game's own beaver textures, a woven reed sash, 4 adult and 3 kit fur colours, every beaver animation carried over, game-style icons and a shell logo; faction art painted for the mod. |
 
 ![Preview](docs/images/preview.png)
@@ -31,17 +34,17 @@ badwater clean — but they're slow on land and work slower once their fur dries
 2. Unzip it into `Documents\Timberborn\Mods\` so you have `Mods\Otters\version-1.1\manifest.json`.
 3. Start Timberborn, enable **Otters** under *Mods*, and pick the Otters faction in a new game.
 
-The `mod/Otters` folder in this repository is the same mod **without the two 3D model files**
+The `mod` folder in this repository is the same mod **without the two otter body models**
 (`*.timbermesh`, 100+ MB, over GitHub's file limit) — use the release zip to play.
 
 ## Repository layout
 
 | Path | What it is |
 |---|---|
-| `src/` | C# code (`Otters.dll`): Dig Site, Reed Filter, faster swimming, otter material maps. |
+| `src/` | C# code (`Otters.dll`): Dig Site, Reed Filter, River Holt placement, Fishing Dock catch, Artesian Well water and breakdowns, faster swimming, otter material maps. |
 | `build_mod.py` | Generates every blueprint from the game's own vanilla blueprints; all balance numbers are at the top. |
 | `art/make_art.py` | Vector art for icons, logo and fallback portraits. |
-| `model/` | The otter model pipeline (Python + Blender's `bpy`): shape, UVs, fur painting, animation transfer, `.timbermesh` export. See `model/README.txt`. |
+| `model/` | Building props (`procmesh.py`, `make_fishing_dock.py`, `make_splash_pool.py`, `make_reed_filter.py`) and the otter model pipeline (Python + Blender's `bpy`): shape, UVs, fur painting, animation transfer, `.timbermesh` export. See `model/README.txt`. |
 | `tools/validate_blueprints.py` | Checks every blueprint against the game's spec schema. |
 | `mod/Otters/` | Built mod (minus model files). |
 

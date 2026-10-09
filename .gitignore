@@ -2,6 +2,7 @@ bin/
 obj/
 build/
 *.timbermesh
+!mod/version-1.1/Buildings/**/*.timbermesh
 __pycache__/
 *.blend1
 model_out/

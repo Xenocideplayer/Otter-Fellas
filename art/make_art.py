@@ -295,11 +295,17 @@ def main():
     save_icon(b(I.river_holt(True), 112), "Buildings/Housing/BigRiverHolt/BigRiverHoltIcon.png")
     save_icon(b(I.wild_rice_crop(), 112), "NaturalResources/Crops/WildRice/WildRiceIcon.png")
     save_icon(b(I.taro_crop(), 112), "NaturalResources/Crops/WaterTaro/WaterTaroIcon.png")
+    save_icon(b(I.fishing_dock(), 112), "Buildings/Food/FishingDock/FishingDockIcon.png")
+    save_icon(b(I.artesian_well(), 112), "Buildings/Water/ArtesianWell/ArtesianWellIcon.png")
+    save_icon(b(I.splash_pool(), 112), "Buildings/Wellbeing/SplashPool/SplashPoolIcon.png")
+    save_icon(I.status_icon(I.broken_well_symbol(), 512), "Sprites/StatusIcons/OtterWellBroken.png")
     g = lambda body: I.line_icon(body, 80, view=80, stroke=3.0)
     save_icon(g(I.wild_rice_good()), "Sprites/Goods/WildRiceIcon.png")
     save_icon(g(I.cooked_rice_good()), "Sprites/Goods/CookedWildRiceIcon.png")
     save_icon(g(I.taro_root_good()), "Sprites/Goods/TaroRootIcon.png")
     save_icon(g(I.roasted_taro_good()), "Sprites/Goods/RoastedTaroIcon.png")
+    save_icon(g(I.fish_good()), "Sprites/Goods/FishIcon.png")
+    save_icon(g(I.grilled_fish_good()), "Sprites/Goods/GrilledFishIcon.png")
     if not (PORTRAITS and os.path.exists(os.path.join(PORTRAITS, "..", "thumbnail.png"))):
         render(thumbnail(), os.path.join(ROOT, "thumbnail.png"), 960, 540, sprite=False)
 

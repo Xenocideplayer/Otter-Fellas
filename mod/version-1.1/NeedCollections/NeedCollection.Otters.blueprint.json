@@ -21,8 +21,10 @@
       "DomedGarden",
       "EarthRecultivator",
       "FarmerMonument",
+      "Fish",
       "FountainOfJoy",
       "GrilledChestnuts",
+      "GrilledFish",
       "GrilledPotatoes",
       "GrilledSpadderdock",
       "HallOfAbundance",
@@ -35,6 +37,7 @@
       "RoastedTaro",
       "Sauna",
       "Scarecrow",
+      "SplashPool",
       "SunflowerSeeds",
       "Weathervane"
     ]

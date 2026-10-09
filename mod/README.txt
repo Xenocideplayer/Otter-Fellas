@@ -32,6 +32,20 @@ WHAT OTTERS DO
                   water), at a Shower, Lido or Domed Garden.
   Rinse Pod       550 science. Uses clean water to wash badwater contamination out of
                   otters. Otters have no Herbalist / Antidote.
+  Fishing Dock    Available from the start (25 logs). A fisher drops a line into the
+                  water and brings up a fish every ~2.5 work-hours. Needs water under the
+                  line; badwater means fewer bites, and none at half badwater. Fish can be
+                  eaten raw or grilled at the Grill into Grilled Fish (two new foods).
+  Splash Pool     Available from the start (40 logs). A log-framed swimming hole set
+                  into the river: fun for everyone (its own wellbeing need) and a big
+                  moisture boost for otters. Needs water inside the frame.
+  Artesian Well   600 science. Brings clean water up out of nowhere: no aquifer, and it
+                  keeps flowing through droughts and badtides. Needs an operator and
+                  750 hp. Build it with its back to lower ground or open water; it pours
+                  about 12 blocks of water an hour over the edge behind it until the water
+                  there is nearly level with the well. About every 50 working hours the
+                  pump breaks down ("Broken down" alert) and the operator spends ~6
+                  hours repairing it, with no water meanwhile.
 
 LOOKS
   Otters have their own 3D body (adult and kit): slim build, long tapering tail,
@@ -43,6 +57,9 @@ LOOKS
 
 KNOWN LIMITS
   - Otters are built on the Folktails economy and buildings.
+  - The Fishing Dock is the Folktails water-pump hut refitted with a rod and a fish rack,
+    and the Artesian Well uses the Aquifer Drill's model; the Splash Pool is a new model
+    built from the game's own wood materials.
   - Worker outfits and tail decals are mapped from the beaver body, so they may sit
     slightly differently on the otter.
   - This mod was checked against the game's own files and code but has not been

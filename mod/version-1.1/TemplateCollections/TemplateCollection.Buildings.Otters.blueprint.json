@@ -163,7 +163,10 @@
       "Buildings/Water/ReedFilter/ReedFilter.Otters.blueprint",
       "Buildings/Wellbeing/RinsePod/RinsePod.Otters.blueprint",
       "Buildings/Housing/RiverHolt/RiverHolt.Otters.blueprint",
-      "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint"
+      "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint",
+      "Buildings/Food/FishingDock/FishingDock.Otters.blueprint",
+      "Buildings/Wellbeing/SplashPool/SplashPool.Otters.blueprint",
+      "Buildings/Water/ArtesianWell/ArtesianWell.Otters.blueprint"
     ]
   }
 }

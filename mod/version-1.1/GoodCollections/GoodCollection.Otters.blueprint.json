@@ -33,7 +33,9 @@
       "WildRice",
       "CookedWildRice",
       "TaroRoot",
-      "RoastedTaro"
+      "RoastedTaro",
+      "Fish",
+      "GrilledFish"
     ]
   }
 }

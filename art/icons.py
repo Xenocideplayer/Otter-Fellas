@@ -189,3 +189,70 @@ def shell_logo(color=OTTER_TEAL, size=98):
     dark = (arr[..., 0] < 60) & (arr[..., 1] < 60) & (arr[..., 3] > 0)
     arr[dark, 3] = 0
     return Image.fromarray(arr)
+
+
+def _fish(x, y, s=1.0, a=0, fill=False):
+    """A side-on fish centred at (x, y), nose to the right, s=1 is about 30 px long."""
+    f = ' fill="FILL"' if fill else ""
+    return (f'<g transform="translate({x} {y}) rotate({a}) scale({s})">'
+            f'<path d="M-9 0 q8 -10 20 -5 q4 2 6 5 q-2 3 -6 5 q-12 5 -20 -5 z"{f}/>'
+            f'<path d="M-9 0 l-7 -6 v12 z"{f}/>'
+            + ('' if fill else '<circle cx="11" cy="-1.5" r="1.2" fill="FILL"/><path d="M3 -5 q-2 5 0 10" stroke-width="2"/>')
+            + '</g>')
+
+
+def fishing_dock():
+    # a little pier on posts with a rod bent over the water and a fish on the line
+    return ('<path d="M10 64 h58"/>'                                       # deck
+            '<path d="M16 64 v26 M36 64 v26 M58 64 v26"/>'                 # posts into the water
+            '<path d="M18 64 v-22 h22 v22 M14 44 l15 -12 l15 12"/>'        # little hut
+            '<path d="M58 62 L94 18" stroke-width="3.6"/>'                 # rod
+            '<path d="M94 18 V58" stroke-width="1.8"/>'                    # line
+            + _fish(94, 68, 0.8, 90) + WAVES)
+
+
+def artesian_well():
+    # a drill tower over a pipe, water welling up and spilling out both sides, with a gear for power
+    return ('<path d="M46 18 h20 l4 46 h-28 z"/>'                          # tower
+            '<path d="M48 32 h16 M47 46 h18" stroke-width="2.4"/>'
+            '<path d="M52 18 v-6 h8 v6"/>'
+            '<circle cx="84" cy="36" r="9"/><circle cx="84" cy="36" r="3" fill="FILL"/>'
+            + "".join(f'<path d="M{84 + 9 * c:.1f} {36 + 9 * s:.1f} l{3.5 * c:.1f} {3.5 * s:.1f}" stroke-width="3"/>'
+                      for c, s in [(__import__("math").cos(__import__("math").radians(d)), __import__("math").sin(__import__("math").radians(d))) for d in range(0, 360, 45)])
+            + '<path d="M70 36 h5"/>'
+            '<path d="M38 64 h36"/>'
+            '<path d="M56 70 q-6 8 -6 12 a6 6 0 0 0 12 0 q0 -4 -6 -12 z" fill="FILL"/>'
+            '<path d="M40 66 q-10 2 -16 12 M72 66 q10 2 16 12"/>'
+            + WAVES)
+
+
+def splash_pool():
+    # a wooden pool frame in the water, a diving plank and a splash
+    return ('<path d="M14 70 h84 M20 70 v20 M92 70 v20"/>'
+            '<path d="M14 62 h22 v8"/>'                                    # plank
+            '<path d="M36 62 l18 -4" stroke-width="3.6"/>'
+            '<path d="M68 60 q-4 -14 -12 -20 M74 58 q2 -16 10 -22 M80 62 q8 -10 16 -12" stroke-width="2.8"/>'
+            '<circle cx="62" cy="34" r="2.6" fill="FILL"/><circle cx="88" cy="32" r="2.2" fill="FILL"/><circle cx="96" cy="44" r="2" fill="FILL"/>'
+            '<path d="M56 70 q8 -10 18 -6 q10 -4 18 6"/>'
+            + WAVES)
+
+
+def fish_good():
+    return _fish(42, 42, 1.6, -12)
+
+
+def grilled_fish_good():
+    return (_fish(38, 50, 1.4, 0)
+            + '<path d="M22 47 l5 7 M30 45 l6 9 M38 44 l6 9" stroke-width="2.2"/>'
+            '<path d="M28 30 q-4 -5 0 -10 q4 -5 0 -10 M42 28 q-4 -5 0 -10 q4 -5 0 -10" stroke-width="2.4"/>')
+
+
+def broken_well_symbol():
+    # a droplet with a spanner across it
+    return ('<path d="M48 26 q-15 18 -15 28 a15 15 0 0 0 30 0 q0 -10 -15 -28 z" stroke-width="0"/>'
+            '<g transform="rotate(45 64 66)">'
+            '<rect x="60" y="58" width="8" height="34" rx="3" stroke-width="0"/>'
+            '<path d="M64 40 a12 12 0 1 0 0.1 0 z" stroke-width="0"/>'
+            '<rect x="60" y="34" width="8" height="12" fill="#5C0F0B" stroke-width="0"/>'
+            '</g>'
+            '<path d="M48 26 q-15 18 -15 28 a15 15 0 0 0 30 0" fill="none" stroke="#5C0F0B" stroke-width="0"/>')
