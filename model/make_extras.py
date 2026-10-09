@@ -598,3 +598,7 @@ if __name__ == "__main__":
         model = make()
         tm.write(model, os.path.join(out, name + ".timbermesh"))
         print(name, sum(n.vertex_count for n in model.nodes), "verts")
+    # The game's wonder code needs a "Default" animation on the wonder model (see add_wellspring_anim.py).
+    import subprocess
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "add_wellspring_anim.py"),
+                    os.path.join(out, "Wellspring.Otters.Model.timbermesh")], check=True)

@@ -1,6 +1,7 @@
 using Bindito.Core;
 using Timberborn.ModManagerScene;
 using Timberborn.TemplateInstantiation;
+using Timberborn.TerrainLevelValidation;
 using UnityEngine;
 
 namespace Otters
@@ -32,6 +33,9 @@ namespace Otters
       var builder = new TemplateModule.Builder();
       builder.AddDecorator<OtterSwimmerSpec, OtterSwimmer>();
       builder.AddDecorator<OtterDigSiteSpec, OtterDigSite>();
+      // Like vanilla dynamite: no dig site on the map's bottom layer, where there is nothing left to dig (it would
+      // only hand out free dirt).
+      builder.AddDecorator<OtterDigSiteSpec, BottomTerrainLevelValidationConstraint>();
       builder.AddDecorator<ReedFilterSpec, ReedFilter>();
       builder.AddDecorator<OtterMaterialSpec, OtterMaterial>();
       builder.AddDecorator<RiverHoltSpec, RiverHoltPlacement>();
