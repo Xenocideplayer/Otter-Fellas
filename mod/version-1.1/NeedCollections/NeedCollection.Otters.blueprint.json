@@ -3,6 +3,7 @@
     "CollectionId": "Otters",
     "Needs": [
       "Agora",
+      "Antidote",
       "BeaverStatue",
       "BeeSting",
       "Biofuel",
@@ -33,10 +34,12 @@
       "MaplePastry",
       "MudPit",
       "OtterMoisture",
+      "OtterSlide",
       "PunchCard",
       "RoastedTaro",
       "Sauna",
       "Scarecrow",
+      "SmokedFish",
       "SplashPool",
       "SunflowerSeeds",
       "Weathervane"

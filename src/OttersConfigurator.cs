@@ -18,6 +18,10 @@ namespace Otters
       Bind<RiverHoltPlacement>().AsTransient();
       Bind<ArtesianWell>().AsTransient();
       Bind<FishingDock>().AsTransient();
+      Bind<WaterTubeRegistry>().AsSingleton();
+      Bind<WaterTube>().AsTransient();
+      Bind<WaterTubeOutlet>().AsTransient();
+      Bind<CleanWaterGrowth>().AsTransient();
       MultiBind<TemplateModule>().ToProvider(ProvideTemplateModule).AsSingleton();
     }
 
@@ -31,6 +35,9 @@ namespace Otters
       builder.AddDecorator<RiverHoltSpec, RiverHoltPlacement>();
       builder.AddDecorator<ArtesianWellSpec, ArtesianWell>();
       builder.AddDecorator<FishingDockSpec, FishingDock>();
+      builder.AddDecorator<WaterTubeSpec, WaterTube>();
+      builder.AddDecorator<WaterTubeOutletSpec, WaterTubeOutlet>();
+      builder.AddDecorator<CleanWaterGrowthSpec, CleanWaterGrowth>();
       return builder.Build();
     }
   }

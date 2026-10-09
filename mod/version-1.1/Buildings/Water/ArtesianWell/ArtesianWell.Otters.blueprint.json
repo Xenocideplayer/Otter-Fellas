@@ -413,47 +413,29 @@
   },
   "ArtesianWellSpec": {
     "WaterPerHour": 12.0,
+    "DroughtSpeed": 0.5,
     "BreakdownChancePerHour": 0.02,
+    "TubePorts": [
+      {
+        "X": -1,
+        "Y": 1,
+        "Z": 0
+      },
+      {
+        "X": 3,
+        "Y": 1,
+        "Z": 0
+      },
+      {
+        "X": 1,
+        "Y": 3,
+        "Z": 0
+      }
+    ],
     "RepairHours": 6.0,
     "BrokenStatusIcon": "OtterWellBroken",
     "BrokenStatusLocKey": "Status.ArtesianWell.Broken",
     "BrokenAlertLocKey": "Status.ArtesianWell.Broken.Short"
-  },
-  "WorkshopParticleControllerSpec": {
-    "AttachmentIds": [
-      "Water"
-    ]
-  },
-  "WaterOutputParticleSpec": {
-    "AttachmentId": "Water",
-    "SpawnOffset": 0.25,
-    "FadeDistance": 0.0,
-    "MinimumLifetime": 0.0
-  },
-  "TemplateAttachmentsSpec": {
-    "Attachments": [
-      {
-        "AttachmentId": "Water",
-        "Prefab": "Environment/WaterDrops/WaterDrops",
-        "Parent": "#Finished",
-        "Position": {
-          "X": 1.5,
-          "Y": 0.3,
-          "Z": 3.05
-        },
-        "Rotation": {
-          "X": 90.0,
-          "Y": 0.0,
-          "Z": 0.0
-        },
-        "Scale": {
-          "X": 1.0,
-          "Y": 1.0,
-          "Z": 1.0
-        },
-        "CreateInstantly": true
-      }
-    ]
   },
   "Children": {
     "#Finished": {
@@ -500,6 +482,13 @@
             "Axis": "Y"
           }
         ]
+      },
+      "Children": {
+        "OtterWellExtras": {
+          "TimbermeshSpec": {
+            "Model": "Buildings/Water/ArtesianWell/ArtesianWellExtras.Otters.Model"
+          }
+        }
       }
     },
     "#Unfinished": {

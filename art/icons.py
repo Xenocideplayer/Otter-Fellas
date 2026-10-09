@@ -256,3 +256,55 @@ def broken_well_symbol():
             '<rect x="60" y="34" width="8" height="12" fill="#5C0F0B" stroke-width="0"/>'
             '</g>'
             '<path d="M48 26 q-15 18 -15 28 a15 15 0 0 0 30 0" fill="none" stroke="#5C0F0B" stroke-width="0"/>')
+
+
+def water_tube():
+    # a run of tube with a bend, a droplet riding inside
+    return ('<path d="M18 64 h38 q6 0 6 -6 v-34 M18 80 h38 q22 0 22 -22 v-34"/>'
+            '<path d="M14 60 v24 M58 24 h24" stroke-width="4.4"/>'
+            '<path d="M32 58 v-0 M44 86 v0" stroke-width="0"/>'
+            '<path d="M38 64 q-5 6 -5 9 a5 5 0 0 0 10 0 q0 -3 -5 -9 z" fill="FILL" stroke-width="0"/>'
+            '<path d="M70 40 q-4 5 -4 7 a4 4 0 0 0 8 0 q0 -2 -4 -7 z" fill="FILL" stroke-width="0"/>'
+            '<path d="M14 98 h84" stroke-width="2.4"/>')
+
+
+def tube_outlet():
+    # a barrel spout fed by a tube from behind, water pouring down into waves
+    return ('<path d="M10 46 h22 M10 58 h22 M10 42 v20" />'
+            '<path d="M32 36 h28 v34 h-28 z"/>'
+            '<path d="M32 46 h28 M32 60 h28" stroke-width="2.4"/>'
+            '<path d="M60 44 h16 q6 0 6 6 v4"/>'
+            '<path d="M80 58 q-3 8 -3 16 M84 58 q2 10 0 20" stroke-width="2.6"/>'
+            + WAVES)
+
+
+def smokehouse():
+    # a small hut with a smoking chimney and fish hanging under the eaves
+    return ('<path d="M18 92 v-40 l30 -22 l30 22 v40 z"/>'
+            '<path d="M62 40 v-18 h10 v26"/>'
+            '<path d="M66 16 q-4 -5 0 -10 M74 18 q-4 -5 0 -10" stroke-width="2.4"/>'
+            '<path d="M40 92 v-20 h16 v20"/>'
+            + _fish(86, 60, 0.6, 90, fill=True) + _fish(98, 64, 0.55, 90, fill=True)
+            + '<path d="M78 46 h26 M86 46 v4 M98 46 v8" stroke-width="2.2"/>')
+
+
+def otter_slide():
+    # a slide tower with a curving chute into the water
+    return ('<path d="M18 92 V36 M42 92 V36 M14 36 h32 M14 24 l16 -10 l16 10 z"/>'
+            '<path d="M22 48 h16 M22 60 h16 M22 72 h16" stroke-width="2.4"/>'
+            '<path d="M42 40 q22 4 34 30 q8 14 22 16" stroke-width="3.6"/>'
+            '<path d="M42 50 q18 4 28 26 q6 10 18 12" stroke-width="2"/>'
+            '<circle cx="96" cy="74" r="2.4" fill="FILL"/><circle cx="102" cy="80" r="2" fill="FILL"/>'
+            + WAVES)
+
+
+def smoked_fish_good():
+    return (_fish(40, 46, 1.5, -8, fill=True)
+            + '<path d="M28 26 q-4 -5 0 -10 q4 -5 0 -10 M40 24 q-4 -5 0 -10 q4 -5 0 -10 M52 26 q-4 -5 0 -10" stroke-width="2.4"/>')
+
+
+def no_room_symbol():
+    # a droplet pressed against a level line: nowhere for the water to go
+    return ('<path d="M56 26 q-14 17 -14 26 a14 14 0 0 0 28 0 q0 -9 -14 -26 z" stroke-width="0"/>'
+            '<path d="M30 78 h52" fill="none" stroke-width="7"/>'
+            '<path d="M38 88 l6 -6 M52 88 l6 -6 M66 88 l6 -6" fill="none" stroke-width="3.5"/>')

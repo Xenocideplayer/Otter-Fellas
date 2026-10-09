@@ -99,6 +99,10 @@
     "UndergroundModelName": "",
     "UndergroundModelDepth": 0
   },
+  "CleanWaterGrowthSpec": {
+    "GrowthMultiplier": 1.5,
+    "CleanThreshold": 0.0005
+  },
   "Children": {
     "#Models": {
       "Children": {

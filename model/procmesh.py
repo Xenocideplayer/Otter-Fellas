@@ -177,3 +177,39 @@ def rot_y(deg):
     a = math.radians(deg)
     # Unity is left-handed: positive yaw turns +x towards -z
     return np.array([[math.cos(a), 0, math.sin(a)], [0, 1, 0], [-math.sin(a), 0, math.cos(a)]])
+
+
+def fish(mesh, material, top, length, yaw=0.0, tilt=0.0, hang=True,
+         silver=(0.72, 0.78, 0.80, 1), back=(0.30, 0.38, 0.42, 1)):
+    """A fish, tail up from `top` when hang=True (otherwise lying along local y from `top`), with a dark back."""
+    top = np.asarray(top, float)
+    a = math.radians(tilt)
+    T = np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+    A = rot_y(yaw) @ T
+    if not hang:  # lie flat: along the local z axis
+        A = A @ np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]])
+    silver = np.asarray(silver, float); back = np.asarray(back, float)
+    centre = top - A[:, 1] * (length * 0.62)
+    radii = np.array([length * 0.17, length * 0.5, length * 0.24])
+    ellipsoid(mesh, material, centre, radii, axes=A, seg=10, rings=7, color=tuple(silver))
+    part = mesh.parts[material]
+    side = (part["P"][-1] - centre) @ A[:, 2] / radii[2]
+    t = np.clip((side + 0.2), 0, 1)[:, None]
+    part["C"][-1] = silver * (1 - t) + back * t
+    tail = centre + A[:, 1] * radii[1] * 0.85
+    triangle(mesh, material, tail, tail + A[:, 1] * length * 0.3 + A[:, 2] * length * 0.18,
+             tail + A[:, 1] * length * 0.3 - A[:, 2] * length * 0.18, color=tuple(back))
+    d0 = centre + A[:, 2] * radii[2] * 0.9
+    triangle(mesh, material, d0 - A[:, 1] * length * 0.12, d0 + A[:, 1] * length * 0.14,
+             d0 + A[:, 1] * length * 0.08 + A[:, 2] * length * 0.1, color=tuple(back))
+
+
+def cone(mesh, material, base, height, r, seg=8, color=(1, 1, 1, 1), uv_offset=(0.0, 0.0)):
+    base = np.asarray(base, float)
+    cylinder(mesh, material, base, base + np.array([0, height, 0]), r, 0.0, seg=seg, color=color, uv_offset=uv_offset)
+
+
+def single_node_model(name, mesh, extra_nodes=()):
+    """A model whose root carries the mesh, plus optional extra child nodes (slots, instanced props)."""
+    root = mesh.node(name, parent=-1)
+    return tm.Model(0, name, [root, *extra_nodes])

@@ -1,0 +1,34 @@
+{
+  "GoodSpec": {
+    "Id": "SmokedFish",
+    "BackwardCompatibleIds": [],
+    "ConsumptionEffects": [
+      {
+        "NeedId": "Hunger",
+        "Points": 0.3
+      },
+      {
+        "NeedId": "SmokedFish",
+        "Points": 0.2
+      }
+    ],
+    "GoodType": "Box",
+    "StockpileVisualization": "Box",
+    "VisibleContainer": "Box",
+    "ContainerColor": {
+      "r": 0.807843149,
+      "g": 0.596078455,
+      "b": 0.227450982,
+      "a": 1.0
+    },
+    "ContainerMaterial": "",
+    "CarryingAnimation": "CarryInHands",
+    "Weight": 1,
+    "GoodGroupId": "Food",
+    "GoodOrder": 9095,
+    "Icon": "Sprites/Goods/SmokedFishIcon",
+    "ForceImport": true,
+    "DisplayNameLocKey": "Good.SmokedFish.DisplayName",
+    "PluralDisplayNameLocKey": "Good.SmokedFish.PluralDisplayName"
+  }
+}

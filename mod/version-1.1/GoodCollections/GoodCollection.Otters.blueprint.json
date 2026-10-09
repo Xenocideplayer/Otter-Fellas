@@ -2,6 +2,7 @@
   "GoodCollectionSpec": {
     "CollectionId": "Otters",
     "Goods": [
+      "Antidote",
       "Biofuel",
       "Book",
       "BotChassis",
@@ -35,7 +36,8 @@
       "TaroRoot",
       "RoastedTaro",
       "Fish",
-      "GrilledFish"
+      "GrilledFish",
+      "SmokedFish"
     ]
   }
 }

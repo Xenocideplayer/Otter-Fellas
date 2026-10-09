@@ -1,0 +1,26 @@
+{
+  "RecipeSpec": {
+    "Id": "SmokedFish",
+    "BackwardCompatibleIds": [],
+    "DisplayLocKey": "Good.SmokedFish.PluralDisplayName",
+    "CycleDurationInHours": 1.5,
+    "Ingredients": [
+      {
+        "Id": "Fish",
+        "Amount": 1
+      }
+    ],
+    "Products": [
+      {
+        "Id": "SmokedFish",
+        "Amount": 3
+      }
+    ],
+    "ProducedSciencePoints": 0,
+    "Fuel": "Log",
+    "CyclesFuelLasts": 10,
+    "FuelCapacity": 5,
+    "CyclesCapacity": 20,
+    "Icon": "Sprites/Goods/SmokedFishIcon"
+  }
+}

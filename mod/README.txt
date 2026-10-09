@@ -40,12 +40,26 @@ WHAT OTTERS DO
                   into the river: fun for everyone (its own wellbeing need) and a big
                   moisture boost for otters. Needs water inside the frame.
   Artesian Well   600 science. Brings clean water up out of nowhere: no aquifer, and it
-                  keeps flowing through droughts and badtides. Needs an operator and
-                  750 hp. Build it with its back to lower ground or open water; it pours
-                  about 12 blocks of water an hour over the edge behind it until the water
-                  there is nearly level with the well. About every 50 working hours the
-                  pump breaks down ("Broken down" alert) and the operator spends ~6
-                  hours repairing it, with no water meanwhile.
+                  keeps flowing through badtides and (at half speed) droughts. Needs an
+                  operator and 750 hp. Build it with its back to lower ground or open
+                  water; it pours about 12 blocks of water an hour over the edge behind
+                  it until the water there is nearly level with the well. About every 50
+                  working hours the pump breaks down ("Broken down" alert) and the
+                  operator spends ~6 hours repairing it, with no water meanwhile. A
+                  "nowhere to go" alert shows when the water has no room.
+  Water Tubes     No science. The game's tube pieces, carrying water instead of beavers.
+                  Plug a line into the Artesian Well's left wall, right wall or back and
+                  end it at a Tube Outlet (a spout built over lower ground or water).
+                  With outlets connected, all of the well's water goes to them, shared
+                  evenly. Tubes block walking like a fence.
+  Smokehouse      150 science. One fish + a little firewood makes three Smoked Fish, the
+                  otters' best food (its own need, like bread).
+  Otter Slide     200 science. A slide tower on the bank with a chute into the river.
+                  Fun (its own need) and a big soak for otters. Needs water at the bottom.
+  Clean water     Crops planted by otters grow 1.5x faster while their water is 100%
+                  clean: aquatic crops standing in water with no badwater, land crops on
+                  irrigated soil with no contamination. Stacks with the faster aquatic
+                  crop times.
 
 LOOKS
   Otters have their own 3D body (adult and kit): slim build, long tapering tail,
@@ -55,11 +69,20 @@ LOOKS
   three for kits. They reuse every beaver animation (walking, swimming,
   chopping, sleeping...), so hats, tools and carried goods still line up.
 
+CO-OP (TIMBER TOGETHER / BEAVERBUDDIES)
+  Every computer needs the same Otters version. Shared-colony games and separate-colony
+  games where everyone plays Otters work; the Trading Post and Power Export appear for
+  otters too. Mixed factions with Otters aren't supported yet (see the repository's
+  docs/TIMBER-TOGETHER.md).
+
 KNOWN LIMITS
-  - Otters are built on the Folktails economy and buildings.
+  - Otters are built on the Folktails economy and buildings (the Herbalist is hidden).
   - The Fishing Dock is the Folktails water-pump hut refitted with a rod and a fish rack,
-    and the Artesian Well uses the Aquifer Drill's model; the Splash Pool is a new model
-    built from the game's own wood materials.
+    the Artesian Well is the Aquifer Drill with tube sockets, a thatched cap and pennant,
+    and the Smokehouse is the Bakery with fish racks and a sign. The Splash Pool and
+    Otter Slide are new models built from the game's own wood materials.
+  - Water Tubes use the Iron Teeth tube models, picked and turned to match their
+    neighbours; the dead-end piece may face the wrong way (not checked in game yet).
   - Worker outfits and tail decals are mapped from the beaver body, so they may sit
     slightly differently on the otter.
   - This mod was checked against the game's own files and code but has not been

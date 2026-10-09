@@ -24,7 +24,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "1.1.0"
+MOD_VERSION = "1.2.0"
 MOD_ID = "Otters.WaterFaction"
 MODIFIERS = "OttersModifiers"
 
@@ -101,9 +101,14 @@ NATURAL_RESOURCES = "TemplateCollections/TemplateCollection.NaturalResources.Ott
 RIVER_HOLT = "Buildings/Housing/RiverHolt/RiverHolt.Otters.blueprint"
 BIG_RIVER_HOLT = "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint"
 HOLT_MOISTURE_PER_HOUR = 0.5         # residents' fur stays wet while they sleep
-REMOVED_FOLKTAILS_BUILDINGS = ["Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint"]
-REMOVED_GOODS = ["Antidote"]
-REMOVED_NEEDS = ["Antidote"]
+# Otters build from the Folktails building list itself (so buildings other mods add to Folktails, like Timber
+# Together's Trading Post, show up for otters too) plus their own list. Folktails buildings otters shouldn't have are
+# hidden from the toolbar instead of removed.
+HIDDEN_FOLKTAILS_BUILDINGS = ["Buildings/Wellbeing/Herbalist/Herbalist.Folktails.blueprint"]  # Rinse Pod instead
+REMOVED_GOODS = []
+REMOVED_NEEDS = []
+CLEAN_WATER_GROWTH = 1.5             # otter crops grow 1.5x faster while their water is 100% clean
+CLEAN_WATER_THRESHOLD = 0.0005       # contamination that still counts as clean (shows as 0%)
 
 # Fishing: a fisher on a dock pulls fish out of clean water; badwater spoils the catch. Fish are eaten raw or
 # grilled at the ordinary Grill.
@@ -120,6 +125,18 @@ WELL_WATER_PER_HOUR = 12.0           # cubic blocks of clean water per hour at f
 WELL_BREAKDOWN_CHANCE = 0.02         # per running hour: on average a breakdown every ~50 working hours
 WELL_REPAIR_HOURS = 6.0              # operator work-hours to get it running again
 WELL_SCIENCE = 600
+WELL_DROUGHT_SPEED = 0.5             # pumps at half speed during droughts
+WELL_TUBE_PORTS = [(-1, 1, 0), (3, 1, 0), (1, 3, 0)]   # tiles by the left wall, right wall and back
+# Water tubes (the game's tube models) carry well water to Tube Outlets anywhere along the line.
+WATER_TUBE = "Buildings/Water/WaterTube/WaterTube.Otters.blueprint"
+TUBE_OUTLET = "Buildings/Water/TubeOutlet/TubeOutlet.Otters.blueprint"
+# Smokehouse: fish into smoked fish, the otters' best food.
+SMOKEHOUSE = "Buildings/Food/Smokehouse/Smokehouse.Otters.blueprint"
+SMOKEHOUSE_SCIENCE = 150
+# Otter Slide: a slide tower that drops into the river; fun and a soaking.
+OTTER_SLIDE = "Buildings/Wellbeing/OtterSlide/OtterSlide.Otters.blueprint"
+SLIDE_MOISTURE = 1.2
+SLIDE_SCIENCE = 200
 
 DIG_SITE = "Buildings/Landscaping/OtterDigSite/OtterDigSite.Otters.blueprint"
 REED_FILTER = "Buildings/Water/ReedFilter/ReedFilter.Otters.blueprint"
@@ -191,21 +208,51 @@ TEXT = {
     "Need.SplashPool.DisplayName": "Splash Pool",
     "Building.ArtesianWell.DisplayName": "Artesian Well",
     "Building.ArtesianWell.Description": "Drills deep and brings up clean water out of nowhere: no aquifer needed, and "
-                                         "it keeps flowing through droughts and badtides. Needs an operator and "
-                                         "750 hp of power. Build it with its back to lower ground or open water: the water "
-                                         "spills out over the edge behind it until it is nearly level with the well. "
+                                         "it keeps flowing through droughts (at half speed) and badtides. Needs an operator and "
+                                         "750 hp of power. Build it with its back to "
+                                         "lower ground or open water: the water spills out over the edge behind it until "
+                                         "it is nearly level with the well. Or plug Water Tubes into its side walls or "
+                                         "back to send the water to Tube Outlets elsewhere. "
                                          "Every so often the pump breaks down and the operator has to spend a few hours "
                                          "repairing it before water flows again.",
     "Building.ArtesianWell.FlavorDescription": "Deep down, the river never ends.",
     "Recipe.ArtesianWater": "Pumping water",
     "Status.ArtesianWell.Broken": "Broken down: the operator is repairing it. No water until it's fixed.",
     "Status.ArtesianWell.Broken.Short": "Well broken down",
+    "Status.ArtesianWell.NoRoom": "The water has nowhere to go. Build the well with its back to lower ground or "
+                                  "water, or connect Water Tubes to a Tube Outlet that pours over an edge.",
+    "Status.ArtesianWell.NoRoom.Short": "Well water has nowhere to go",
+    "Building.WaterTube.DisplayName": "Water Tube",
+    "Building.WaterTube.Description": "Carries water from an Artesian Well to Tube Outlets. Plug a line into the well's "
+                                      "left wall, right wall or back; when outlets are connected, all of the well's "
+                                      "water goes to them, shared evenly, instead of spilling out behind the well.",
+    "Building.WaterTube.FlavorDescription": "Like a tubeway, but wetter.",
+    "Building.TubeOutlet.DisplayName": "Tube Outlet",
+    "Building.TubeOutlet.Description": "The open end of a water tube line. Connect a tube to its back and build it with "
+                                       "its spout over lower ground or water; it pours until the water below is nearly "
+                                       "up to the spout.",
+    "Building.TubeOutlet.FlavorDescription": "Where the river comes back out.",
+    "Building.Smokehouse.DisplayName": "Smokehouse",
+    "Building.Smokehouse.Description": "Smokes fish over a slow log fire. One fish makes three smoked fish, the otters' "
+                                       "favourite food.",
+    "Building.Smokehouse.FlavorDescription": "Smells like home.",
+    "Good.SmokedFish.DisplayName": "Smoked fish",
+    "Good.SmokedFish.PluralDisplayName": "Smoked fish",
+    "Building.OtterSlide.DisplayName": "Otter Slide",
+    "Building.OtterSlide.Description": "A slide tower on the bank with a chute that drops into the river. Fun for "
+                                       "everyone and a thorough soaking for otters. Needs water at the bottom of the "
+                                       "chute.",
+    "Building.OtterSlide.FlavorDescription": "Again! Again!",
+    "Need.OtterSlide.DisplayName": "Otter Slide",
 }
 
 
 # ---------------------------------------------------------------------------------------------------------
 # Faction
 # ---------------------------------------------------------------------------------------------------------
+CLEAN_WATER_SPEC = {"GrowthMultiplier": CLEAN_WATER_GROWTH, "CleanThreshold": CLEAN_WATER_THRESHOLD}
+
+
 def modifier_path(original, name):
     return f"{MODIFIERS}/{name}.Otters.optional.blueprint"
 
@@ -225,7 +272,7 @@ def build_faction(modifiers):
         "NewGameFullAvatar": "Sprites/Avatars/OttersFullNewGame",
         # The pod model is the Iron Teeth one, so their materials are needed too.
         "MaterialCollectionIds": ["Folktails", "IronTeeth"],
-        "TemplateCollectionIds": ["Buildings.Otters", "Characters.Folktails", "ModularShaftParts.Folktails",
+        "TemplateCollectionIds": ["Buildings.Folktails", "Buildings.Otters", "Characters.Folktails", "ModularShaftParts.Folktails",
                                   "NaturalResources.Folktails", "NaturalResources.Otters"],
         "NeedCollectionIds": ["Otters"],
         "GoodCollectionIds": ["Otters"],
@@ -244,10 +291,8 @@ def build_faction(modifiers):
 
 
 def build_collections():
-    buildings = load("TemplateCollections/TemplateCollection.Buildings.Folktails.blueprint")["TemplateCollectionSpec"]
-    blueprints = [b for b in buildings["Blueprints"] if b not in REMOVED_FOLKTAILS_BUILDINGS]
-    blueprints += [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT, FISHING_DOCK, SPLASH_POOL,
-                   ARTESIAN_WELL]
+    blueprints = [DIG_SITE, REED_FILTER, RINSE_POD, RIVER_HOLT, BIG_RIVER_HOLT, FISHING_DOCK, SPLASH_POOL,
+                  ARTESIAN_WELL, WATER_TUBE, TUBE_OUTLET, SMOKEHOUSE, OTTER_SLIDE]
     write("TemplateCollections/TemplateCollection.Buildings.Otters.blueprint.json",
           {"TemplateCollectionSpec": {"CollectionId": "Buildings.Otters", "Blueprints": blueprints}})
 
@@ -255,11 +300,11 @@ def build_collections():
     write("GoodCollections/GoodCollection.Otters.blueprint.json",
           {"GoodCollectionSpec": {"CollectionId": "Otters", "Goods": [g for g in goods if g not in REMOVED_GOODS]
                                   + EXTRA_GOODS + [g for c in NEW_CROPS for g in (c[3], c[5])]
-                                  + ["Fish", "GrilledFish"]}})
+                                  + ["Fish", "GrilledFish", "SmokedFish"]}})
 
     needs = load("NeedCollections/NeedCollection.Folktails.blueprint")["NeedCollectionSpec"]["Needs"]
     needs = ([n for n in needs if n not in REMOVED_NEEDS] + ["OtterMoisture"] + EXTRA_NEEDS + [c[5] for c in NEW_CROPS]
-             + ["Fish", "GrilledFish", "SplashPool"])
+             + ["Fish", "GrilledFish", "SmokedFish", "SplashPool", "OtterSlide"])
     write("NeedCollections/NeedCollection.Otters.blueprint.json",
           {"NeedCollectionSpec": {"CollectionId": "Otters", "Needs": sorted(needs)}})
 
@@ -392,6 +437,7 @@ def build_crops():
         bp["CuttableSpec"]["Yielder"]["Yield"] = {"Id": good, "Amount": amount}
         bp["CuttableSpec"]["Yielder"]["ResourceGroup"] = "AquaticFarmhouse"
         bp["FloodableNaturalResourceSpec"] = copy.deepcopy(cattail["FloodableNaturalResourceSpec"])
+        bp["CleanWaterGrowthSpec"] = dict(CLEAN_WATER_SPEC)
         bp["LabeledEntitySpec"] = {"DisplayNameLocKey": f"NaturalResource.{name}.DisplayName", "DescriptionLocKey": "",
                                    "FlavorDescriptionLocKey": f"NaturalResource.{name}.FlavorDescription",
                                    "Icon": f"NaturalResources/Crops/{name}/{name}Icon"}
@@ -539,16 +585,15 @@ def build_artesian_well():
     # behind it there is nowhere for the water to go and it simply waits.
     bp["WaterOutputSpec"] = {"WaterCoordinates": {"X": 1, "Y": 3, "Z": 0}, "DistanceToGroundOffset": 0.0,
                              "OverflowAllowed": False}
-    bp["ArtesianWellSpec"] = {"WaterPerHour": WELL_WATER_PER_HOUR, "BreakdownChancePerHour": WELL_BREAKDOWN_CHANCE,
+    bp["ArtesianWellSpec"] = {"WaterPerHour": WELL_WATER_PER_HOUR, "DroughtSpeed": WELL_DROUGHT_SPEED,
+                              "BreakdownChancePerHour": WELL_BREAKDOWN_CHANCE,
+                              "TubePorts": [{"X": x, "Y": y, "Z": z} for x, y, z in WELL_TUBE_PORTS],
                               "RepairHours": WELL_REPAIR_HOURS, "BrokenStatusIcon": "OtterWellBroken",
                               "BrokenStatusLocKey": "Status.ArtesianWell.Broken",
                               "BrokenAlertLocKey": "Status.ArtesianWell.Broken.Short"}
-    discharge = load("Buildings/Water/Discharge/Discharge.Folktails.blueprint")
-    for spec in ("WorkshopParticleControllerSpec", "WaterOutputParticleSpec"):
-        bp[spec] = copy.deepcopy(discharge[spec])
-    attach = copy.deepcopy(discharge["TemplateAttachmentsSpec"])
-    attach["Attachments"][0]["Position"] = {"X": 1.5, "Y": 0.3, "Z": 3.05}
-    bp["TemplateAttachmentsSpec"] = attach
+    if MODEL_DIR:  # its own look: tube sockets, painted bands, a thatched cap and pennant, barrels
+        bp["Children"]["#Finished"]["Children"] = {
+            "OtterWellExtras": {"TimbermeshSpec": {"Model": "Buildings/Water/ArtesianWell/ArtesianWellExtras.Otters.Model"}}}
     bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 101
     labeled(bp["LabeledEntitySpec"], "ArtesianWell", "Buildings/Water/ArtesianWell/ArtesianWellIcon")
     write(ARTESIAN_WELL + ".json", order_specs(bp))
@@ -557,6 +602,122 @@ def build_artesian_well():
         "Id": "ArtesianWater", "BackwardCompatibleIds": [], "DisplayLocKey": "Recipe.ArtesianWater",
         "CycleDurationInHours": 1.0, "Ingredients": [], "Products": [], "ProducedSciencePoints": 0, "Fuel": "",
         "CyclesFuelLasts": 0, "FuelCapacity": 0, "CyclesCapacity": 1, "Icon": "Sprites/Goods/WaterIcon"}})
+
+
+def build_water_tubes():
+    bp = copy.deepcopy(load("Buildings/Paths/Tubeway/Tubeway.IronTeeth.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "WaterTube.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Plank", "Amount": 2}, {"Id": "MetalBlock", "Amount": 1}],
+                               "ScienceCost": 0, "FinishableWithBeaversOnSite": False})
+    # Carries water, not beavers.
+    for spec in ("BlockObjectNavMeshSettingsSpec", "BlockObjectWithPathRangeSpec", "PathSpec", "TubeModelSpec",
+                 "TubeSpec", "MovementSpeedBoostingBuildingSpec"):
+        del bp[spec]
+    bp["BlockObjectSpec"]["Blocks"][0]["Occupations"] = "Bottom, Middle"
+    bp["WaterTubeSpec"] = {"ModelPrefix": "Variant_"}
+    bp["PlaceableBlockObjectSpec"].update({"ToolGroupId": "Water", "ToolOrder": 102})
+    labeled(bp["LabeledEntitySpec"], "WaterTube", "Buildings/Water/WaterTube/WaterTubeIcon")
+    write(WATER_TUBE + ".json", order_specs(bp))
+
+    bp = copy.deepcopy(load("Buildings/Water/Discharge/Discharge.Folktails.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "TubeOutlet.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 10}, {"Id": "Plank", "Amount": 5}],
+                               "ScienceCost": 0, "LoopingSoundName": ""})
+    for spec in ("WorkplaceSpec", "EnterableSpec", "TransformSlotInitializerSpec", "WorkplaceSlotManagerSpec",
+                 "BuildingAccessibleSpec", "WorkshopSpec", "ManufactorySpec", "WorkshopParticleControllerSpec",
+                 "WorkplaceIlluminatorSpec", "SimpleManufactoryBehaviorsSpec", "WorkshopWorkerHiderSpec",
+                 "ManufactoryWaterProducerSpec", "ManufactoryWaterContaminationProducerSpec",
+                 "WaterOutputParticleSpec", "ManufactoryTogglableRecipesSpec", "TemplateAttachmentsSpec"):
+        bp.pop(spec, None)
+    bp["BlockObjectSpec"]["Entrance"]["HasEntrance"] = False
+    bp["WaterTubeOutletSpec"] = {"InputCoordinates": {"X": 0, "Y": -1, "Z": 0}}
+    if MODEL_DIR:
+        bp["Children"]["#Finished"]["Children"] = {
+            "OtterTubeCollar": {"TimbermeshSpec": {"Model": "Buildings/Water/TubeOutlet/TubeOutletExtras.Otters.Model"}}}
+    bp["PlaceableBlockObjectSpec"].update({"ToolOrder": 103})
+    labeled(bp["LabeledEntitySpec"], "TubeOutlet", "Buildings/Water/TubeOutlet/TubeOutletIcon")
+    write(TUBE_OUTLET + ".json", order_specs(bp))
+
+
+def build_smokehouse():
+    bp = copy.deepcopy(load("Buildings/Food/Bakery/Bakery.Folktails.blueprint"))
+    bp["TemplateSpec"].update({"TemplateName": "Smokehouse.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 30}, {"Id": "Plank", "Amount": 10}],
+                               "ScienceCost": SMOKEHOUSE_SCIENCE})
+    bp["ManufactorySpec"]["ProductionRecipeIds"] = ["SmokedFish"]
+    if MODEL_DIR:
+        bp["Children"]["#Finished"].setdefault("Children", {})["OtterSmokehouseExtras"] = {
+            "TimbermeshSpec": {"Model": "Buildings/Food/Smokehouse/SmokehouseExtras.Otters.Model"}}
+    bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 51
+    labeled(bp["LabeledEntitySpec"], "Smokehouse", "Buildings/Food/Smokehouse/SmokehouseIcon")
+    write(SMOKEHOUSE + ".json", order_specs(bp))
+
+    recipe = copy.deepcopy(load("Recipes/Recipe.Bread.blueprint"))
+    recipe["RecipeSpec"].update({"Id": "SmokedFish", "DisplayLocKey": "Good.SmokedFish.PluralDisplayName",
+                                 "CycleDurationInHours": 1.5, "Ingredients": [{"Id": "Fish", "Amount": 1}],
+                                 "Products": [{"Id": "SmokedFish", "Amount": 3}], "CyclesCapacity": 20,
+                                 "Icon": "Sprites/Goods/SmokedFishIcon"})
+    write("Recipes/Recipe.SmokedFish.blueprint.json", recipe)
+    good = copy.deepcopy(load("Goods/Good.Bread.blueprint"))
+    good["GoodSpec"].update({"Id": "SmokedFish", "Icon": "Sprites/Goods/SmokedFishIcon", "GoodOrder": 9095,
+                             "ConsumptionEffects": [{"NeedId": "Hunger", "Points": 0.3}, {"NeedId": "SmokedFish", "Points": 0.2}],
+                             "DisplayNameLocKey": "Good.SmokedFish.DisplayName",
+                             "PluralDisplayNameLocKey": "Good.SmokedFish.PluralDisplayName"})
+    write("Goods/Good.SmokedFish.blueprint.json", good)
+    need = copy.deepcopy(load("Needs/Need.Beaver.Bread.blueprint"))
+    need["NeedSpec"].update({"Id": "SmokedFish", "Order": 59, "DisplayNameLocKey": "Good.SmokedFish.PluralDisplayName"})
+    write("Needs/Need.Beaver.SmokedFish.blueprint.json", need)
+
+
+def build_otter_slide():
+    pool = load("Buildings/Wellbeing/SwimmingPool/SwimmingPool.IronTeeth.blueprint")
+    bp = copy.deepcopy(pool)
+    bp["TemplateSpec"].update({"TemplateName": "OtterSlide.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 30}, {"Id": "Plank", "Amount": 20}],
+                               "ScienceCost": SLIDE_SCIENCE})
+    bp["AttractionSpec"]["Effects"] = [
+        {"NeedId": "OtterSlide", "PointsPerHour": 0.7, "SatisfyToMaxValue": False},
+        {"NeedId": "OtterMoisture", "PointsPerHour": SLIDE_MOISTURE, "SatisfyToMaxValue": False}]
+    bp["EnterableSpec"]["CapacityFinished"] = 5
+    del bp["PatrollingSlotInitializerSpec"]
+    bp["TransformSlotInitializerSpec"]["Slots"] = [
+        {"SlotKeyword": "Seat", "Animation": "Sitting", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": False},
+        {"SlotKeyword": "Floating", "Animation": "Floating", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": True}]
+    # 2 x 3, one block down into the water like the pool: tower on the bank (row 0), chute over the water.
+    full = "Bottom, Top, Corners, Path, Middle"
+    def block(occ, below):
+        return {"MatterBelow": below, "Occupations": occ, "Stackable": "None", "OccupyAllBelow": False, "Underground": False}
+    layers = [
+        [["None", "None"], [full, full], [full, full]],                                  # z0: water under the chute
+        [[full, full], ["Bottom", "Bottom"], ["Bottom", "Bottom"]],                      # z1: ground level
+        [["All", "All"], ["Middle", "Middle"], ["None", "None"]],                       # z2: platform, chute top
+    ]
+    blocks = []
+    for z, layer in enumerate(layers):
+        for y, row in enumerate(layer):
+            for occ in row:
+                blocks.append(block(occ, "GroundOrStackable" if (z, y) == (1, 0) else "Any"))
+    bp["BlockObjectSpec"].update({"Size": {"X": 2, "Y": 3, "Z": 3}, "Blocks": blocks,
+                                  "Entrance": {"HasEntrance": True, "Coordinates": {"X": 0, "Y": -1, "Z": 1}}})
+    bp["BuildingAccessibleSpec"]["LocalAccess"] = {"X": 1.0, "Y": 1.0, "Z": 0.2}
+    bp["PlaceableBlockObjectSpec"].update({"ToolOrder": 16, "CustomPivot": {"HasCustomPivot": True,
+                                           "Coordinates": {"X": 1.0, "Y": 0.5, "Z": 0.0}}})
+    bp["TickableWaterBuildingSpec"]["WaterCoordinates"] = {"X": 1, "Y": 2, "Z": 0}
+    bp["Children"]["#Finished"] = {
+        "TimbermeshSpec": {"Model": "Buildings/Wellbeing/OtterSlide/OtterSlide.Otters.Model"},
+        "CollidersSpec": {"BoxColliders": [
+            {"Center": {"X": 1.0, "Y": 1.15, "Z": 0.5}, "Size": {"X": 2.0, "Y": 2.3, "Z": 1.0}},
+            {"Center": {"X": 1.0, "Y": 0.6, "Z": 1.9}, "Size": {"X": 0.75, "Y": 1.3, "Z": 1.9}}],
+            "SphereColliders": [], "CapsuleColliders": []}}
+    bp["Children"]["#Unfinished"]["Children"] = {
+        "ConstructionBase2x2#nested": {"BlueprintPath": "ConstructionBases/ConstructionBase2x2/ConstructionBase2x2.blueprint"}}
+    bp["ConstructionSiteProgressVisualizerSpec"] = {"ProgressThresholds": []}
+    labeled(bp["LabeledEntitySpec"], "OtterSlide", "Buildings/Wellbeing/OtterSlide/OtterSlideIcon")
+    write(OTTER_SLIDE + ".json", order_specs(bp))
+
+    need = copy.deepcopy(load("Needs/Need.Beaver.SwimmingPool.blueprint"))
+    need["NeedSpec"].update({"Id": "OtterSlide", "DisplayNameLocKey": "Need.OtterSlide.DisplayName", "Order": 32})
+    write("Needs/Need.Beaver.OtterSlide.blueprint.json", need)
 
 
 def order_specs(bp):
@@ -608,9 +769,18 @@ def build_modifiers():
         name = original.split("/")[-1].replace(".blueprint", "")
         add(original, f"Buildings/{name}", {"BuildingSpec": {"ScienceCost": 0}})
 
-    for original, days in CROP_GROWTH_DAYS.items():
+    for original in HIDDEN_FOLKTAILS_BUILDINGS:
         name = original.split("/")[-1].replace(".blueprint", "")
-        add(original, f"NaturalResources/{name}", {"GrowableSpec": {"GrowthTimeInDays": days}})
+        add(original, f"Buildings/{name}", {"PlaceableBlockObjectSpec": {"DevModeTool": True}})
+
+    folktails_crops = [b for b in load("TemplateCollections/TemplateCollection.NaturalResources.Folktails.blueprint")
+                       ["TemplateCollectionSpec"]["Blueprints"] if "/Crops/" in b]
+    for original in folktails_crops:
+        content = {"CleanWaterGrowthSpec": CLEAN_WATER_SPEC}
+        if original in CROP_GROWTH_DAYS:
+            content["GrowableSpec"] = {"GrowthTimeInDays": CROP_GROWTH_DAYS[original]}
+        name = original.split("/")[-1].replace(".blueprint", "")
+        add(original, f"NaturalResources/{name}", content)
     return mods
 
 
@@ -670,7 +840,11 @@ def copy_models():
     shutil.copy(os.path.join(MODEL_DIR, "buildings", "ReedFilter.Otters.Model.timbermesh"), reed)
     written.append("Buildings/Water/ReedFilter/ReedFilter.Otters.Model.timbermesh")
     for folder, name in (("Buildings/Food/FishingDock", "FishingDock.Otters.Model.timbermesh"),
-                         ("Buildings/Wellbeing/SplashPool", "SplashPool.Otters.Model.timbermesh")):
+                         ("Buildings/Wellbeing/SplashPool", "SplashPool.Otters.Model.timbermesh"),
+                         ("Buildings/Water/ArtesianWell", "ArtesianWellExtras.Otters.Model.timbermesh"),
+                         ("Buildings/Water/TubeOutlet", "TubeOutletExtras.Otters.Model.timbermesh"),
+                         ("Buildings/Food/Smokehouse", "SmokehouseExtras.Otters.Model.timbermesh"),
+                         ("Buildings/Wellbeing/OtterSlide", "OtterSlide.Otters.Model.timbermesh")):
         os.makedirs(os.path.join(OUT, folder), exist_ok=True)
         shutil.copy(os.path.join(MODEL_DIR, "buildings", name), os.path.join(OUT, folder, name))
         written.append(f"{folder}/{name}")
@@ -692,6 +866,9 @@ def main():
     build_fishing_dock()
     build_splash_pool()
     build_artesian_well()
+    build_water_tubes()
+    build_smokehouse()
+    build_otter_slide()
     build_localization()
     build_manifest()
     if MODEL_DIR:
