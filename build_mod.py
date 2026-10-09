@@ -320,7 +320,9 @@ def build_faction(wonder_override=None):
     if wonder_override:
         wonder.update(wonder_override)
     write("Factions/Faction.Otters.blueprint.json",
-          {"FactionSpec": f, "StartingFactionSpec": {}, "FactionWonderSpec": wonder})
+          # No StartingFactionSpec: that marks the faction the game's tutorial is written for (it names Folktails
+          # buildings and crashes for any other faction), like Iron Teeth.
+          {"FactionSpec": f, "FactionWonderSpec": wonder})
 
 
 def unique(items):

@@ -46,7 +46,6 @@
     "GameOverMessageLocKey": "Faction.Otters.GameOver.Message",
     "GameOverFlavorLocKey": "Faction.Otters.GameOver.Flavor"
   },
-  "StartingFactionSpec": {},
   "FactionWonderSpec": {
     "WonderCompletionImage": "UI/Images/WonderCompletion/wonder-completion-folktails",
     "WonderLaunchSound": "UI.Buildings.Wonder.EarthRecultivator",
