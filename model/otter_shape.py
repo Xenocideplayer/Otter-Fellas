@@ -163,7 +163,31 @@ def otter_sdf(P, beaver_grid, lo, params):
     c, r = F["foot"]
     for sgn in (-1, 1):
         d = smin(d, ellipsoid(P, (sgn * c[0], c[1], c[2]), r), 0.012)
+
+    # --- stylization: eye bulges so the eyes pop, and fur tufts breaking the silhouette
+    if F.get("eye_bulge"):
+        c, r = F["eye_bulge"]
+        for sgn in (-1, 1):
+            d = smin(d, sphere(P, (sgn * c[0], c[1], c[2]), r), 0.008)
+    for base, tip, rb, mirror in F.get("tufts", []):
+        for sgn in ((-1, 1) if mirror else (1,)):
+            b = (sgn * base[0], base[1], base[2])
+            t = (sgn * tip[0], tip[1], tip[2])
+            # soft, short tufts: pull the tip in and keep it rounded
+            t = tuple(bb + (tt - bb) * 0.62 for bb, tt in zip(b, t))
+            d = smin(d, capsule_chain(P, [b, t], [rb, rb * 0.38]), rb * 0.85)
     return d
+
+
+def stylized_sdf(P, beaver_grid, lo, params):
+    """Head scaled up around its centre (cartoon proportions); everything below the neck unchanged."""
+    hs = params["features"].get("head_scale")
+    if not hs:
+        return otter_sdf(P, beaver_grid, lo, params)
+    c, k, y0, y1 = hs
+    s = 1 + (k - 1) * smoothstep(y0, y1, P[..., 1])
+    Q = np.asarray(c) + (P - np.asarray(c)) / s[..., None]
+    return otter_sdf(Q, beaver_grid, lo, params) * s
 
 
 ADULT_FEATURES = dict(
@@ -177,6 +201,15 @@ ADULT_FEATURES = dict(
     chin=((0, 0.395, 0.16), (0.04, 0.022, 0.035)),
     ear=((0.083, 0.495, 0.035), (0.016, 0.02, 0.012)),
     foot=((0.118, 0.012, -0.03), (0.05, 0.012, 0.07)),
+    head_scale=((0.0, 0.45, 0.09), 1.09, 0.36, 0.42),
+    eye_bulge=((0.039, 0.496, 0.133), 0.019),
+    # (base, tip, base radius, mirrored)
+    tufts=[
+        ((0.084, 0.432, 0.112), (0.128, 0.414, 0.098), 0.018, True),    # cheek ruff
+        ((0.078, 0.408, 0.122), (0.117, 0.386, 0.112), 0.016, True),
+        ((0.088, 0.455, 0.088), (0.124, 0.452, 0.07), 0.015, True),
+        ((0.0, 0.505, 0.07), (0.0, 0.535, 0.035), 0.018, False),        # one soft crown swoosh
+    ],
 )
 
 ADULT_PARAMS = dict(slim=0.09, belly=0.10, head_widen=0.05, erode=0.0015, features=ADULT_FEATURES)
@@ -195,7 +228,7 @@ def build(pos, tris, params=ADULT_PARAMS):
     ys = lo[1] + (np.arange(shape[1]) + 0.5) * VOXEL
     zs = lo[2] + (np.arange(shape[2]) + 0.5) * VOXEL
     P = np.stack(np.meshgrid(xs, ys, zs, indexing="ij"), axis=-1)
-    d = otter_sdf(P, bgrid, lo, params)
+    d = stylized_sdf(P, bgrid, lo, params)
     # flat floor: nothing below y = 0
     d = np.maximum(d, -(P[..., 1] - 0.0005))
     verts, faces, _, _ = measure.marching_cubes(d, 0.0, spacing=(VOXEL,) * 3)
@@ -245,5 +278,11 @@ CHILD_FEATURES = dict(
     chin=_hfeat(A["chin"], True),
     ear=((0.048, 0.305, 0.03), (0.011, 0.013, 0.008)),
     foot=((0.066, 0.008, -0.025), (0.03, 0.008, 0.042)),
+)
+CHILD_FEATURES.update(
+    head_scale=(_hfeat(((0.0, 0.45, 0.09), (1, 1, 1)), True)[0], 1.07, 0.2, 0.245),
+    eye_bulge=(_hfeat((A["eye_bulge"][0], (1, 1, 1)))[0], 0.0125),
+    tufts=[(_hfeat((b, (1, 1, 1)))[0] if b[1] > 0.3 else _body(b), _hfeat((t, (1, 1, 1)))[0] if b[1] > 0.3 else _body(t),
+            r * 0.62, m) for b, t, r, m in A["tufts"]],
 )
 CHILD_PARAMS = dict(slim=0.07, belly=0.08, head_widen=0.04, erode=0.001, features=CHILD_FEATURES)

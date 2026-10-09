@@ -6,3 +6,21 @@ CHILD = dict(scale=0.62, head_y=0.262, muzzle_z=0.088, bib_low=0.13, hand_x=0.11
              ear=(0.048,0.305,0.03), nose=(0.0,0.2645,0.128), whisker=(0.0238,0.2505,0.1135),
              eye=(0.024,0.299,0.087), eye_r=0.0076,
              tail_start_z=-0.105, muzzle_c=(0.0,0.255,0.115), sash=None, clasp_x=0.0)
+
+
+def _scaled(L, c, k):
+    """Move head landmarks to match the enlarged head (scaled by k around c)."""
+    import numpy as np
+    out = dict(L)
+    c = np.asarray(c)
+    for key in ("ear", "nose", "whisker", "eye", "muzzle_c"):
+        out[key] = tuple(c + (np.asarray(L[key]) - c) * k)
+    out["head_y"] = float(c[1] + (L["head_y"] - c[1]) * k)
+    out["muzzle_z"] = float(c[2] + (L["muzzle_z"] - c[2]) * k)
+    out["eye_r"] = L["eye_r"] * k * 1.18   # bigger, more expressive eyes
+    return out
+
+
+import otter_shape as _os
+ADULT = _scaled(ADULT, *_os.ADULT_FEATURES["head_scale"][:2])
+CHILD = _scaled(CHILD, *_os.CHILD_FEATURES["head_scale"][:2])

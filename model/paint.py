@@ -246,22 +246,33 @@ def paint(P, N, M, A, L, back, belly, R, detail):
             w = smoothstep(0.003 * s, 0.0015 * s, dd) * smoothstep(0.2, 0.5, nz)
             col = col * (1 - 0.6 * w[..., None])
 
-    # eyes: dark glossy with a catch-light and a darker brow above
+    # eyes, cartoon style: dark brown iris with a lighter ring, black pupil, a cream rim along the lower edge,
+    # a heavy upper lid line, two catch-lights and a furry brow tuft
     for sgn in (-1, 1):
         c = np.array(L["eye"]) * [sgn, 1, 1]
-        front_face = smoothstep(0.0, 0.35, nz) * (np.abs(z - c[2]) < 0.05 * s)
-        d2 = np.linalg.norm((P - c)[..., :2] / [1.0, 1.15], axis=-1)
-        brow_c = c + [sgn * 0.002 * s, 0.006 * s, 0]
-        bd = np.linalg.norm((P - brow_c)[..., :2] / [1.0, 0.7], axis=-1)
-        brow = smoothstep(L["eye_r"] * 2.0, L["eye_r"] * 1.4, bd) * (P[..., 1] > c[1] + 0.3 * L["eye_r"]) * front_face
-        col = col * (1 - 0.35 * brow[..., None])
-        eye = smoothstep(L["eye_r"] * 1.05, L["eye_r"] * 0.85, d2) * front_face
-        col = lerp(col, np.array([0.05, 0.035, 0.03]), eye)
-        iris = smoothstep(L["eye_r"] * 0.75, L["eye_r"] * 0.55, d2) * front_face
-        col = lerp(col, np.array([0.16, 0.09, 0.05]), iris * 0.6)
-        glint_c = c + [sgn * 0.004 * s, 0.005 * s, 0]
-        glint = smoothstep(L["eye_r"] * 0.38, L["eye_r"] * 0.22, np.linalg.norm((P - glint_c)[..., :2], axis=-1)) * front_face
-        col = lerp(col, np.array([0.97, 0.97, 0.95]), glint)
+        er = L["eye_r"]
+        front_face = smoothstep(-0.1, 0.3, nz) * (np.abs(z - c[2]) < 0.06 * s)
+        rel2 = (P - c)[..., :2] / [1.0, 1.12]
+        d2 = np.linalg.norm(rel2, axis=-1)
+        # brow tuft: a darker swoosh above and slightly outward
+        bc = c + [sgn * 0.004 * s, er * 1.35, 0]
+        bd = np.linalg.norm((P - bc)[..., :2] / [1.25, 0.55], axis=-1)
+        brow = smoothstep(er * 1.25, er * 0.7, bd) * front_face
+        col = col * (1 - 0.45 * brow[..., None])
+        rim = smoothstep(er * 1.22, er * 1.05, d2) * (rel2[..., 1] < -0.15 * er) * front_face
+        col = lerp(col, np.array([0.93, 0.88, 0.78]), rim * 0.85)
+        eye = smoothstep(er * 1.04, er * 0.9, d2) * front_face
+        col = lerp(col, np.array([0.03, 0.02, 0.02]), eye)
+        iris = smoothstep(er * 0.86, er * 0.7, d2) * front_face
+        col = lerp(col, np.array([0.30, 0.17, 0.08]), iris)
+        pupil = smoothstep(er * 0.52, er * 0.4, d2) * front_face
+        col = lerp(col, np.array([0.02, 0.015, 0.01]), pupil)
+        lid = smoothstep(er * 0.16, er * 0.0, np.abs(d2 - er * 1.0)) * (rel2[..., 1] > 0.1 * er) * front_face
+        col = lerp(col, np.array([0.05, 0.03, 0.02]), lid)
+        for (gx, gy, gr) in ((-0.32, 0.34, 0.3), (0.3, -0.3, 0.13)):
+            gc = c + [sgn * gx * er, gy * er, 0]
+            glint = smoothstep(er * gr, er * gr * 0.55, np.linalg.norm((P - gc)[..., :2], axis=-1)) * front_face
+            col = lerp(col, np.array([0.98, 0.98, 0.96]), glint)
 
     # fur detail: the game's painted strands where they fit, procedural strokes elsewhere
     proc = R["procedural"]
@@ -276,9 +287,14 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     col = lerp(col, shell, R["shell"])
     col = lerp(col, np.array([0.45, 0.3, 0.25]), R["shell_rim"] * 0.8)
 
-    col = col * (0.72 + 0.28 * A[..., None])
-    # painted top light: heads and shoulders lighter, undersides darker
-    col = col * (0.86 + 0.2 * np.clip(ny, -1, 1)[..., None])
+    # painted fur clumps: soft vertical streaks with lighter tips, like hand-painted strokes
+    clump = np.zeros(M.shape); clump[M] = fbm(flat * [1.0, 0.28, 1.0], 55.0, 21, 3)
+    tips = smoothstep(0.55, 0.75, clump) * (1 - R["sash"]) * (1 - R["shell"])
+    col = col * (0.82 + 0.36 * clump[..., None])
+    col = col + 0.07 * tips[..., None] * (1 - cream_w[..., None] * 0.5)
+    col = col * (0.62 + 0.38 * A[..., None])
+    # painted light: tops and faces lighter, undersides and backs darker
+    col = col * (0.8 + 0.3 * np.clip(ny, -1, 1)[..., None] + 0.06 * np.clip(nz, 0, 1)[..., None])
     return np.clip(col, 0, 1), dict(nose=nose_w, eyes=None)
 
 

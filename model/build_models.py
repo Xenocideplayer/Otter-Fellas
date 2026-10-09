@@ -42,8 +42,8 @@ import beaver_data as bd
 import bake_detail as bk
 
 CONFIG = [  # which, beaver, target tris, texture size, binding sigma, beaver normal, beaver AO, beaver albedo
-    ("adult", "BeaverAdult", 2300, 2048, 0.03, "Adult_Normal_2K.png", "Adult_AO_2K.png", "BeaverAdult1.Folktails.png"),
-    ("child", "BeaverChild", 1900, 1024, 0.02, "Chilkd_Normal_1K.png", "Child_AO_1K.png", "BeaverChild1.Folktails.png"),
+    ("adult", "BeaverAdult", 2800, 2048, 0.03, "Adult_Normal_2K.png", "Adult_AO_2K.png", "BeaverAdult1.Folktails.png"),
+    ("child", "BeaverChild", 2200, 1024, 0.02, "Chilkd_Normal_1K.png", "Child_AO_1K.png", "BeaverChild1.Folktails.png"),
 ]
 for which, beaver, tris, size, sigma, bn, bao, balb in CONFIG:
     raw = f"{TMP}/otter_{which}_raw.npz"
