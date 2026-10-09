@@ -1,0 +1,7 @@
+bin/
+obj/
+build/
+*.timbermesh
+__pycache__/
+*.blend1
+model_out/

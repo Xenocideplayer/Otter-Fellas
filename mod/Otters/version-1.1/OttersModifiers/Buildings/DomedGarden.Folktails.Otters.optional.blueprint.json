@@ -1,0 +1,11 @@
+{
+  "AttractionSpec": {
+    "Effects#append": [
+      {
+        "NeedId": "OtterMoisture",
+        "PointsPerHour": 0.6,
+        "SatisfyToMaxValue": false
+      }
+    ]
+  }
+}

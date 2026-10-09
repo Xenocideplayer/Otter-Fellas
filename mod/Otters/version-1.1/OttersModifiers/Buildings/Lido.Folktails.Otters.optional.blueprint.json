@@ -1,0 +1,14 @@
+{
+  "BuildingSpec": {
+    "ScienceCost": 150
+  },
+  "AttractionSpec": {
+    "Effects#append": [
+      {
+        "NeedId": "OtterMoisture",
+        "PointsPerHour": 0.8,
+        "SatisfyToMaxValue": false
+      }
+    ]
+  }
+}
