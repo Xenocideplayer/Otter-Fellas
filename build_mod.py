@@ -29,7 +29,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "2.0.0"
+MOD_VERSION = "2.0.1"
 MOD_ID = "Otters.WaterFaction"
 FACTION_ID = "Otters"
 
