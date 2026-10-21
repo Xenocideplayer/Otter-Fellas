@@ -114,20 +114,21 @@ def dilate(img, mask, steps=12):
     return img
 
 
-# palette: (back, belly) per variant; warm and saturated like the game's painted beavers
-ADULT_VARIANTS = [   # red-brown river otters, like the reference painting
-    ((0.52, 0.24, 0.12), (0.66, 0.36, 0.20)),
-    ((0.45, 0.21, 0.11), (0.60, 0.33, 0.19)),
-    ((0.58, 0.29, 0.14), (0.72, 0.42, 0.24)),
-    ((0.42, 0.22, 0.13), (0.57, 0.33, 0.21)),
+# palette: (back, belly) per variant. Muted browns in the same range as the game's own beaver textures (beaver back
+# ~(0.43, 0.24, 0.15), belly ~(0.47, 0.28, 0.18), head ~(0.51, 0.34, 0.22)): river otters a little darker and cooler.
+ADULT_VARIANTS = [
+    ((0.38, 0.23, 0.15), (0.50, 0.34, 0.23)),
+    ((0.32, 0.20, 0.13), (0.46, 0.31, 0.21)),
+    ((0.43, 0.27, 0.17), (0.55, 0.38, 0.26)),
+    ((0.34, 0.23, 0.16), (0.48, 0.35, 0.25)),
 ]
 CHILD_VARIANTS = [
-    ((0.68, 0.38, 0.20), (0.82, 0.54, 0.33)),
-    ((0.62, 0.33, 0.18), (0.78, 0.49, 0.30)),
-    ((0.72, 0.42, 0.22), (0.86, 0.58, 0.36)),
+    ((0.46, 0.30, 0.19), (0.58, 0.42, 0.30)),
+    ((0.41, 0.27, 0.17), (0.55, 0.40, 0.28)),
+    ((0.50, 0.33, 0.21), (0.62, 0.46, 0.33)),
 ]
 SICK_VARIANT = ((0.30, 0.31, 0.2), (0.45, 0.46, 0.32))
-CREAM = np.array([0.95, 0.87, 0.72])
+CREAM = np.array([0.70, 0.58, 0.45])   # a pale tan throat, soft like the beavers' lighter muzzles
 DARK = np.array([0.27, 0.14, 0.11])
 STRAW_A = np.array([0.83, 0.70, 0.38])
 STRAW_B = np.array([0.62, 0.50, 0.25])
@@ -232,7 +233,7 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     n2 = np.zeros(M.shape); n2[M] = fbm(flat * [1.0, 0.35, 1.0], 140.0, 11, 3)  # fur strokes, stretched along y
     s = L["scale"]
 
-    col = back[None, None] * (0.86 + 0.28 * n1[..., None])
+    col = back[None, None] * (0.94 + 0.12 * n1[..., None])
     # darker along the spine, like a painted dorsal shadow
     spine = smoothstep(-0.2, -0.7, nz) * smoothstep(0.06 * s, 0.0, ax) * smoothstep(0.05 * s, 0.15 * s, y)
     col = col * (1 - 0.18 * spine[..., None])
@@ -244,26 +245,25 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     # cream throat/chest bib + lower face, with a soft darker seam where the colours meet
     hy = L["head_y"]
     bib = smoothstep(0.15, 0.55, nz) * smoothstep(L["bib_low"], L["bib_low"] + 0.05 * s, y) * (1 - smoothstep(hy + 0.035 * s, hy + 0.055 * s, y))
-    bib *= 1 - smoothstep(0.055 * s, 0.085 * s, ax - 0.25 * np.clip(y - L["bib_low"], 0, None))
-    muzzle = smoothstep(L["muzzle_z"] - 0.04 * s, L["muzzle_z"], z) * (1 - smoothstep(hy + 0.04 * s, hy + 0.06 * s, y)) * smoothstep(hy - 0.06 * s, hy - 0.03 * s, y)
+    bib *= 1 - smoothstep(0.045 * s, 0.1 * s, ax - 0.25 * np.clip(y - L["bib_low"], 0, None))   # soft edge
+    eye_y = L["eye"][1]          # pale lips and chin only: brown face up from just under the eyes, like a river otter
+    muzzle = smoothstep(L["muzzle_z"] - 0.04 * s, L["muzzle_z"], z) * (1 - smoothstep(eye_y - 0.04 * s, eye_y - 0.02 * s, y)) * smoothstep(hy - 0.06 * s, hy - 0.03 * s, y)
     cream_w = np.clip(np.maximum(bib, muzzle), 0, 1)
-    col = lerp(col, CREAM * (0.92 + 0.12 * n1[..., None]), cream_w * (0.9 + 0.1 * n1))
-    seam = 4 * cream_w * (1 - cream_w)
-    col = col * (1 - 0.12 * seam[..., None])
+    col = lerp(col, CREAM * (0.97 + 0.06 * n1[..., None]), cream_w * 0.85)
 
     # paws, feet and tail tip a shade darker
     paws = np.maximum(smoothstep(0.045 * s, 0.02 * s, y), smoothstep(L["hand_x"] - 0.03 * s, L["hand_x"], ax))
     tailtip = smoothstep(L["tail_tip_z"] + 0.12 * s, L["tail_tip_z"] + 0.02 * s, z) * (1 - smoothstep(0.12 * s, 0.2 * s, y))
-    darker = np.clip(np.maximum(paws * 0.35, tailtip * 0.4), 0, 1)
+    darker = np.clip(np.maximum(paws * 0.42, tailtip * 0.3), 0, 1)     # dark paws, as the beavers have
     col = col * (1 - darker[..., None])
 
     # ears: darker rim, warm pink inside (front-facing side)
     for sgn in (-1, 1):
         e = np.array(L["ear"]) * [sgn, 1, 1]
         de = np.linalg.norm(P - e, axis=-1)
-        col = col * (1 - 0.25 * smoothstep(0.034 * s, 0.022 * s, de))[..., None]
+        col = col * (1 - 0.15 * smoothstep(0.034 * s, 0.022 * s, de))[..., None]
         inner = smoothstep(0.02 * s, 0.012 * s, de) * smoothstep(0.0, 0.4, nz)
-        col = lerp(col, np.array([0.74, 0.46, 0.40]), inner * 0.85)
+        col = lerp(col, np.array([0.52, 0.34, 0.28]), inner * 0.6)
 
     # nose: dark leathery rhinarium, wider at the top (rounded triangle), with a highlight and a mouth line below
     nc = np.array(L["nose"])
@@ -273,14 +273,14 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     nose_w = smoothstep(1.25, 0.85, inside) * smoothstep(-0.1, 0.3, nz) * (rel[..., 2] > -0.02 * s)
     col = lerp(col, DARK, nose_w)
     hl = smoothstep(0.006 * s, 0.0015 * s, np.linalg.norm(P - (nc + [0.006 * s, 0.006 * s, 0.01 * s]), axis=-1))
-    col = col + 0.4 * hl[..., None]
+    col = col + 0.2 * hl[..., None]
     # philtrum + little smile (soft lines so they don't stair-step)
     mx = np.abs(rel[..., 0])
     ph = smoothstep(0.0024 * s, 0.0009 * s, mx) * smoothstep(-0.026 * s, -0.022 * s, rel[..., 1]) * smoothstep(-0.009 * s, -0.012 * s, rel[..., 1])
     curve = -0.031 * s + 40.0 * (mx - 0.009 * s) ** 2 / s          # a soft "ω" smile
     smile = smoothstep(0.0024 * s, 0.0009 * s, np.abs(rel[..., 1] - curve)) * smoothstep(0.021 * s, 0.018 * s, mx)
     mouth = np.maximum(ph, smile) * smoothstep(0.15, 0.35, nz) * (np.abs(rel[..., 2]) < 0.03 * s)
-    col = col * (1 - 0.55 * mouth[..., None])
+    col = col * (1 - 0.14 * mouth[..., None])            # only a hint of a mouth: the beavers have none painted
 
     # whiskers: thin light strokes fanning out across the cheeks
     for sgn in (-1, 1):
@@ -291,7 +291,7 @@ def paint(P, N, M, A, L, back, belly, R, detail):
             t = np.clip(q @ dvec, 0, 0.075 * s)
             dist = np.linalg.norm(q - t[..., None] * dvec, axis=-1)
             wsk = smoothstep(0.0016 * s, 0.0006 * s, dist) * (t > 0.004 * s) * smoothstep(0.0, 0.25, nz)
-            col = lerp(col, np.array([0.97, 0.95, 0.9]), wsk * 0.85)
+            col = lerp(col, np.array([0.97, 0.95, 0.9]), wsk * 0.0)   # no painted whiskers (beavers have none)
 
     # whisker dots on the pads
     for sgn in (-1, 1):
@@ -299,13 +299,13 @@ def paint(P, N, M, A, L, back, belly, R, detail):
             c = np.array(L["whisker"]) + [sgn * dx * s, dy * s, 0]
             dd = np.linalg.norm((P - c)[..., :2], axis=-1)
             w = smoothstep(0.003 * s, 0.0015 * s, dd) * smoothstep(0.2, 0.5, nz)
-            col = col * (1 - 0.6 * w[..., None])
+            col = col * (1 - 0.1 * w[..., None])
 
     # eyes, cartoon style: dark brown iris with a lighter ring, black pupil, a cream rim along the lower edge,
     # a heavy upper lid line, two catch-lights and a furry brow tuft
     for sgn in (-1, 1):
         c = np.array(L["eye"]) * [sgn, 1, 1]
-        er = L["eye_r"]
+        er = L["eye_r"] * 0.85   # smaller painted eyes, closer to the beavers' little dark eyes
         front_face = smoothstep(-0.1, 0.3, nz) * (np.abs(z - c[2]) < 0.06 * s)
         rel2 = (P - c)[..., :2] / [1.0, 1.12]
         d2 = np.linalg.norm(rel2, axis=-1)
@@ -313,26 +313,26 @@ def paint(P, N, M, A, L, back, belly, R, detail):
         bc = c + [sgn * 0.004 * s, er * 1.35, 0]
         bd = np.linalg.norm((P - bc)[..., :2] / [1.25, 0.55], axis=-1)
         brow = smoothstep(er * 1.25, er * 0.7, bd) * front_face
-        col = col * (1 - 0.45 * brow[..., None])
+        col = col * (1 - 0.0 * brow[..., None])                       # no brow tuft
         rim = smoothstep(er * 1.22, er * 1.05, d2) * (rel2[..., 1] < -0.15 * er) * front_face
         col = lerp(col, np.array([0.93, 0.88, 0.78]), rim * 0.0)
         eye = smoothstep(er * 1.04, er * 0.9, d2) * front_face
         col = lerp(col, np.array([0.03, 0.02, 0.02]), eye)
         iris = smoothstep(er * 0.86, er * 0.7, d2) * front_face
-        col = lerp(col, np.array([0.30, 0.17, 0.08]), iris)
+        col = lerp(col, np.array([0.12, 0.08, 0.05]), iris)          # simple dark eyes, like the beavers'
         pupil = smoothstep(er * 0.52, er * 0.4, d2) * front_face
         col = lerp(col, np.array([0.02, 0.015, 0.01]), pupil)
         lid = smoothstep(er * 0.16, er * 0.0, np.abs(d2 - er * 1.0)) * (rel2[..., 1] > 0.1 * er) * front_face
-        col = lerp(col, np.array([0.05, 0.03, 0.02]), lid)
-        for (gx, gy, gr) in ((-0.32, 0.34, 0.3), (0.3, -0.3, 0.13)):
+        col = lerp(col, np.array([0.05, 0.03, 0.02]), lid * 0.0)
+        for (gx, gy, gr) in ((-0.3, 0.32, 0.24),):
             gc = c + [sgn * gx * er, gy * er, 0]
             glint = smoothstep(er * gr, er * gr * 0.55, np.linalg.norm((P - gc)[..., :2], axis=-1)) * front_face
             col = lerp(col, np.array([0.98, 0.98, 0.96]), glint)
 
     # fur detail: the game's painted strands where they fit, procedural strokes elsewhere
     proc = R["procedural"]
-    det = detail * (1 - proc) + (0.86 + 0.28 * n2) * proc
-    col = col * det[..., None] ** 1.35
+    det = detail * (1 - proc) + (0.95 + 0.1 * n2) * proc
+    col = col * det[..., None] ** 0.6
 
     # outfit (adults): patchwork apron, belt, leather strap with buckle, gold shell badge, wrist cuffs
     if L.get("sash"):
@@ -359,11 +359,11 @@ def paint(P, N, M, A, L, back, belly, R, detail):
     # painted fur clumps: soft vertical streaks with lighter tips, like hand-painted strokes
     clump = np.zeros(M.shape); clump[M] = fbm(flat * [1.0, 0.28, 1.0], 55.0, 21, 3)
     tips = smoothstep(0.55, 0.75, clump) * (1 - R["sash"]) * (1 - R["shell"])
-    col = col * (0.82 + 0.36 * clump[..., None])
-    col = col + 0.07 * tips[..., None] * (1 - cream_w[..., None] * 0.5)
-    col = col * (0.62 + 0.38 * A[..., None])
+    col = col * (0.95 + 0.1 * clump[..., None])
+    col = col + 0.015 * tips[..., None] * (1 - cream_w[..., None] * 0.5)
+    col = col * (0.72 + 0.28 * A[..., None])
     # painted light: tops and faces lighter, undersides and backs darker
-    col = col * (0.8 + 0.3 * np.clip(ny, -1, 1)[..., None] + 0.06 * np.clip(nz, 0, 1)[..., None])
+    col = col * (0.9 + 0.16 * np.clip(ny, -1, 1)[..., None] + 0.04 * np.clip(nz, 0, 1)[..., None])
     return np.clip(col, 0, 1), dict(nose=nose_w, eyes=None)
 
 
@@ -373,9 +373,9 @@ def gloss_map(P, N, L, R):
     for sgn in (-1, 1):
         c = np.array(L["eye"]) * [sgn, 1, 1]
         d2 = np.linalg.norm((P - c)[..., :2] / [1.0, 1.15], axis=-1)
-        g = np.maximum(g, 0.85 * smoothstep(L["eye_r"] * 1.05, L["eye_r"] * 0.85, d2) * smoothstep(0.0, 0.35, N[..., 2]))
+        g = np.maximum(g, 0.5 * smoothstep(L["eye_r"] * 0.9, L["eye_r"] * 0.72, d2) * smoothstep(0.0, 0.35, N[..., 2]))
     nd = np.linalg.norm(P - np.array(L["nose"]), axis=-1)
-    g = np.maximum(g, 0.55 * smoothstep(0.02 * s, 0.012 * s, nd))
+    g = np.maximum(g, 0.4 * smoothstep(0.02 * s, 0.012 * s, nd))
     g = np.maximum(g, 0.7 * np.maximum(R["shell_rim"], np.maximum(R["buckle"], R["rivet"])))
     return g
 
