@@ -8,7 +8,7 @@
         "Amount": 20
       }
     ],
-    "ScienceCost": 0,
+    "ScienceCost": 150,
     "PlaceFinished": false,
     "FinishableWithBeaversOnSite": false,
     "DrawRangeBoundsOnIt": false
@@ -37,7 +37,7 @@
       },
       {
         "NeedId": "OtterMoisture",
-        "PointsPerHour": 0.5,
+        "PointsPerHour": 0.15,
         "SatisfyToMaxValue": false
       }
     ]
@@ -332,6 +332,7 @@
     "MinimumWaterTiles": 3,
     "WarningLocKey": "Building.RiverHolt.NeedsWater"
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

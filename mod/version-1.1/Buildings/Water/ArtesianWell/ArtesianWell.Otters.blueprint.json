@@ -16,7 +16,7 @@
         "Amount": 10
       }
     ],
-    "ScienceCost": 600,
+    "ScienceCost": 900,
     "PlaceFinished": false,
     "FinishableWithBeaversOnSite": false,
     "DrawRangeBoundsOnIt": false
@@ -412,9 +412,9 @@
     "OverflowAllowed": false
   },
   "ArtesianWellSpec": {
-    "WaterPerHour": 12.0,
+    "WaterPerHour": 6.0,
     "DroughtSpeed": 0.5,
-    "BreakdownChancePerHour": 0.02,
+    "BreakdownChancePerHour": 0.03,
     "TubePorts": [
       {
         "X": -1,

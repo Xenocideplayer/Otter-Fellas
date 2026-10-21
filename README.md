@@ -10,23 +10,27 @@ badwater clean — but they're slow on land and work slower once their fur dries
 
 | | |
 |---|---|
-| **Water experts** | Levee, Floodgate, Aquatic Farmhouse and Shower need no science; bigger floodgates, valves, the Large Water Pump and the Lido are cheaper. |
-| **Aquatic farming** | Cattail and Spadderdock grow ~40% faster. Two new aquatic crops, **Wild Rice** and **Water Taro**, cooked at the Grill into new foods. |
+| **Water experts** | Levee, Floodgate, Aquatic Farmhouse and Shower need no science; bigger floodgates, valves, the Large Water Pump, the Lido and Terrain Blocks are cheaper. |
+| **Aquatic farming** | Cattail and Spadderdock grow ~20% faster. Two new aquatic crops, **Wild Rice** and **Water Taro**, cooked at the Grill into new foods. |
 | **Mangroves** | Otters can plant Mangrove trees in water for logs and mangrove fruit. |
-| **River Holts** | Otter dens that must stand in water (3 and 6 residents); residents' fur stays wet while they sleep. |
-| **Dig Site** | From the start, free, no explosives: builders slowly dig out a block by paw and leave 1 dirt behind. Terrain Blocks (4 dirt) need no science. |
-| **Reed Filter** | A Folktails water pump with reeds at its feet that turns badwater into clean water where it stands. |
+| **River Holts** | Otter dens that must stand in water (3 and 6 residents); residents' fur dries out more slowly while they sleep. |
+| **Dig Site** | From the start, free, no explosives: builders slowly dig out a block by paw and leave 1 dirt behind. Terrain Blocks (4 dirt) cost half the science. |
+| **Reed Filter** | A pump station that drinks through a tied bundle of reeds (reaching down into the river like the pump's pipe) and turns badwater into clean water where it stands. |
 | **On land / in water** | Walk ~15% slower than beavers, swim much faster. |
-| **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 15% slower. Swimming, the Shower, the Lido, the Domed Garden and River Holts refill it. |
+| **Moisture** | A new need. When it runs dry the otter gets *Dry fur* and works 20% slower. Swimming, the Shower, the Lido, the Domed Garden and River Holts refill it. |
 | **Rinse Pod** | 550 science. Uses clean water to wash badwater contamination out of otters (no Herbalist/Antidote). |
 | **Fishing Dock** | From the start: a fisher brings up fish from the water under the line; badwater spoils the catch. Fish are eaten raw or grilled at the Grill. |
-| **Splash Pool** | From the start: a log-framed swimming hole set into the river. Fun for everyone, a big soak for otter fur. |
-| **Artesian Well** | 600 science, 750 hp and an operator: pours clean water out of nowhere, even in badtides and (at half speed) droughts, over the edge behind it. Breaks down now and then and has to be repaired. |
+| **Splash Pool** | 60 science: a log-framed swimming hole set into the river. Fun for everyone, a big soak for otter fur. |
+| **Artesian Well** | 900 science, 750 hp and an operator: pours clean water out of nowhere, even in badtides and (at half speed) droughts, over the edge behind it. Breaks down now and then and has to be repaired. |
 | **Water Tubes** | The game's tube pieces carrying water: plug them into the well's walls and end them at a **Tube Outlet** to put the water anywhere. |
 | **Smokehouse** | Fish into Smoked Fish, the otters' best food. |
 | **Otter Slide** | A slide tower with a chute into the river: fun, and a big soak. |
 | **Tube Valve** | Shuts a water tube line when paused or switched off by automation. |
 | **Clam Bed** | Otters rake clams from clean, shallow riverbeds; Grilled Clams at the Grill. |
+| **Driftwood Catch** | A log boom over moving water that lands driftwood as logs: no trees needed, faster in a stronger current, nothing in still water. |
+| **Basking Deck** | A sun deck with reed mats and a warm stone: a new wellbeing need for four otters at a time. |
+| **Lumberjacks with hatchets** | Otter lumberjacks chop trees with a little hatchet and an overhead swing instead of gnawing. |
+| **Waterproof** | Fishing Dock, Reed Filter, Clam Bed, Driftwood Catch, River Holts, Splash Pool, Otter Slide and Basking Deck keep working when the water rises over their doors. |
 | **Slipway** | A mud-and-log ramp into the river so otters can swim instead of walking around. |
 | **The Wellspring** | The otters' own wonder. |
 | **Clean water** | Crops planted by otters grow 1.5x faster while their water is 100% clean. |

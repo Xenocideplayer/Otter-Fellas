@@ -67,4 +67,6 @@ for which, beaver, tris, size, sigma, bn, bao, balb in CONFIG:
                         hires=(np.asarray(hm.vertices), np.asarray(hm.vertex_normals)))
     if not textures_only:
         run("export_otter.py", find(f"{beaver}.timbermesh"), f"{out}/otter_{which}.npz", f"{out}/{name}.Model.timbermesh", str(sigma))
+# the adult's hatchet and chop (also paints the hatchet's patches into the adult textures)
+run("add_axe.py", os.path.abspath(out), *([] if textures_only else ["--fresh"]))
 print("models done")

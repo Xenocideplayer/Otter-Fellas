@@ -265,6 +265,7 @@
     "StatusLocKey": "Status.ClamBed.NoWater",
     "StatusShortLocKey": "Status.ClamBed.NoWater.Short"
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

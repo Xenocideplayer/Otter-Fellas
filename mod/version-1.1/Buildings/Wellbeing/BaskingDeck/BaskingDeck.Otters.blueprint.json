@@ -1,0 +1,221 @@
+{
+  "BuildingSpec": {
+    "SelectionSoundName": "ContemplationSpot",
+    "LoopingSoundName": "",
+    "BuildingCost": [
+      {
+        "Id": "Log",
+        "Amount": 20
+      },
+      {
+        "Id": "Plank",
+        "Amount": 6
+      }
+    ],
+    "ScienceCost": 60,
+    "PlaceFinished": false,
+    "FinishableWithBeaversOnSite": false,
+    "DrawRangeBoundsOnIt": true
+  },
+  "BuildingModelSpec": {
+    "FinishedModelName": "#Finished",
+    "UnfinishedModelName": "#Unfinished",
+    "FinishedUncoveredModelName": "",
+    "UndergroundModelName": "",
+    "ConstructionModeModel": "Finished",
+    "UndergroundModelDepth": 0
+  },
+  "AttractionSpec": {
+    "Effects": [
+      {
+        "NeedId": "Basking",
+        "PointsPerHour": 0.6,
+        "SatisfyToMaxValue": false
+      }
+    ]
+  },
+  "FixedSlotManagerSpec": {},
+  "TransformSlotInitializerSpec": {
+    "Slots": [
+      {
+        "SlotKeyword": "Bask",
+        "Animation": "Sitting",
+        "Inanimate": false,
+        "RandomizeYRotation": false,
+        "WaterSlot": false
+      },
+      {
+        "SlotKeyword": "Sun",
+        "Animation": "Sleeping",
+        "Inanimate": false,
+        "RandomizeYRotation": false,
+        "WaterSlot": false
+      }
+    ]
+  },
+  "EnterableSpec": {
+    "OperatingState": "Finished",
+    "LimitedCapacityFinished": true,
+    "CapacityFinished": 4,
+    "LimitedCapacityUnfinished": false,
+    "CapacityUnfinished": 0
+  },
+  "TemplateSpec": {
+    "TemplateName": "BaskingDeck.Otters",
+    "BackwardCompatibleTemplateNames": [],
+    "RequiredFeatureToggle": "",
+    "DisablingFeatureToggle": ""
+  },
+  "BlockObjectSpec": {
+    "Size": {
+      "X": 2,
+      "Y": 2,
+      "Z": 1
+    },
+    "Blocks": [
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      }
+    ],
+    "Entrance": {
+      "HasEntrance": true,
+      "Coordinates": {
+        "X": 0,
+        "Y": -1,
+        "Z": 0
+      }
+    },
+    "BaseZ": 0,
+    "Overridable": false,
+    "Flippable": false
+  },
+  "BuildingAccessibleSpec": {
+    "LocalAccess": {
+      "X": 0.5,
+      "Y": 0.16,
+      "Z": 0.2
+    },
+    "ForceOneFinalAccess": false
+  },
+  "PlaceableBlockObjectSpec": {
+    "ToolGroupId": "Wellbeing",
+    "ToolOrder": 71,
+    "ToolShape": "Square",
+    "Layout": "Single",
+    "CustomPivot": {
+      "HasCustomPivot": false,
+      "Coordinates": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      }
+    },
+    "CanBeAttachedToTerrainSide": false,
+    "DevModeTool": false
+  },
+  "LabeledEntitySpec": {
+    "DisplayNameLocKey": "Building.BaskingDeck.DisplayName",
+    "DescriptionLocKey": "Building.BaskingDeck.Description",
+    "FlavorDescriptionLocKey": "Building.BaskingDeck.FlavorDescription",
+    "Icon": "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon"
+  },
+  "EnterableIlluminatorSpec": {},
+  "ConstructionSiteProgressVisualizerSpec": {
+    "ProgressThresholds": [
+      0.0
+    ]
+  },
+  "FloodableObjectBlockerSpec": {},
+  "Children": {
+    "#Finished": {
+      "TimbermeshSpec": {
+        "Model": "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.Model"
+      },
+      "CollidersSpec": {
+        "BoxColliders": [
+          {
+            "Center": {
+              "X": 1.0,
+              "Y": 0.08,
+              "Z": 1.0
+            },
+            "Size": {
+              "X": 2.0,
+              "Y": 0.16,
+              "Z": 2.0
+            }
+          },
+          {
+            "Center": {
+              "X": 1.0,
+              "Y": 0.2,
+              "Z": 1.5
+            },
+            "Size": {
+              "X": 1.2,
+              "Y": 0.12,
+              "Z": 0.7
+            }
+          }
+        ],
+        "SphereColliders": [],
+        "CapsuleColliders": []
+      }
+    },
+    "#Unfinished": {
+      "Children": {
+        "ConstructionBase2x2#nested": {
+          "BlueprintPath": "ConstructionBases/ConstructionBase2x2/ConstructionBase2x2.blueprint"
+        },
+        "ConstructionStage0": {
+          "TimbermeshSpec": {
+            "Model": "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.ConstructionStage0.Model"
+          },
+          "CollidersSpec": {
+            "BoxColliders": [
+              {
+                "Center": {
+                  "X": 1.0,
+                  "Y": 0.08,
+                  "Z": 1.0
+                },
+                "Size": {
+                  "X": 2.0,
+                  "Y": 0.16,
+                  "Z": 2.0
+                }
+              }
+            ],
+            "SphereColliders": [],
+            "CapsuleColliders": []
+          }
+        }
+      }
+    }
+  }
+}

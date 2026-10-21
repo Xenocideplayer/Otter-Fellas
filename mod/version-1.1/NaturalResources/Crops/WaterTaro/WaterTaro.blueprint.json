@@ -37,7 +37,7 @@
   },
   "CropSpec": {},
   "GrowableSpec": {
-    "GrowthTimeInDays": 9.0
+    "GrowthTimeInDays": 10.0
   },
   "BasicSelectionSoundSpec": {
     "SoundName": "Bush",

@@ -1,0 +1,385 @@
+{
+  "BuildingSpec": {
+    "SelectionSoundName": "WaterPump",
+    "LoopingSoundName": "",
+    "BuildingCost": [
+      {
+        "Id": "Log",
+        "Amount": 30
+      },
+      {
+        "Id": "Plank",
+        "Amount": 10
+      }
+    ],
+    "ScienceCost": 120,
+    "PlaceFinished": false,
+    "FinishableWithBeaversOnSite": false,
+    "DrawRangeBoundsOnIt": false
+  },
+  "BuildingModelSpec": {
+    "FinishedModelName": "#Finished",
+    "UnfinishedModelName": "#Unfinished",
+    "FinishedUncoveredModelName": "",
+    "UndergroundModelName": "",
+    "ConstructionModeModel": "Finished",
+    "UndergroundModelDepth": 0
+  },
+  "WorkplaceSpec": {
+    "MaxWorkers": 1,
+    "DefaultWorkers": 1,
+    "DefaultWorkerType": "Beaver",
+    "DisallowOtherWorkerTypes": false,
+    "WorkerTypeUnlockCosts": []
+  },
+  "ManufactorySpec": {
+    "ProductionRecipeIds": [
+      "OtterDriftwood"
+    ]
+  },
+  "WorkshopSpec": {},
+  "EnterableSpec": {
+    "OperatingState": "Finished",
+    "LimitedCapacityFinished": false,
+    "CapacityFinished": 0,
+    "LimitedCapacityUnfinished": false,
+    "CapacityUnfinished": 0
+  },
+  "TemplateSpec": {
+    "TemplateName": "DriftwoodCatch.Otters",
+    "BackwardCompatibleTemplateNames": [],
+    "RequiredFeatureToggle": "",
+    "DisablingFeatureToggle": ""
+  },
+  "WorkplaceSlotManagerSpec": {},
+  "TransformSlotInitializerSpec": {
+    "Slots": [
+      {
+        "SlotKeyword": "Entrance",
+        "Animation": "Working",
+        "Inanimate": false,
+        "RandomizeYRotation": false,
+        "WaterSlot": false
+      }
+    ]
+  },
+  "BlockObjectSpec": {
+    "Size": {
+      "X": 3,
+      "Y": 3,
+      "Z": 2
+    },
+    "Blocks": [
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "None",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "GroundOrStackable",
+        "Occupations": "Bottom, Top, Corners, Path, Middle",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      },
+      {
+        "MatterBelow": "Any",
+        "Occupations": "Bottom",
+        "Stackable": "None",
+        "OccupyAllBelow": false,
+        "Underground": false
+      }
+    ],
+    "Entrance": {
+      "HasEntrance": true,
+      "Coordinates": {
+        "X": 1,
+        "Y": -1,
+        "Z": 1
+      }
+    },
+    "BaseZ": 1,
+    "Overridable": false,
+    "Flippable": false
+  },
+  "BlockObjectNavMeshSettingsSpec": {
+    "NoAutoWalls": false,
+    "GenerateFloorsOnStackable": true,
+    "EdgeGroups": [],
+    "UnblockedCoordinates": [],
+    "BlockedEdges": []
+  },
+  "BuildingAccessibleSpec": {
+    "LocalAccess": {
+      "X": 1.5,
+      "Y": 1.0,
+      "Z": 0.3
+    },
+    "ForceOneFinalAccess": false
+  },
+  "PlaceableBlockObjectSpec": {
+    "ToolGroupId": "Wood",
+    "ToolOrder": 25,
+    "ToolShape": "Square",
+    "Layout": "Single",
+    "CustomPivot": {
+      "HasCustomPivot": true,
+      "Coordinates": {
+        "X": 1.5,
+        "Y": 0.5,
+        "Z": 0.0
+      }
+    },
+    "CanBeAttachedToTerrainSide": false,
+    "DevModeTool": false
+  },
+  "WorkplaceIlluminatorSpec": {},
+  "LabeledEntitySpec": {
+    "DisplayNameLocKey": "Building.DriftwoodCatch.DisplayName",
+    "DescriptionLocKey": "Building.DriftwoodCatch.Description",
+    "FlavorDescriptionLocKey": "Building.DriftwoodCatch.FlavorDescription",
+    "Icon": "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon"
+  },
+  "SimpleManufactoryBehaviorsSpec": {},
+  "ConstructionSiteProgressVisualizerSpec": {
+    "ProgressThresholds": [
+      0.0
+    ]
+  },
+  "FloodableObjectBlockerSpec": {},
+  "DriftwoodCatchSpec": {
+    "WaterCoordinates": {
+      "X": 1,
+      "Y": 2,
+      "Z": 0
+    },
+    "MinWaterDepth": 0.3,
+    "FullSpeedCurrent": 1.0,
+    "MinimumCurrent": 0.05,
+    "StatusIcon": "OtterDriftwoodNoCurrent",
+    "StatusLocKey": "Status.DriftwoodCatch.NoCurrent",
+    "StatusShortLocKey": "Status.DriftwoodCatch.NoCurrent.Short"
+  },
+  "Children": {
+    "#Finished": {
+      "TimbermeshSpec": {
+        "Model": "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.Model"
+      },
+      "CollidersSpec": {
+        "BoxColliders": [
+          {
+            "Center": {
+              "X": 1.5,
+              "Y": 0.1,
+              "Z": 0.5
+            },
+            "Size": {
+              "X": 3.0,
+              "Y": 0.2,
+              "Z": 1.0
+            }
+          },
+          {
+            "Center": {
+              "X": 2.25,
+              "Y": 0.4,
+              "Z": 0.5
+            },
+            "Size": {
+              "X": 0.65,
+              "Y": 0.4,
+              "Z": 0.85
+            }
+          },
+          {
+            "Center": {
+              "X": 0.15,
+              "Y": -0.3,
+              "Z": 2.85
+            },
+            "Size": {
+              "X": 0.12,
+              "Y": 1.4,
+              "Z": 0.12
+            }
+          },
+          {
+            "Center": {
+              "X": 2.85,
+              "Y": -0.3,
+              "Z": 2.85
+            },
+            "Size": {
+              "X": 0.12,
+              "Y": 1.4,
+              "Z": 0.12
+            }
+          },
+          {
+            "Center": {
+              "X": 0.62,
+              "Y": -0.3,
+              "Z": 2.0
+            },
+            "Size": {
+              "X": 0.12,
+              "Y": 1.4,
+              "Z": 0.12
+            }
+          },
+          {
+            "Center": {
+              "X": 2.38,
+              "Y": -0.3,
+              "Z": 2.0
+            },
+            "Size": {
+              "X": 0.12,
+              "Y": 1.4,
+              "Z": 0.12
+            }
+          }
+        ],
+        "SphereColliders": [],
+        "CapsuleColliders": []
+      }
+    },
+    "#Unfinished": {
+      "Children": {
+        "ConstructionBase3x1#nested": {
+          "BlueprintPath": "ConstructionBases/ConstructionBase3x1/ConstructionBase3x1.blueprint"
+        },
+        "ConstructionStage0": {
+          "TimbermeshSpec": {
+            "Model": "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.ConstructionStage0.Model"
+          },
+          "CollidersSpec": {
+            "BoxColliders": [
+              {
+                "Center": {
+                  "X": 1.5,
+                  "Y": 0.1,
+                  "Z": 0.5
+                },
+                "Size": {
+                  "X": 3.0,
+                  "Y": 0.2,
+                  "Z": 1.0
+                }
+              }
+            ],
+            "SphereColliders": [],
+            "CapsuleColliders": []
+          }
+        }
+      }
+    }
+  }
+}
