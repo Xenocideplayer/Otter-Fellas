@@ -305,7 +305,7 @@ def main():
     save_icon(b(I.smokehouse(), 112), "Buildings/Food/Smokehouse/SmokehouseIcon.png")
     save_icon(b(I.otter_slide(), 112), "Buildings/Wellbeing/OtterSlide/OtterSlideIcon.png")
     save_icon(b(I.slipway(), 112), "Buildings/Paths/Slipway/SlipwayIcon.png")
-    g = lambda body: I.line_icon(body, 80, view=80, stroke=3.0)
+    g = lambda body: I.line_icon(body, 80, view=80, stroke=3.4)
     save_icon(g(I.wild_rice_good()), "Sprites/Goods/WildRiceIcon.png")
     save_icon(g(I.cooked_rice_good()), "Sprites/Goods/CookedWildRiceIcon.png")
     save_icon(g(I.taro_root_good()), "Sprites/Goods/TaroRootIcon.png")

@@ -147,22 +147,21 @@ def tunnel_lodge():
 
 
 def rice_cakes_good():
-    # a stack of three round rice cakes
-    return ('<ellipse cx="40" cy="60" rx="24" ry="8"/><path d="M16 60 v-8 M64 60 v-8"/>'
-            '<ellipse cx="40" cy="48" rx="24" ry="8"/><path d="M16 48 v-8 M64 48 v-8"/>'
-            '<ellipse cx="40" cy="36" rx="24" ry="8" fill="FILL"/>'
-            '<path d="M30 36 h2 M44 34 h2 M38 39 h2" stroke-width="2.4"/>')
+    # a little stack of puffed rice cakes, the top one with grains showing
+    return ('<path d="M14 58 q0 -6 26 -6 q26 0 26 6 v6 q0 6 -26 6 q-26 0 -26 -6 z"/>'
+            '<path d="M18 46 q0 -6 22 -6 q22 0 22 6 v6 q0 4 -22 4 q-22 0 -22 -4 z"/>'
+            '<ellipse cx="40" cy="30" rx="20" ry="7"/><path d="M20 30 v6 q0 4 20 4 q20 0 20 -4 v-6"/>'
+            '<path d="M31 29 l3 -1 M41 27 l3 1 M46 32 l3 -1 M34 33 l3 0" stroke-width="2.4"/>')
 
 
 def sushi_good():
-    # two maki rolls and a nigiri with a band of seaweed
-    return ('<ellipse cx="22" cy="40" rx="12" ry="5"/><path d="M10 40 v12 a12 5 0 0 0 24 0 v-12" fill="none"/>'
-            '<ellipse cx="22" cy="40" rx="5" ry="2" fill="FILL"/>'
-            '<ellipse cx="50" cy="34" rx="12" ry="5"/><path d="M38 34 v12 a12 5 0 0 0 24 0 v-12" fill="none"/>'
-            '<ellipse cx="50" cy="34" rx="5" ry="2" fill="FILL"/>'
-            '<path d="M30 66 q0 -8 18 -8 q18 0 18 8 z"/>'
-            '<path d="M28 64 q20 -16 40 -4" stroke-width="4" fill="none"/>'
-            '<path d="M47 56 v10" stroke-width="5"/>')
+    # a maki roll and a nigiri: rice with a slice of fish on top, tied with a band of seaweed
+    return ('<ellipse cx="24" cy="30" rx="13" ry="6"/><path d="M11 30 v16 q0 6 13 6 q13 0 13 -6 v-16"/>'
+            '<ellipse cx="24" cy="30" rx="6" ry="2.6" fill="FILL"/>'
+            '<rect x="36" y="48" width="36" height="12" rx="5"/>'
+            '<path d="M33 48 q2 -9 20 -9 q16 0 22 7 q-2 3 -8 2 z"/>'
+            '<path d="M44 42 l4 5 M54 40 l4 6 M64 41 l3 5" stroke-width="2"/>'
+            '<path d="M54 44 v17" stroke-width="5"/>')
 
 
 def render(name, size):
@@ -170,7 +169,7 @@ def render(name, size):
     if size == 512:
         return status_icon(body, 512)
     if size == 80:
-        return line_icon(body, 80, view=80, stroke=3.0)
+        return line_icon(body, 80, view=80, stroke=3.4)
     return line_icon(body, size)
 
 
