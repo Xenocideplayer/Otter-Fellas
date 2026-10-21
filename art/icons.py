@@ -1,7 +1,8 @@
 """Icons drawn in Timberborn's own UI style.
 
-* Building / crop tool icons: 112 px, tan (#BBA16C) line art, ~3.2 px round strokes, soft dark drop shadow.
-* Good icons: 80 px, same style.
+* Building / crop tool icons: 112 px, tan (#BBA16C) line art, ~3.4 px round strokes with a slight hand-drawn
+  wobble, a soft dark halo.
+* Good icons: 80 px, a lighter tan with a crisp dark drop shadow underneath, like the game's goods.
 * Faction logo: 98 px, rounded diamond outline with a solid symbol inside, in the faction colour.
 * Status icons: 512 px, orange ring around a dark red disc with a tan symbol.
 """
@@ -18,18 +19,70 @@ def _png(svg, w, h):
     return Image.open(io.BytesIO(cairosvg.svg2png(bytestring=svg.encode(), output_width=w, output_height=h))).convert("RGBA")
 
 
-def line_icon(body, size, view=112, stroke=3.2, shadow=True):
-    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {view} {view}" width="{size}" height="{size}">'
-           f'<g fill="none" stroke="{TAN}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round">'
-           f'{body}</g></svg>').replace("FILL", TAN)
-    img = _png(svg, size, size)
+GOOD_TAN = "#CAAC6B"   # good icons are a shade lighter than building icons in the game
+
+
+def _wobble(img, amount, seed):
+    """Nudge the drawing by a smooth random displacement so lines look drawn by hand, as the game's icons are."""
+    import numpy as np
+    from scipy import ndimage
+    rng = np.random.default_rng(seed)
+    w, h = img.size
+    fields = []
+    for _ in range(2):
+        coarse = rng.normal(0, 1, (6, 6))
+        f = ndimage.zoom(coarse, (h / 6, w / 6), order=3)[:h, :w]
+        fields.append(f / (np.abs(f).max() + 1e-9) * amount)
+    yy, xx = np.mgrid[0:h, 0:w].astype(float)
+    src = np.asarray(img).astype(float)
+    out = np.stack([ndimage.map_coordinates(src[..., c], [yy + fields[0], xx + fields[1]], order=1, mode="constant")
+                    for c in range(4)], -1)
+    return Image.fromarray(np.clip(out, 0, 255).astype("uint8"), "RGBA")
+
+
+def _fit(body, view, stroke, fill):
+    """Scale and centre a drawing so it fills about `fill` of the icon, as the game's icons do (theirs run nearly
+    edge to edge; ours were drawn at many different sizes)."""
+    probe = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {view} {view}" width="{view * 2}" height="{view * 2}">'
+             f'<g fill="none" stroke="#000" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round">'
+             f'{body}</g></svg>').replace("FILL", "#000")
+    box = _png(probe, view * 2, view * 2).split()[3].getbbox()
+    if not box:
+        return body
+    x0, y0, x1, y1 = (v / 2 for v in box)
+    s = min(fill * view / max(x1 - x0, y1 - y0), 1.5)
+    if abs(s - 1) < 0.04 and abs((x0 + x1) / 2 - view / 2) < 2 and abs((y0 + y1) / 2 - view / 2) < 2:
+        return body
+    tx = view / 2 - s * (x0 + x1) / 2
+    ty = view / 2 - s * (y0 + y1) / 2
+    return f'<g transform="translate({tx:.2f} {ty:.2f}) scale({s:.4f})" stroke-width="{stroke / s:.3f}">{body}</g>'
+
+
+def line_icon(body, size, view=112, stroke=3.4, shadow=True, good=None):
+    """Tan line art like the game's icons. Building/crop icons (112) get the game's soft dark halo; good icons (80)
+    are a lighter tan with the crisp dark drop shadow under them that the game's goods have."""
+    good = (view == 80) if good is None else good
+    color = GOOD_TAN if good else TAN
+    body = _fit(body, view, stroke, 0.78 if good else 0.8)
+    k = 4                                                  # draw big, wobble, then scale down (smooth edges)
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {view} {view}" width="{size * k}" height="{size * k}">'
+           f'<g fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round">'
+           f'{body}</g></svg>').replace("FILL", color)
+    big = _png(svg, size * k, size * k)
+    big = _wobble(big, 0.55 * k * size / view, seed=sum(map(ord, body)) % 100000)
+    img = big.resize((size, size), Image.LANCZOS)
     if not shadow:
         return img
     a = img.split()[3]
-    sh = Image.new("RGBA", img.size, (20, 16, 10, 0))
-    sh.putalpha(a.filter(ImageFilter.GaussianBlur(size / 90)).point(lambda v: int(v * 0.65)))
     out = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    out.alpha_composite(sh, (max(1, size // 80), max(1, size // 56)))
+    if good:
+        sh = Image.new("RGBA", img.size, (12, 10, 6, 0))
+        sh.putalpha(a.filter(ImageFilter.GaussianBlur(size / 200)))
+        out.alpha_composite(sh, (max(0, round(size / 160)), max(1, round(size / 32))))
+    else:
+        sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        sh.putalpha(a.filter(ImageFilter.GaussianBlur(size / 50)).point(lambda v: int(min(255, v * 0.75))))
+        out.alpha_composite(sh, (0, max(1, round(size / 110))))
     out.alpha_composite(img)
     return out
 

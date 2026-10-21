@@ -29,7 +29,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "2.2.0"
+MOD_VERSION = "2.2.1"
 MOD_ID = "Otters.WaterFaction"
 FACTION_ID = "Otters"
 
@@ -185,8 +185,8 @@ RINSE_POD = "Buildings/Wellbeing/RinsePod/RinsePod.Otters.blueprint"
 
 TEXT = {
     "Faction.Otters.DisplayName": "Otters",
-    "Faction.Otters.Description": "Sleek river folk who would rather swim than walk. Otters dig, filter and farm the "
-                                  "water from day one, but they are slow on land and work slower once their fur "
+    "Faction.Otters.Description": "Sleek river folk who would rather swim than walk, Otters farm, filter and dig "
+                                  "the water from day one. On land they are slow, and they tire once their fur "
                                   "dries out.\nTheir motto: <i>Clean water, warm dens, and a good swim.</i>",
     "Faction.Otters.GameOver.Message": "The rivers ran dry, and your Otters with them. This is the end.",
     "Faction.Otters.GameOver.Flavor": "No current runs forever.",
@@ -194,29 +194,24 @@ TEXT = {
                                               "this map's rivers to build the faction's wonder.",
     "Faction.Otters.WonderCompletionFlavor": "The rivers run clean again, and every one of them leads home.",
     "Need.OtterMoisture.DisplayName": "Moisture",
-    "Status.Need.OtterMoisture": "Dry fur: works slower until wet again.",
+    "Status.Need.OtterMoisture": "Dry fur. Works slower until it gets wet again.",
     "Building.OtterDigSite.DisplayName": "Dig Site",
-    "Building.OtterDigSite.FlavorDescription": "\"Why blow it up when you can just dig?\"",
+    "Building.OtterDigSite.FlavorDescription": "\"Why blow it up when you can just dig?\" —Old Eddy",
     "Building.ReedFilter.DisplayName": "Reed Filter",
-    "Building.ReedFilter.Description": "A pump station that drinks through a tied bundle of reeds. Turns badwater at its intake "
-                                       "into clean water without lowering the river; cleans faster the dirtier the "
-                                       "water is.",
-    "Building.ReedFilter.FlavorDescription": "The reeds don't mind the taste.",
+    "Building.ReedFilter.Description": "Cleans badwater at its intake through a bundle of reeds. Works faster the "
+                                       "dirtier the water.",
+    "Building.ReedFilter.FlavorDescription": "\"The reeds don't mind the taste. I asked.\" —Nan Rillwhisker",
     "Building.RinsePod.DisplayName": "Rinse Pod",
-    "Building.RinsePod.Description": "A long soak in clean water that washes badwater contamination out of an "
-                                     "otter's fur. Uses water.",
+    "Building.RinsePod.Description": "A clean-water soak that washes badwater contamination out of otters.",
     "Building.RinsePod.FlavorDescription": "In through the badwater, out through the rinse.",
     "Recipe.OtterWaterFiltering": "Filtering water",
-    "Building.OtterDigSite.Description": "Builders slowly dig out the block of terrain underneath by paw and leave "
-                                         "1 dirt behind for every block. No explosives, and the digging waits until "
-                                         "nobody is standing on the spot.",
+    "Building.OtterDigSite.Description": "Digs out the terrain underneath it by paw, leaving a little dirt behind.",
     "Building.RiverHolt.DisplayName": "River Holt",
-    "Building.RiverHolt.Description": "A cosy otter den built out in the water. Must be placed with at least two "
-                                      "tiles in water. Residents' fur dries out more slowly while they sleep.",
+    "Building.RiverHolt.Description": "A den out in the water. Residents' fur dries out slower while they sleep. "
+                                      "Must stand in water.",
     "Building.RiverHolt.FlavorDescription": "Front door: the river.",
     "Building.BigRiverHolt.DisplayName": "Big River Holt",
-    "Building.BigRiverHolt.Description": "A two-storey otter den out in the water for six. Must be placed with at "
-                                         "least three tiles in water. Residents' fur dries out more slowly while they sleep.",
+    "Building.BigRiverHolt.Description": "A bigger holt that fits more otters. Must stand in water.",
     "Building.BigRiverHolt.FlavorDescription": "Room for the whole raft.",
     "Building.RiverHolt.NeedsWater": "Must stand in water",
     "NaturalResource.WildRice.DisplayName": "Wild rice",
@@ -232,63 +227,45 @@ TEXT = {
     "Good.RoastedTaro.DisplayName": "Roasted taro",
     "Good.RoastedTaro.PluralDisplayName": "Roasted taro",
     "Building.FishingDock.DisplayName": "Fishing Dock",
-    "Building.FishingDock.Description": "A fisher drops a line into the water below and brings up fish. Needs water "
-                                        "under the line; the more badwater in it, the fewer fish bite, and none at all "
-                                        "in half-badwater. Takes no water from the river.",
-    "Building.FishingDock.FlavorDescription": "Patience, a long rod, and a longer lunch.",
+    "Building.FishingDock.Description": "Employs a fisher who catches fish in the water below. Badwater scares the "
+                                        "fish away.",
+    "Building.FishingDock.FlavorDescription": "\"Patience, a long rod, and a longer lunch.\" —Old Eddy",
     "Recipe.OtterFishing": "Fishing",
     "Good.Fish.DisplayName": "Fish",
     "Good.Fish.PluralDisplayName": "Fish",
     "Good.GrilledFish.DisplayName": "Grilled fish",
     "Good.GrilledFish.PluralDisplayName": "Grilled fish",
     "Building.SplashPool.DisplayName": "Splash Pool",
-    "Building.SplashPool.Description": "A log-framed swimming hole set into the river, with a deck, a diving board and "
-                                       "a bench. Fun for everyone; otters' fur gets a good soak. Needs water inside "
-                                       "the frame.",
+    "Building.SplashPool.Description": "A log-framed swimming hole in the river. Soaks otters' fur.",
     "Building.SplashPool.FlavorDescription": "Last one in is a dry beaver.",
     "Need.SplashPool.DisplayName": "Splash Pool",
     "Building.ArtesianWell.DisplayName": "Artesian Well",
-    "Building.ArtesianWell.Description": "Drills deep and brings up clean water out of nowhere: no aquifer needed, and "
-                                         "it keeps flowing through droughts (at half speed) and badtides. Needs an operator and "
-                                         "750 hp of power. Build it with its back to "
-                                         "lower ground or open water: the water spills out over the edge behind it until "
-                                         "it is nearly level with the well. Or plug Water Tubes into its side walls or "
-                                         "back to send the water to Tube Outlets elsewhere. "
-                                         "Every so often the pump breaks down and the operator has to spend a few hours "
-                                         "repairing it before water flows again.",
+    "Building.ArtesianWell.Description": "Brings up clean water from deep underground, even in droughts and "
+                                         "badtides, and pours it out of its back or into <YellowHighlight>Water "
+                                         "Tubes</YellowHighlight>. Breaks down from time to time.",
     "Building.ArtesianWell.FlavorDescription": "Deep down, the river never ends.",
     "Recipe.ArtesianWater": "Pumping water",
-    "Status.ArtesianWell.Broken": "Broken down: the operator is repairing it. No water until it's fixed.",
+    "Status.ArtesianWell.Broken": "Broken down. Being repaired.",
     "Status.ArtesianWell.Broken.Short": "Well broken down",
-    "Status.ArtesianWell.NoRoom": "The water has nowhere to go. Build the well with its back to lower ground or "
-                                  "water, or connect Water Tubes to a Tube Outlet that pours over an edge.",
+    "Status.ArtesianWell.NoRoom": "The water has nowhere to go.",
     "Status.ArtesianWell.NoRoom.Short": "Well water has nowhere to go",
     "Building.WaterTube.DisplayName": "Water Tube",
-    "Building.WaterTube.Description": "Carries water from an Artesian Well to Tube Outlets. Plug a line into the well's "
-                                      "left wall, right wall or back; when outlets are connected, all of the well's "
-                                      "water goes to them, shared evenly, instead of spilling out behind the well.",
+    "Building.WaterTube.Description": "Carries water from an Artesian Well to Tube Outlets.",
     "Building.WaterTube.FlavorDescription": "Like a tubeway, but wetter.",
     "Building.TubeOutlet.DisplayName": "Tube Outlet",
-    "Building.TubeOutlet.Description": "The open end of a water tube line. Connect a tube to its back and build it with "
-                                       "its spout over lower ground or water; it pours until the water below is nearly "
-                                       "up to the spout.",
+    "Building.TubeOutlet.Description": "Pours out the water brought by Water Tubes.",
     "Building.TubeOutlet.FlavorDescription": "Where the river comes back out.",
     "Building.Smokehouse.DisplayName": "Smokehouse",
-    "Building.Smokehouse.Description": "Smokes fish over a slow log fire (one fish makes three smoked fish, the "
-                                       "otters' favourite food) and rolls sushi from wild rice and raw fish.",
-    "Building.Smokehouse.FlavorDescription": "Smells like home.",
+    "Building.Smokehouse.Description": "Smokes fish and rolls sushi.",
+    "Building.Smokehouse.FlavorDescription": "\"Smells like home.\" —Nan Rillwhisker",
     "Good.SmokedFish.DisplayName": "Smoked fish",
     "Good.SmokedFish.PluralDisplayName": "Smoked fish",
     "Building.OtterSlide.DisplayName": "Otter Slide",
-    "Building.OtterSlide.Description": "A slide tower on the bank with a chute that drops into the river. Fun for "
-                                       "everyone and a thorough soaking for otters. Needs water at the bottom of the "
-                                       "chute.",
-    "Building.OtterSlide.FlavorDescription": "Again! Again!",
+    "Building.OtterSlide.Description": "A slide tower with a chute into the river. Soaks otters' fur.",
+    "Building.OtterSlide.FlavorDescription": "\"Again! Again!\" —Every otter kit ever",
     "Need.OtterSlide.DisplayName": "Otter Slide",
     "Building.Slipway.DisplayName": "Slipway",
-    "Building.Slipway.Description": "A mud-and-log ramp down the bank. Build it on the riverbed against the bank, "
-                                    "facing the bank, and otters can slip into the river and swim along the bottom "
-                                    "instead of walking around. Works like stairs for everyone.",
+    "Building.Slipway.Description": "A mud ramp for slipping into the river. Place it against a riverbank.",
     "Building.Slipway.FlavorDescription": "Wheee-splash.",
 }
 
@@ -412,7 +389,7 @@ def labeled(spec, key, icon):
     spec["Icon"] = icon
 
 
-WATERPROOF_NOTE = " Waterproof: keeps working when the water rises over its door."
+WATERPROOF_NOTE = " Keeps working when flooded."
 WATERPROOF_KEYS = []
 
 

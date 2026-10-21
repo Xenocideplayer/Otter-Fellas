@@ -75,66 +75,51 @@ WONDER_MOISTURE = 1.0                # moisture points per hour for otters in ra
 
 TEXT = {
     "Building.TubeValve.DisplayName": "Tube Valve",
-    "Building.TubeValve.Description": "A length of Water Tube with a hand wheel. Pause it to close it: no water gets "
-                                      "past it, so outlets beyond it go dry and the rest of the line shares the well's "
-                                      "water. If every outlet on a well's line is closed off, the well stops pumping "
-                                      "instead of spilling behind it. Paused Tube Outlets get no water either.",
+    "Building.TubeValve.Description": "A Water Tube that can be closed. Pause it to stop the water.",
     "Building.TubeValve.FlavorDescription": "Righty-tighty, lefty-loosey.",
-    "Status.ArtesianWell.Closed": "Every Tube Outlet on this well's line is paused or closed off by a Tube Valve, "
-                                  "so the water stays in the well.",
+    "Status.ArtesianWell.Closed": "Every outlet on this well's line is closed.",
     "Status.ArtesianWell.Closed.Short": "Well's tube line is closed",
     "Building.ClamBed.DisplayName": "Clam Bed",
-    "Building.ClamBed.Description": "A staked net over the riverbed where a gatherer raises clams. Build it with its "
-                                    "deck on the bank and its bed over water one block down. Needs at least half a "
-                                    "block of water over the bed, and clean water: the more badwater, the fewer clams, "
-                                    "and none at all at 20% badwater. Takes no water from the river.",
+    "Building.ClamBed.Description": "Employs a gatherer who raises clams on a clean, shallow riverbed.",
     "Building.ClamBed.FlavorDescription": "Happy as a clam, as long as the water's clean.",
     "Recipe.OtterClamming": "Gathering clams",
-    "Status.ClamBed.NoWater": "No clams: the bed needs at least half a block of clean water (under 20% badwater) over it.",
+    "Status.ClamBed.NoWater": "Needs shallow, clean water over the bed.",
     "Status.ClamBed.NoWater.Short": "Clam bed needs clean water",
     "Good.Clams.DisplayName": "Clams",
     "Good.Clams.PluralDisplayName": "Clams",
     "Good.GrilledClams.DisplayName": "Grilled clams",
     "Good.GrilledClams.PluralDisplayName": "Grilled clams",
     "Building.DriftwoodCatch.DisplayName": "Driftwood Catch",
-    "Building.DriftwoodCatch.Description": "A log boom across the current that catches driftwood and lands it as logs. "
-                                           "Build it with its deck on the bank and the boom over water one block "
-                                           "down. Only works in moving water, faster the stronger the current "
-                                           "(full speed from a current of 1). Needs no trees and takes no water.",
-    "Building.DriftwoodCatch.FlavorDescription": "Somebody upstream is very bad at keeping track of their logs.",
+    "Building.DriftwoodCatch.Description": "Catches driftwood from flowing water. Works faster in a stronger "
+                                           "current.",
+    "Building.DriftwoodCatch.FlavorDescription": "\"Somebody upstream is very bad at keeping track of their "
+                                                 "logs.\" —Old Eddy",
     "Recipe.OtterDriftwood": "Catching driftwood",
-    "Status.DriftwoodCatch.NoCurrent": "Nothing drifts in: the boom needs moving water (a current of at least 0.05) "
-                                       "at least a third of a block deep.",
+    "Status.DriftwoodCatch.NoCurrent": "Needs flowing water.",
     "Status.DriftwoodCatch.NoCurrent.Short": "Driftwood catch needs a current",
     "Building.BaskingDeck.DisplayName": "Basking Deck",
-    "Building.BaskingDeck.Description": "A low sun deck with reed mats and a warm flat stone. Otters sprawl here to dry "
-                                        "off and doze in the sun.",
+    "Building.BaskingDeck.Description": "A sunny spot where otters doze on warm stones.",
     "Building.BaskingDeck.FlavorDescription": "Wet fur, warm stone, no plans.",
     "Building.TimberTunnel.DisplayName": "Timber Tunnel",
-    "Building.TimberTunnel.Description": "A slatted log tunnel. Otters scurry through it much faster than they walk. "
-                                         "Joins up with other tunnels, shafts and Tunnel Lodges.",
-    "Building.TimberTunnel.FlavorDescription": "Like a burrow, only faster. The lanterns tell you someone's inside.",
+    "Building.TimberTunnel.Description": "A fast, if drafty, means of otter transportation.",
+    "Building.TimberTunnel.FlavorDescription": "\"Like a burrow, only faster.\" —Pebble",
     "Building.TimberShaft.DisplayName": "Timber Shaft",
-    "Building.TimberShaft.Description": "A tunnel piece with a ladder: stack shafts to take the tunnels up or down a "
-                                        "level. Things can be built on top of it.",
+    "Building.TimberShaft.Description": "A fast, if drafty, means of otter transportation. Connects upward.",
     "Building.TimberShaft.FlavorDescription": "Up the ladder, down the slide.",
     "Building.SealedTimberTunnel.DisplayName": "Sealed Timber Tunnel",
-    "Building.SealedTimberTunnel.Description": "A tunnel boxed in tarred planks that keeps water out, so it can run "
-                                               "through rivers and holds water back like a levee.",
+    "Building.SealedTimberTunnel.Description": "A fast, watertight means of otter transportation. Blocks off "
+                                               "water.",
     "Building.SealedTimberTunnel.FlavorDescription": "For once, the otters want to stay dry.",
     "Building.TunnelLodge.DisplayName": "Tunnel Lodge",
-    "Building.TunnelLodge.Description": "Where otters climb into the Timber Tunnels. Connect tunnels to its side "
-                                        "openings; the lodge lets otters in and out of the network.",
+    "Building.TunnelLodge.Description": "A Timber Tunnel network entrance and exit.",
     "Building.TunnelLodge.FlavorDescription": "Mind the gap. And the tail.",
     "Good.RiceCakes.DisplayName": "Rice cake",
     "Good.RiceCakes.PluralDisplayName": "Rice cakes",
     "Good.Sushi.DisplayName": "Sushi",
     "Good.Sushi.PluralDisplayName": "Sushi",
     "Building.Wellspring.DisplayName": "The Wellspring",
-    "Building.Wellspring.Description": "The Otters' wonder: a great log fountain that lifts the river into a bowl high "
-                                       "above the town and pours it back in four streams, with a holt on top. Once "
-                                       "finished and stocked with extract and smoked fish it can be activated, filling "
-                                       "every otter nearby with awe and keeping their fur wet.",
+    "Building.Wellspring.Description": "The Otters' wonder: a great log fountain that lifts the river high above "
+                                       "the town.",
     "Building.Wellspring.FlavorDescription": "Every river starts somewhere. This one starts here.",
 }
 
