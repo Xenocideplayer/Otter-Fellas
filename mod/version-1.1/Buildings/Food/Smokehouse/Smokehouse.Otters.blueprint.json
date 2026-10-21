@@ -39,7 +39,8 @@
   },
   "ManufactorySpec": {
     "ProductionRecipeIds": [
-      "SmokedFish"
+      "SmokedFish",
+      "Sushi"
     ]
   },
   "WorkshopSpec": {},

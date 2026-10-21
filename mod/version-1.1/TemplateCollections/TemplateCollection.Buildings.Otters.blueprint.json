@@ -97,9 +97,6 @@
       "Buildings/Paths/SuspensionBridge5x1/SuspensionBridge5x1.Otters.blueprint",
       "Buildings/Paths/SuspensionBridge6x1/SuspensionBridge6x1.Otters.blueprint",
       "Buildings/Paths/TriplePlatform/TriplePlatform.Otters.blueprint",
-      "Buildings/Paths/ZiplineBeam/ZiplineBeam.Otters.blueprint",
-      "Buildings/Paths/ZiplinePylon/ZiplinePylon.Otters.blueprint",
-      "Buildings/Paths/ZiplineStation/ZiplineStation.Otters.blueprint",
       "Buildings/Power/Clutch/Clutch.Otters.blueprint",
       "Buildings/Power/GeothermalEngine/GeothermalEngine.Otters.blueprint",
       "Buildings/Power/GravityBattery/GravityBattery.Otters.blueprint",
@@ -175,7 +172,11 @@
       "Buildings/Food/ClamBed/ClamBed.Otters.blueprint",
       "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.blueprint",
       "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.blueprint",
-      "Buildings/Monuments/Wellspring/Wellspring.Otters.blueprint"
+      "Buildings/Monuments/Wellspring/Wellspring.Otters.blueprint",
+      "Buildings/Paths/TimberTunnel/TimberTunnel.Otters.blueprint",
+      "Buildings/Paths/TimberShaft/TimberShaft.Otters.blueprint",
+      "Buildings/Paths/SealedTimberTunnel/SealedTimberTunnel.Otters.blueprint",
+      "Buildings/Paths/TunnelLodge/TunnelLodge.Otters.blueprint"
     ]
   }
 }

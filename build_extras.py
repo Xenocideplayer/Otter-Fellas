@@ -39,6 +39,31 @@ DRIFTWOOD_HOURS = 3.0                # one log per 3 work-hours at full current 
 DRIFTWOOD_FULL_CURRENT = 1.0         # Flow Sensor reading for full speed (the sensor goes up to 2)
 DRIFTWOOD_MIN_CURRENT = 0.05         # still water below this: nothing drifts in
 DRIFTWOOD_MIN_DEPTH = 0.3
+RICE_CAKES = (1, 4)                  # 1 wild rice -> 4 rice cakes at the Bakery (bread: 1 flour -> 5), log-fired
+SUSHI = (1, 1, 4)                    # 1 wild rice + 1 fish -> 4 sushi at the Smokehouse, no fire
+ZIPLINES = ["Buildings/Paths/ZiplineStation/ZiplineStation.Folktails.blueprint",
+            "Buildings/Paths/ZiplinePylon/ZiplinePylon.Folktails.blueprint",
+            "Buildings/Paths/ZiplineBeam/ZiplineBeam.Folktails.blueprint"]     # otters swim and tunnel instead
+# Timber Tunnels: otter copies of the Iron Teeth tubeway set with wooden models (model/make_tunnels.py)
+TUNNELS = {  # Iron Teeth blueprint -> (otter blueprint, key, cost, science)
+    "Buildings/Paths/Tubeway/Tubeway.IronTeeth.blueprint":
+        ("Buildings/Paths/TimberTunnel/TimberTunnel.Otters.blueprint", "TimberTunnel",
+         [{"Id": "Log", "Amount": 2}, {"Id": "Plank", "Amount": 2}], 400),
+    "Buildings/Paths/VerticalTubeway/VerticalTubeway.IronTeeth.blueprint":
+        ("Buildings/Paths/TimberShaft/TimberShaft.Otters.blueprint", "TimberShaft",
+         [{"Id": "Log", "Amount": 3}, {"Id": "Plank", "Amount": 3}], 500),
+    "Buildings/Paths/ImpermeableTubeway/ImpermeableTubeway.IronTeeth.blueprint":
+        ("Buildings/Paths/SealedTimberTunnel/SealedTimberTunnel.Otters.blueprint", "SealedTimberTunnel",
+         [{"Id": "Plank", "Amount": 4}, {"Id": "TreatedPlank", "Amount": 2}], 700),
+    "Buildings/Paths/TubewayStation/TubewayStation.IronTeeth.blueprint":
+        ("Buildings/Paths/TunnelLodge/TunnelLodge.Otters.blueprint", "TunnelLodge",
+         [{"Id": "Log", "Amount": 40}, {"Id": "Plank", "Amount": 40}, {"Id": "Gear", "Amount": 20}], 600),
+}
+TUNNEL_VARIANTS = ["000000", "000001", "001000", "001001", "001100", "001101", "011100", "011101", "101000",
+                   "101001", "111100", "111101"]
+SHAFT_VARIANTS = ["000000", "000001", "000010", "000011", "001000", "001001", "001010", "001011", "001100", "001101",
+                  "001110", "001111", "011100", "011101", "011110", "011111", "101000", "101001", "101010", "101011",
+                  "111100", "111101", "111110", "111111"]
 BASKING_COST = [{"Id": "Log", "Amount": 20}, {"Id": "Plank", "Amount": 6}]
 BASKING_SCIENCE = 60
 BASKING_POINTS = 0.6                 # per hour, like the Contemplation Spot
@@ -85,6 +110,26 @@ TEXT = {
     "Building.BaskingDeck.Description": "A low sun deck with reed mats and a warm flat stone. Otters sprawl here to dry "
                                         "off and doze in the sun.",
     "Building.BaskingDeck.FlavorDescription": "Wet fur, warm stone, no plans.",
+    "Building.TimberTunnel.DisplayName": "Timber Tunnel",
+    "Building.TimberTunnel.Description": "A slatted log tunnel. Otters scurry through it much faster than they walk. "
+                                         "Joins up with other tunnels, shafts and Tunnel Lodges.",
+    "Building.TimberTunnel.FlavorDescription": "Like a burrow, only faster. The lanterns tell you someone's inside.",
+    "Building.TimberShaft.DisplayName": "Timber Shaft",
+    "Building.TimberShaft.Description": "A tunnel piece with a ladder: stack shafts to take the tunnels up or down a "
+                                        "level. Things can be built on top of it.",
+    "Building.TimberShaft.FlavorDescription": "Up the ladder, down the slide.",
+    "Building.SealedTimberTunnel.DisplayName": "Sealed Timber Tunnel",
+    "Building.SealedTimberTunnel.Description": "A tunnel boxed in tarred planks that keeps water out, so it can run "
+                                               "through rivers and holds water back like a levee.",
+    "Building.SealedTimberTunnel.FlavorDescription": "For once, the otters want to stay dry.",
+    "Building.TunnelLodge.DisplayName": "Tunnel Lodge",
+    "Building.TunnelLodge.Description": "Where otters climb into the Timber Tunnels. Connect tunnels to its side "
+                                        "openings; the lodge lets otters in and out of the network.",
+    "Building.TunnelLodge.FlavorDescription": "Mind the gap. And the tail.",
+    "Good.RiceCakes.DisplayName": "Rice cake",
+    "Good.RiceCakes.PluralDisplayName": "Rice cakes",
+    "Good.Sushi.DisplayName": "Sushi",
+    "Good.Sushi.PluralDisplayName": "Sushi",
     "Building.Wellspring.DisplayName": "The Wellspring",
     "Building.Wellspring.Description": "The Otters' wonder: a great log fountain that lifts the river into a bowl high "
                                        "above the town and pours it back in four streams, with a holt on top. Once "
@@ -289,6 +334,72 @@ def build_basking_deck(bm):
     bm.write("Needs/Need.Beaver.Basking.blueprint.json", need)
 
 
+def build_tunnels(bm):
+    """Otter copies of the Iron Teeth tubeway set: same behaviour, wooden models, wood costs."""
+    paths, models, icons = [], [], []
+    for source, (path, key, cost, science) in TUNNELS.items():
+        bp = bm.copy.deepcopy(bm.load(source))
+        folder = os.path.dirname(path)
+        name = os.path.basename(path).replace(".blueprint", "")
+        bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
+        bp["BuildingSpec"].update({"BuildingCost": _clean(cost), "ScienceCost": science})
+        finished = bp["Children"]["#Finished"]
+        if key in ("TimberTunnel", "TimberShaft"):
+            for child, spec in finished["Children"].items():
+                if child.startswith("Variant_"):
+                    model = f"{key}{child[len('Variant_'):]}.Otters"
+                elif child == "#Platform":
+                    model = "TimberShaftCover.Otters"
+                else:
+                    raise AssertionError((source, child))
+                spec["TimbermeshSpec"]["Model"] = f"{folder}/{model}.Model"
+                models.append((folder, model + ".Model.timbermesh"))
+            variants = sorted(c[len("Variant_"):] for c in finished["Children"] if c.startswith("Variant_"))
+            assert variants == sorted(TUNNEL_VARIANTS if key == "TimberTunnel" else SHAFT_VARIANTS), variants
+        else:
+            finished["TimbermeshSpec"]["Model"] = f"{folder}/{name}.Model"
+            models.append((folder, name + ".Model.timbermesh"))
+            stage = bp["Children"]["#Unfinished"]["Children"]["ConstructionStage0"]
+            stage["TimbermeshSpec"]["Model"] = f"{folder}/{name}.ConstructionStage0.Model"
+            models.append((folder, name + ".ConstructionStage0.Model.timbermesh"))
+        if "ClockHandAnimatorSpec" in bp:
+            bp["ClockHandAnimatorSpec"].update({"HandName": "#HandOtter", "AngleOffset": 180.0})  # noon at the top
+        bm.labeled(bp["LabeledEntitySpec"], key, f"{folder}/{name.split('.')[0]}Icon")
+        bm.write(path + ".json", bm.order_specs(bp))
+        paths.append(path)
+        icons.append((key[0].lower() + "".join("_" + c.lower() if c.isupper() else c for c in key[1:]), 112,
+                      f"{folder}/{name.split('.')[0]}Icon.png"))
+    return {"buildings": paths, "models": models, "icons": icons}
+
+
+def build_foods(bm):
+    """Rice cakes (the otter Bakery's answer to bread) and sushi (Smokehouse: wild rice and raw fish)."""
+    for gid, order, color, need_order, icon in (("RiceCakes", 9060, (0.93, 0.89, 0.78), 60, "RiceCakes"),
+                                                 ("Sushi", 9096, (0.86, 0.45, 0.38), 61, "Sushi")):
+        good = bm.copy.deepcopy(bm.load("Goods/Good.Bread.blueprint"))
+        good["GoodSpec"].update({"Id": gid, "Icon": f"Sprites/Goods/{icon}Icon", "GoodOrder": order,
+                                 "ContainerColor": {"r": color[0], "g": color[1], "b": color[2], "a": 1.0},
+                                 "ConsumptionEffects": [{"NeedId": "Hunger", "Points": 0.3}, {"NeedId": gid, "Points": 0.2}],
+                                 "DisplayNameLocKey": f"Good.{gid}.DisplayName",
+                                 "PluralDisplayNameLocKey": f"Good.{gid}.PluralDisplayName"})
+        bm.write(f"Goods/Good.{gid}.blueprint.json", good)
+        need = bm.copy.deepcopy(bm.load("Needs/Need.Beaver.Bread.blueprint"))
+        need["NeedSpec"].update({"Id": gid, "Order": need_order, "DisplayNameLocKey": f"Good.{gid}.PluralDisplayName"})
+        bm.write(f"Needs/Need.Beaver.{gid}.blueprint.json", need)
+    bread = bm.load("Recipes/Recipe.Bread.blueprint")["RecipeSpec"]
+    bm.write("Recipes/Recipe.RiceCakes.blueprint.json", {"RecipeSpec": {
+        **bm.copy.deepcopy(bread), "Id": "RiceCakes", "BackwardCompatibleIds": [],
+        "DisplayLocKey": "Good.RiceCakes.PluralDisplayName",
+        "Ingredients": [{"Id": "WildRice", "Amount": RICE_CAKES[0]}],
+        "Products": [{"Id": "RiceCakes", "Amount": RICE_CAKES[1]}], "Icon": "Sprites/Goods/RiceCakesIcon"}})
+    bm.write("Recipes/Recipe.Sushi.blueprint.json", {"RecipeSpec": {
+        **bm.copy.deepcopy(bread), "Id": "Sushi", "BackwardCompatibleIds": [], "DisplayLocKey": "Good.Sushi.PluralDisplayName",
+        "CycleDurationInHours": 1.0,
+        "Ingredients": [{"Id": "WildRice", "Amount": SUSHI[0]}, {"Id": "Fish", "Amount": SUSHI[1]}],
+        "Products": [{"Id": "Sushi", "Amount": SUSHI[2]}], "Fuel": "", "CyclesFuelLasts": 0, "FuelCapacity": 0,
+        "CyclesCapacity": 20, "Icon": "Sprites/Goods/SushiIcon"}})
+
+
 # ---------------------------------------------------------------------------------------------------- wonder
 def build_wellspring(bm):
     folk = bm.load(FOLKTAILS_WONDER)
@@ -338,6 +449,8 @@ def build_all(bm):
     build_clam_bed(bm)
     build_driftwood_catch(bm)
     build_basking_deck(bm)
+    build_foods(bm)
+    tunnels = build_tunnels(bm)
     build_wellspring(bm)
     folk_wonder = bm.load("Factions/Faction.Folktails.blueprint")["FactionWonderSpec"]
     models = [("Buildings/Water/TubeValve", "TubeValveWheel.Otters.Model.timbermesh"),
@@ -351,15 +464,16 @@ def build_all(bm):
     models += [("Buildings/Monuments/Wellspring", f"Wellspring.Otters.ConstructionStage{k}.Model.timbermesh")
                for k in range(4)]
     if bm.MODEL_DIR:
-        missing = [n for _, n in models if not os.path.exists(os.path.join(bm.MODEL_DIR, "buildings", n))]
-        assert not missing, f"run model/make_extras.py first, missing {missing}"
+        missing = [n for _, n in models + tunnels["models"]
+                   if not os.path.exists(os.path.join(bm.MODEL_DIR, "buildings", n))]
+        assert not missing, f"run model/make_extras.py, make_new_buildings.py and make_tunnels.py first, missing {missing}"
     return {
-        "buildings": [TUBE_VALVE, CLAM_BED, DRIFTWOOD_CATCH, BASKING_DECK, WELLSPRING],
-        "goods": ["Clams", "GrilledClams"],
-        "needs": ["Clams", "GrilledClams", "Wellspring", "Basking"],
+        "buildings": [TUBE_VALVE, CLAM_BED, DRIFTWOOD_CATCH, BASKING_DECK, WELLSPRING] + tunnels["buildings"],
+        "goods": ["Clams", "GrilledClams", "RiceCakes", "Sushi"],
+        "needs": ["Clams", "GrilledClams", "Wellspring", "Basking", "RiceCakes", "Sushi"],
         "grill_recipes": ["GrilledClams"],
         "text": dict(TEXT),
-        "models": models,
+        "models": models + tunnels["models"],
         "icons": [("tube_valve", 112, "Buildings/Water/TubeValve/TubeValveIcon.png"),
                   ("clam_bed", 112, "Buildings/Food/ClamBed/ClamBedIcon.png"),
                   ("wellspring", 112, "Buildings/Monuments/Wellspring/WellspringIcon.png"),
@@ -368,10 +482,12 @@ def build_all(bm):
                   ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png"),
                   ("driftwood_catch", 112, "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon.png"),
                   ("basking_deck", 112, "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon.png"),
-                  ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png")],
+                  ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png"),
+                  ("rice_cakes_good", 80, "Sprites/Goods/RiceCakesIcon.png"),
+                  ("sushi_good", 80, "Sprites/Goods/SushiIcon.png")] + tunnels["icons"],
         "wonder": {"WonderCompletionImage": folk_wonder["WonderCompletionImage"],
                    "WonderLaunchSound": folk_wonder["WonderLaunchSound"],
                    "WonderCompletionFlavorLocKey": "Faction.Otters.WonderCompletionFlavor",
                    "WonderCompletionMessageLocKey": "Faction.Otters.WonderCompletionMessage"},
-        "omit_folktails": [FOLKTAILS_WONDER],
+        "omit_folktails": [FOLKTAILS_WONDER] + ZIPLINES,
     }

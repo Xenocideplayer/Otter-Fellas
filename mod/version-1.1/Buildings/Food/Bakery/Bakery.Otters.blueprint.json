@@ -43,7 +43,7 @@
   },
   "ManufactorySpec": {
     "ProductionRecipeIds": [
-      "Bread",
+      "RiceCakes",
       "CattailCracker",
       "MaplePastry"
     ]
