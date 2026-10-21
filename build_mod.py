@@ -29,7 +29,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "2.1.0"
+MOD_VERSION = "2.2.0"
 MOD_ID = "Otters.WaterFaction"
 FACTION_ID = "Otters"
 
@@ -139,8 +139,10 @@ SHAFT_PARTS = ("Buildings/Power/PowerShaft/Models/ModularShaftParts.Folktails.bl
                "Buildings/Power/PowerShaft/Models/ModularShaftParts.Otters.blueprint")
 # Spec fields that name other templates: a Folktails building name there is replaced by its otter copy's name.
 TEMPLATE_NAME_FIELDS = {"TunnelSupportTemplateName", "UnderstructureTemplateNames"}
-REMOVED_GOODS = []
-REMOVED_NEEDS = []
+REMOVED_GOODS = ["Bread"]            # otters bake rice cakes instead (build_extras.py)
+REMOVED_NEEDS = ["Bread"]
+# Folktails buildings whose recipe lists change for otters: source -> {old recipe: new recipe or None}
+RECIPE_SWAPS = {"Buildings/Food/Bakery/Bakery.Folktails.blueprint": {"Bread": "RiceCakes"}}
 CLEAN_WATER_GROWTH = 1.5             # otter crops grow 1.5x faster while their water is 100% clean
 CLEAN_WATER_THRESHOLD = 0.0005       # contamination that still counts as clean (shows as 0%)
 
@@ -272,8 +274,8 @@ TEXT = {
                                        "up to the spout.",
     "Building.TubeOutlet.FlavorDescription": "Where the river comes back out.",
     "Building.Smokehouse.DisplayName": "Smokehouse",
-    "Building.Smokehouse.Description": "Smokes fish over a slow log fire. One fish makes three smoked fish, the otters' "
-                                       "favourite food.",
+    "Building.Smokehouse.Description": "Smokes fish over a slow log fire (one fish makes three smoked fish, the "
+                                       "otters' favourite food) and rolls sushi from wild rice and raw fish.",
     "Building.Smokehouse.FlavorDescription": "Smells like home.",
     "Good.SmokedFish.DisplayName": "Smoked fish",
     "Good.SmokedFish.PluralDisplayName": "Smoked fish",
@@ -716,7 +718,7 @@ def build_smokehouse():
     bp["TemplateSpec"].update({"TemplateName": "Smokehouse.Otters", "BackwardCompatibleTemplateNames": []})
     bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 30}, {"Id": "Plank", "Amount": 10}],
                                "ScienceCost": SMOKEHOUSE_SCIENCE})
-    bp["ManufactorySpec"]["ProductionRecipeIds"] = ["SmokedFish"]
+    bp["ManufactorySpec"]["ProductionRecipeIds"] = ["SmokedFish", "Sushi"]   # sushi: build_extras.py
     if MODEL_DIR:
         bp["Children"]["#Finished"].setdefault("Children", {})["OtterSmokehouseExtras"] = {
             "TimbermeshSpec": {"Model": "Buildings/Food/Smokehouse/SmokehouseExtras.Otters.Model"}}
@@ -862,7 +864,7 @@ def build_building_copies(extra_grill_recipes=(), omitted=()):
     bases stay the Folktails ones). Returns the otter blueprint paths, in the Folktails order, plus the shared ones."""
     sources, shared = folktails_buildings()
     sources = [s for s in sources if s not in omitted]
-    for table in (SCIENCE_DISCOUNTS, MOISTURE_SOURCES, FREE_FOLKTAILS_BUILDINGS, [GRILL]):
+    for table in (SCIENCE_DISCOUNTS, MOISTURE_SOURCES, FREE_FOLKTAILS_BUILDINGS, [GRILL], RECIPE_SWAPS):
         missing = [b for b in table if b not in sources]
         assert not missing, f"tuned Folktails buildings not in the copy list: {missing}"
     blueprints = {s: copy.deepcopy(load(s)) for s in sources}
@@ -883,6 +885,12 @@ def build_building_copies(extra_grill_recipes=(), omitted=()):
             assert effects, source
             effects.append({"NeedId": "OtterMoisture", "PointsPerHour": MOISTURE_SOURCES[source],
                             "SatisfyToMaxValue": False})
+        for old, new in RECIPE_SWAPS.get(source, {}).items():
+            recipes = bp["ManufactorySpec"]["ProductionRecipeIds"]
+            assert old in recipes, (source, old)
+            recipes[recipes.index(old)] = new
+            if new is None:
+                recipes.remove(None)
         if source == GRILL:
             recipes = bp["ManufactorySpec"]["ProductionRecipeIds"]
             recipes.extend(r for r in [c[5] for c in NEW_CROPS] + ["GrilledFish"] + list(extra_grill_recipes)

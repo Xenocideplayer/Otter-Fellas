@@ -8,7 +8,6 @@
       "BotChassis",
       "BotHead",
       "BotLimb",
-      "Bread",
       "Carrot",
       "Catalyst",
       "CattailCracker",
@@ -39,7 +38,9 @@
       "GrilledFish",
       "SmokedFish",
       "Clams",
-      "GrilledClams"
+      "GrilledClams",
+      "RiceCakes",
+      "Sushi"
     ]
   }
 }

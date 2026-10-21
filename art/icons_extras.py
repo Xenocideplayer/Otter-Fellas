@@ -109,6 +109,62 @@ def driftwood_no_current_symbol():
             '<path d="M36 92 L76 64" fill="none" stroke-width="6"/>')
 
 
+def timber_tunnel():
+    # a slatted tunnel seen from the side: hoops with boards running along between them, a mouth at the front
+    return ('<path d="M14 92 V58 a14 18 0 0 1 28 0 V92" stroke-width="4.4"/>'
+            '<path d="M28 40 H90 M14 58 H96 M14 76 H96" stroke-width="2.6"/>'
+            '<path d="M56 40 v52 M76 40 v52" stroke-width="3.4"/>'
+            '<path d="M90 40 a10 18 0 0 1 10 18 V92" stroke-width="3.4"/>'
+            '<path d="M8 96 h96" stroke-width="2.4"/>')
+
+
+def timber_shaft():
+    # a slatted barrel standing up with a ladder inside, tunnel off to the side at the bottom
+    return ('<path d="M40 100 V22 M72 100 V22"/><path d="M48 100 V22 M64 100 V22" stroke-width="2"/>'
+            '<path d="M36 26 h40 M36 58 h40 M36 92 h40" stroke-width="4.4"/>'
+            '<path d="M48 40 h16 M48 72 h16" stroke-width="2.4"/>'
+            '<path d="M76 100 v-16 a10 12 0 0 1 20 0 v16" stroke-width="3"/>'
+            '<path d="M8 100 h96" stroke-width="2.4"/>')
+
+
+def sealed_timber_tunnel():
+    # a planked box with a tunnel mouth, water lapping against one side
+    return ('<path d="M22 96 V30 H90 V96 Z"/>'
+            '<path d="M22 52 H90 M22 74 H90" stroke-width="2"/>'
+            '<path d="M44 96 v-22 a12 15 0 0 1 24 0 v22" fill="FILL"/>'
+            '<path d="M6 64 q4 -4 8 0 t8 0 M6 80 q4 -4 8 0 t8 0" stroke-width="2.6"/>'
+            '<path d="M8 100 h96" stroke-width="2.4"/>')
+
+
+def tunnel_lodge():
+    # a round log hall with a cone roof and tunnels off both sides
+    return ('<path d="M32 98 V58 H80 V98"/>'
+            '<path d="M32 68 H80 M32 78 H80 M32 88 H80" stroke-width="2"/>'
+            '<path d="M24 58 L56 22 L88 58 Z"/>'
+            '<path d="M48 98 v-16 a8 9 0 0 1 16 0 v16" fill="FILL"/>'
+            '<path d="M6 98 v-14 a9 11 0 0 1 18 0 v14 M88 98 v-14 a9 11 0 0 1 18 0 v14" stroke-width="3"/>'
+            '<path d="M56 22 v-12"/><path d="M56 10 l10 4 l-10 4 z" fill="FILL"/>')
+
+
+def rice_cakes_good():
+    # a stack of three round rice cakes
+    return ('<ellipse cx="40" cy="60" rx="24" ry="8"/><path d="M16 60 v-8 M64 60 v-8"/>'
+            '<ellipse cx="40" cy="48" rx="24" ry="8"/><path d="M16 48 v-8 M64 48 v-8"/>'
+            '<ellipse cx="40" cy="36" rx="24" ry="8" fill="FILL"/>'
+            '<path d="M30 36 h2 M44 34 h2 M38 39 h2" stroke-width="2.4"/>')
+
+
+def sushi_good():
+    # two maki rolls and a nigiri with a band of seaweed
+    return ('<ellipse cx="22" cy="40" rx="12" ry="5"/><path d="M10 40 v12 a12 5 0 0 0 24 0 v-12" fill="none"/>'
+            '<ellipse cx="22" cy="40" rx="5" ry="2" fill="FILL"/>'
+            '<ellipse cx="50" cy="34" rx="12" ry="5"/><path d="M38 34 v12 a12 5 0 0 0 24 0 v-12" fill="none"/>'
+            '<ellipse cx="50" cy="34" rx="5" ry="2" fill="FILL"/>'
+            '<path d="M30 66 q0 -8 18 -8 q18 0 18 8 z"/>'
+            '<path d="M28 64 q20 -16 40 -4" stroke-width="4" fill="none"/>'
+            '<path d="M47 56 v10" stroke-width="5"/>')
+
+
 def render(name, size):
     body = globals()[name]()
     if size == 512:
@@ -127,4 +183,10 @@ ICONS = [("tube_valve", 112, "Buildings/Water/TubeValve/TubeValveIcon.png"),
          ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png"),
          ("driftwood_catch", 112, "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon.png"),
          ("basking_deck", 112, "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon.png"),
-         ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png")]
+         ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png"),
+         ("rice_cakes_good", 80, "Sprites/Goods/RiceCakesIcon.png"),
+         ("sushi_good", 80, "Sprites/Goods/SushiIcon.png"),
+         ("timber_tunnel", 112, "Buildings/Paths/TimberTunnel/TimberTunnelIcon.png"),
+         ("timber_shaft", 112, "Buildings/Paths/TimberShaft/TimberShaftIcon.png"),
+         ("sealed_timber_tunnel", 112, "Buildings/Paths/SealedTimberTunnel/SealedTimberTunnelIcon.png"),
+         ("tunnel_lodge", 112, "Buildings/Paths/TunnelLodge/TunnelLodgeIcon.png")]

@@ -4,7 +4,7 @@
 computer runs the same simulation from the same save, and only player actions go over the network. So a mod
 works in co-op as long as its simulation is deterministic and every player has the same version.
 
-## Status (Otters 2.1.0)
+## Status (Otters 2.2.0)
 
 Otters 2.0 is a self-contained faction: collections `Buildings.Otters`, `Characters.Otters` (`OtterAdult`,
 `OtterChild`, `Bot.Otters`), `ModularShaftParts.Otters`, `NaturalResources.Otters`, worker outfits with

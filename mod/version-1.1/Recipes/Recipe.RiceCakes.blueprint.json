@@ -1,0 +1,26 @@
+{
+  "RecipeSpec": {
+    "Id": "RiceCakes",
+    "BackwardCompatibleIds": [],
+    "DisplayLocKey": "Good.RiceCakes.PluralDisplayName",
+    "CycleDurationInHours": 1.0,
+    "Ingredients": [
+      {
+        "Id": "WildRice",
+        "Amount": 1
+      }
+    ],
+    "Products": [
+      {
+        "Id": "RiceCakes",
+        "Amount": 4
+      }
+    ],
+    "ProducedSciencePoints": 0,
+    "Fuel": "Log",
+    "CyclesFuelLasts": 10,
+    "FuelCapacity": 5,
+    "CyclesCapacity": 38,
+    "Icon": "Sprites/Goods/RiceCakesIcon"
+  }
+}

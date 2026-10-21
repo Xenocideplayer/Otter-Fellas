@@ -23,7 +23,8 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | **Splash Pool** | 60 science: a log-framed swimming hole set into the river. Fun for everyone, a big soak for otter fur. |
 | **Artesian Well** | 900 science, 750 hp and an operator: pours clean water out of nowhere, even in badtides and (at half speed) droughts, over the edge behind it. Breaks down now and then and has to be repaired. |
 | **Water Tubes** | The game's tube pieces carrying water: plug them into the well's walls and end them at a **Tube Outlet** to put the water anywhere. |
-| **Smokehouse** | Fish into Smoked Fish, the otters' best food. |
+| **Smokehouse** | Fish into Smoked Fish, the otters' best food, and wild rice + fish into **Sushi**. |
+| **Rice cakes, not bread** | Otters don't bake bread: their Bakery bakes **Rice Cakes** from wild rice instead. |
 | **Otter Slide** | A slide tower with a chute into the river: fun, and a big soak. |
 | **Tube Valve** | Shuts a water tube line when paused or switched off by automation. |
 | **Clam Bed** | Otters rake clams from clean, shallow riverbeds; Grilled Clams at the Grill. |
@@ -31,6 +32,7 @@ badwater clean — but they're slow on land and work slower once their fur dries
 | **Basking Deck** | A sun deck with reed mats and a warm stone: a new wellbeing need for four otters at a time. |
 | **Lumberjacks with hatchets** | Otter lumberjacks chop trees with a little hatchet and an overhead swing instead of gnawing. |
 | **Waterproof** | Fishing Dock, Reed Filter, Clam Bed, Driftwood Catch, River Holts, Splash Pool, Otter Slide and Basking Deck keep working when the water rises over their doors. |
+| **Timber Tunnels** | No zip lines: otters get their own wooden take on the Iron Teeth tube network: Timber Tunnel, Timber Shaft, Sealed Timber Tunnel and the Tunnel Lodge, all slatted log tunnels with their own models. |
 | **Slipway** | A mud-and-log ramp into the river so otters can swim instead of walking around. |
 | **The Wellspring** | The otters' own wonder. |
 | **Clean water** | Crops planted by otters grow 1.5x faster while their water is 100% clean. |
