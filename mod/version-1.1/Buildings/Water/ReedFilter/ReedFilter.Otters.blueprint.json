@@ -267,6 +267,11 @@
     "WaterPerCycle": 1.0,
     "MinimumContamination": 0.01
   },
+  "ReedPipeSpec": {
+    "TemplateName": "#OtterReedSegment",
+    "PipeParentName": "#Finished"
+  },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

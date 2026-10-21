@@ -37,7 +37,7 @@
       },
       {
         "NeedId": "OtterMoisture",
-        "PointsPerHour": 0.5,
+        "PointsPerHour": 0.15,
         "SatisfyToMaxValue": false
       }
     ]
@@ -207,6 +207,7 @@
     "MinimumWaterTiles": 2,
     "WarningLocKey": "Building.RiverHolt.NeedsWater"
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

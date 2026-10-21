@@ -14,6 +14,7 @@ namespace Otters
       Bind<OtterSwimmer>().AsTransient();
       Bind<OtterDigSite>().AsTransient();
       Bind<ReedFilter>().AsTransient();
+      Bind<ReedPipe>().AsTransient();
       Bind<OtterMaterial>().AsTransient();
       Bind<OtterDirtDropper>().AsSingleton();
       Bind<RiverHoltPlacement>().AsTransient();
@@ -24,6 +25,7 @@ namespace Otters
       Bind<WaterTubeOutlet>().AsTransient();
       Bind<WaterTubeValve>().AsTransient();
       Bind<ClamBed>().AsTransient();
+      Bind<DriftwoodCatch>().AsTransient();
       Bind<CleanWaterGrowth>().AsTransient();
       MultiBind<TemplateModule>().ToProvider(ProvideTemplateModule).AsSingleton();
     }
@@ -37,6 +39,7 @@ namespace Otters
       // only hand out free dirt).
       builder.AddDecorator<OtterDigSiteSpec, BottomTerrainLevelValidationConstraint>();
       builder.AddDecorator<ReedFilterSpec, ReedFilter>();
+      builder.AddDecorator<ReedPipeSpec, ReedPipe>();
       builder.AddDecorator<OtterMaterialSpec, OtterMaterial>();
       builder.AddDecorator<RiverHoltSpec, RiverHoltPlacement>();
       builder.AddDecorator<ArtesianWellSpec, ArtesianWell>();
@@ -45,6 +48,7 @@ namespace Otters
       builder.AddDecorator<WaterTubeOutletSpec, WaterTubeOutlet>();
       builder.AddDecorator<WaterTubeValveSpec, WaterTubeValve>();
       builder.AddDecorator<ClamBedSpec, ClamBed>();
+      builder.AddDecorator<DriftwoodCatchSpec, DriftwoodCatch>();
       builder.AddDecorator<CleanWaterGrowthSpec, CleanWaterGrowth>();
       return builder.Build();
     }

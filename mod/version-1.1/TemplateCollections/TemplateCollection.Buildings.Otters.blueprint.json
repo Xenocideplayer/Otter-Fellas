@@ -173,6 +173,8 @@
       "Buildings/Paths/Slipway/Slipway.Otters.blueprint",
       "Buildings/Water/TubeValve/TubeValve.Otters.blueprint",
       "Buildings/Food/ClamBed/ClamBed.Otters.blueprint",
+      "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.blueprint",
+      "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.blueprint",
       "Buildings/Monuments/Wellspring/Wellspring.Otters.blueprint"
     ]
   }

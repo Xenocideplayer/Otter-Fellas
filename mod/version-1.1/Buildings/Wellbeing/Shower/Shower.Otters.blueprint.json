@@ -139,7 +139,7 @@
       },
       {
         "NeedId": "OtterMoisture",
-        "PointsPerHour": 1.5,
+        "PointsPerHour": 1.0,
         "SatisfyToMaxValue": false
       }
     ]

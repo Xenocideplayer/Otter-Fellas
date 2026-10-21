@@ -21,6 +21,8 @@ TUBE_VALVE = "Buildings/Water/TubeValve/TubeValve.Otters.blueprint"
 CLAM_BED = "Buildings/Food/ClamBed/ClamBed.Otters.blueprint"
 WELLSPRING = "Buildings/Monuments/Wellspring/Wellspring.Otters.blueprint"
 FOLKTAILS_WONDER = "Buildings/Monuments/EarthRecultivator/EarthRecultivator.Folktails.blueprint"
+DRIFTWOOD_CATCH = "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.blueprint"
+BASKING_DECK = "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.blueprint"
 
 # Tuning
 VALVE_COST = [{"Id": "Plank", "Amount": 3}, {"Id": "Gear", "Amount": 1}, {"Id": "MetalBlock", "Amount": 1}]
@@ -31,6 +33,16 @@ CLAMS_PER_CYCLE = 2                  # ...brings up two clams (fish: one per 2.5
 CLAM_MIN_DEPTH = 0.5                 # blocks of water over the riverbed
 CLAM_MAX_CONTAMINATION = 0.2         # clean water only: full speed at 0 %, nothing at 20 % badwater or more
 GRILLED_CLAMS = (2, 3)               # 2 clams -> 3 grilled clams
+DRIFTWOOD_COST = [{"Id": "Log", "Amount": 30}, {"Id": "Plank", "Amount": 10}]
+DRIFTWOOD_SCIENCE = 120
+DRIFTWOOD_HOURS = 3.0                # one log per 3 work-hours at full current (a Lumberjack is faster, but needs trees)
+DRIFTWOOD_FULL_CURRENT = 1.0         # Flow Sensor reading for full speed (the sensor goes up to 2)
+DRIFTWOOD_MIN_CURRENT = 0.05         # still water below this: nothing drifts in
+DRIFTWOOD_MIN_DEPTH = 0.3
+BASKING_COST = [{"Id": "Log", "Amount": 20}, {"Id": "Plank", "Amount": 6}]
+BASKING_SCIENCE = 60
+BASKING_POINTS = 0.6                 # per hour, like the Contemplation Spot
+BASKING_CAPACITY = 4
 WONDER_COST = [{"Id": "Gear", "Amount": 1600}, {"Id": "TreatedPlank", "Amount": 2400},
                {"Id": "MetalBlock", "Amount": 1500}]          # Folktails: 2000 / 2000 / 1500
 WONDER_GOODS = [{"Id": "Extract", "Amount": 500}, {"Id": "SmokedFish", "Amount": 500}]  # Folktails: Extract + Paper
@@ -59,6 +71,20 @@ TEXT = {
     "Good.Clams.PluralDisplayName": "Clams",
     "Good.GrilledClams.DisplayName": "Grilled clams",
     "Good.GrilledClams.PluralDisplayName": "Grilled clams",
+    "Building.DriftwoodCatch.DisplayName": "Driftwood Catch",
+    "Building.DriftwoodCatch.Description": "A log boom across the current that catches driftwood and lands it as logs. "
+                                           "Build it with its deck on the bank and the boom over water one block "
+                                           "down. Only works in moving water, faster the stronger the current "
+                                           "(full speed from a current of 1). Needs no trees and takes no water.",
+    "Building.DriftwoodCatch.FlavorDescription": "Somebody upstream is very bad at keeping track of their logs.",
+    "Recipe.OtterDriftwood": "Catching driftwood",
+    "Status.DriftwoodCatch.NoCurrent": "Nothing drifts in: the boom needs moving water (a current of at least 0.05) "
+                                       "at least a third of a block deep.",
+    "Status.DriftwoodCatch.NoCurrent.Short": "Driftwood catch needs a current",
+    "Building.BaskingDeck.DisplayName": "Basking Deck",
+    "Building.BaskingDeck.Description": "A low sun deck with reed mats and a warm flat stone. Otters sprawl here to dry "
+                                        "off and doze in the sun.",
+    "Building.BaskingDeck.FlavorDescription": "Wet fur, warm stone, no plans.",
     "Building.Wellspring.DisplayName": "The Wellspring",
     "Building.Wellspring.Description": "The Otters' wonder: a great log fountain that lifts the river into a bowl high "
                                        "above the town and pours it back in four streams, with a holt on top. Once "
@@ -153,6 +179,7 @@ def build_clam_bed(bm):
                                    "CollidersSpec": _colliders([(1.5, 0.1, 0.5, 3.0, 0.2, 1.0)])}}}}
     bp["ConstructionSiteProgressVisualizerSpec"] = {"ProgressThresholds": [0.0]}
     bm.labeled(bp["LabeledEntitySpec"], "ClamBed", "Buildings/Food/ClamBed/ClamBedIcon")
+    bm.waterproof(bp)
     bm.write(CLAM_BED + ".json", bm.order_specs(bp))
 
     water = bm.load("Recipes/Recipe.Water.blueprint")["RecipeSpec"]
@@ -190,6 +217,76 @@ def build_clam_bed(bm):
                                  "Products": [{"Id": "GrilledClams", "Amount": GRILLED_CLAMS[1]}],
                                  "Icon": "Sprites/Goods/GrilledClamsIcon"})
     bm.write("Recipes/Recipe.GrilledClams.blueprint.json", recipe)
+
+
+def build_driftwood_catch(bm):
+    clam = bm.load_written(CLAM_BED + ".json")
+    bp = bm.copy.deepcopy(clam)
+    bp["TemplateSpec"].update({"TemplateName": "DriftwoodCatch.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": _clean(DRIFTWOOD_COST), "ScienceCost": DRIFTWOOD_SCIENCE})
+    bp["ManufactorySpec"]["ProductionRecipeIds"] = ["OtterDriftwood"]
+    bp["TransformSlotInitializerSpec"]["Slots"] = [
+        {"SlotKeyword": "Entrance", "Animation": "Working", "Inanimate": False, "RandomizeYRotation": False,
+         "WaterSlot": False}]
+    del bp["ClamBedSpec"]
+    bp["DriftwoodCatchSpec"] = {"WaterCoordinates": {"X": 1, "Y": 2, "Z": 0}, "MinWaterDepth": DRIFTWOOD_MIN_DEPTH,
+                                "FullSpeedCurrent": DRIFTWOOD_FULL_CURRENT, "MinimumCurrent": DRIFTWOOD_MIN_CURRENT,
+                                "StatusIcon": "OtterDriftwoodNoCurrent", "StatusLocKey": "Status.DriftwoodCatch.NoCurrent",
+                                "StatusShortLocKey": "Status.DriftwoodCatch.NoCurrent.Short"}
+    bp["PlaceableBlockObjectSpec"].update({"ToolGroupId": "Wood", "ToolOrder": 25})
+    posts = [(x, -0.3, z, 0.12, 1.4, 0.12) for x, z in ((0.15, 2.85), (2.85, 2.85), (0.62, 2.0), (2.38, 2.0))]
+    bp["Children"] = {
+        "#Finished": {"TimbermeshSpec": {"Model": "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.Model"},
+                      "CollidersSpec": _colliders([(1.5, 0.1, 0.5, 3.0, 0.2, 1.0), (2.25, 0.4, 0.5, 0.65, 0.4, 0.85)]
+                                                  + posts)},
+        "#Unfinished": {"Children": {
+            "ConstructionBase3x1#nested": {"BlueprintPath": "ConstructionBases/ConstructionBase3x1/ConstructionBase3x1.blueprint"},
+            "ConstructionStage0": {"TimbermeshSpec": {"Model": "Buildings/Wood/DriftwoodCatch/DriftwoodCatch.Otters.ConstructionStage0.Model"},
+                                   "CollidersSpec": _colliders([(1.5, 0.1, 0.5, 3.0, 0.2, 1.0)])}}}}
+    bm.labeled(bp["LabeledEntitySpec"], "DriftwoodCatch", "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon")
+    bm.write(DRIFTWOOD_CATCH + ".json", bm.order_specs(bp))   # waterproof already (copied from the Clam Bed)
+    bm.WATERPROOF_KEYS.append(bp["LabeledEntitySpec"]["DescriptionLocKey"])
+
+    water = bm.load("Recipes/Recipe.Water.blueprint")["RecipeSpec"]
+    bm.write("Recipes/Recipe.OtterDriftwood.blueprint.json", {"RecipeSpec": {
+        **bm.copy.deepcopy(water), "Id": "OtterDriftwood", "BackwardCompatibleIds": [],
+        "DisplayLocKey": "Recipe.OtterDriftwood", "CycleDurationInHours": DRIFTWOOD_HOURS, "Ingredients": [],
+        "Products": [{"Id": "Log", "Amount": 1}], "CyclesCapacity": 10, "Icon": "Sprites/Goods/LogIcon"}})
+
+
+def build_basking_deck(bm):
+    spot = bm.load("Buildings/Wellbeing/ContemplationSpot/ContemplationSpot.Folktails.blueprint")
+    bp = bm.copy.deepcopy(spot)
+    bp["TemplateSpec"].update({"TemplateName": "BaskingDeck.Otters", "BackwardCompatibleTemplateNames": []})
+    bp["BuildingSpec"].update({"BuildingCost": _clean(BASKING_COST), "ScienceCost": BASKING_SCIENCE,
+                               "SelectionSoundName": "ContemplationSpot"})
+    for spec in ("FloodableFireSpec", "FireSpec", "NightTimeLightControllerSpec", "TemplateAttachmentsSpec"):
+        bp.pop(spec, None)
+    bp["AttractionSpec"]["Effects"] = [{"NeedId": "Basking", "PointsPerHour": BASKING_POINTS, "SatisfyToMaxValue": False}]
+    bp["TransformSlotInitializerSpec"]["Slots"] = [
+        {"SlotKeyword": "Bask", "Animation": "Sitting", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": False},
+        {"SlotKeyword": "Sun", "Animation": "Sleeping", "Inanimate": False, "RandomizeYRotation": False, "WaterSlot": False}]
+    bp["EnterableSpec"].update({"LimitedCapacityFinished": True, "CapacityFinished": BASKING_CAPACITY})
+    full = "Bottom, Corners, Path, Middle"
+    bp["BlockObjectSpec"].update({"Size": {"X": 2, "Y": 2, "Z": 1}, "Blocks": [_block(full, "GroundOrStackable") for _ in range(4)],
+                                  "Entrance": {"HasEntrance": True, "Coordinates": {"X": 0, "Y": -1, "Z": 0}}})
+    bp["BuildingAccessibleSpec"]["LocalAccess"] = {"X": 0.5, "Y": 0.16, "Z": 0.2}
+    bp["PlaceableBlockObjectSpec"].update({"ToolOrder": 71, "Layout": "Single"})
+    bp["Children"] = {
+        "#Finished": {"TimbermeshSpec": {"Model": "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.Model"},
+                      "CollidersSpec": _colliders([(1.0, 0.08, 1.0, 2.0, 0.16, 2.0), (1.0, 0.2, 1.5, 1.2, 0.12, 0.7)])},
+        "#Unfinished": {"Children": {
+            "ConstructionBase2x2#nested": {"BlueprintPath": "ConstructionBases/ConstructionBase2x2/ConstructionBase2x2.blueprint"},
+            "ConstructionStage0": {"TimbermeshSpec": {"Model": "Buildings/Wellbeing/BaskingDeck/BaskingDeck.Otters.ConstructionStage0.Model"},
+                                   "CollidersSpec": _colliders([(1.0, 0.08, 1.0, 2.0, 0.16, 2.0)])}}}}
+    bm.labeled(bp["LabeledEntitySpec"], "BaskingDeck", "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon")
+    bm.waterproof(bp)
+    bm.write(BASKING_DECK + ".json", bm.order_specs(bp))
+
+    need = bm.copy.deepcopy(bm.load("Needs/Need.Beaver.ContemplationSpot.blueprint"))
+    need["NeedSpec"].update({"Id": "Basking", "BackwardCompatibleIds": [], "Order": 33,
+                             "DisplayNameLocKey": "Building.BaskingDeck.DisplayName"})
+    bm.write("Needs/Need.Beaver.Basking.blueprint.json", need)
 
 
 # ---------------------------------------------------------------------------------------------------- wonder
@@ -239,21 +336,27 @@ def build_wellspring(bm):
 def build_all(bm):
     build_tube_valve(bm)
     build_clam_bed(bm)
+    build_driftwood_catch(bm)
+    build_basking_deck(bm)
     build_wellspring(bm)
     folk_wonder = bm.load("Factions/Faction.Folktails.blueprint")["FactionWonderSpec"]
     models = [("Buildings/Water/TubeValve", "TubeValveWheel.Otters.Model.timbermesh"),
               ("Buildings/Food/ClamBed", "ClamBed.Otters.Model.timbermesh"),
               ("Buildings/Food/ClamBed", "ClamBed.Otters.ConstructionStage0.Model.timbermesh"),
-              ("Buildings/Monuments/Wellspring", "Wellspring.Otters.Model.timbermesh")]
+              ("Buildings/Monuments/Wellspring", "Wellspring.Otters.Model.timbermesh"),
+              ("Buildings/Wood/DriftwoodCatch", "DriftwoodCatch.Otters.Model.timbermesh"),
+              ("Buildings/Wood/DriftwoodCatch", "DriftwoodCatch.Otters.ConstructionStage0.Model.timbermesh"),
+              ("Buildings/Wellbeing/BaskingDeck", "BaskingDeck.Otters.Model.timbermesh"),
+              ("Buildings/Wellbeing/BaskingDeck", "BaskingDeck.Otters.ConstructionStage0.Model.timbermesh")]
     models += [("Buildings/Monuments/Wellspring", f"Wellspring.Otters.ConstructionStage{k}.Model.timbermesh")
                for k in range(4)]
     if bm.MODEL_DIR:
         missing = [n for _, n in models if not os.path.exists(os.path.join(bm.MODEL_DIR, "buildings", n))]
         assert not missing, f"run model/make_extras.py first, missing {missing}"
     return {
-        "buildings": [TUBE_VALVE, CLAM_BED, WELLSPRING],
+        "buildings": [TUBE_VALVE, CLAM_BED, DRIFTWOOD_CATCH, BASKING_DECK, WELLSPRING],
         "goods": ["Clams", "GrilledClams"],
-        "needs": ["Clams", "GrilledClams", "Wellspring"],
+        "needs": ["Clams", "GrilledClams", "Wellspring", "Basking"],
         "grill_recipes": ["GrilledClams"],
         "text": dict(TEXT),
         "models": models,
@@ -262,7 +365,10 @@ def build_all(bm):
                   ("wellspring", 112, "Buildings/Monuments/Wellspring/WellspringIcon.png"),
                   ("clams_good", 80, "Sprites/Goods/ClamsIcon.png"),
                   ("grilled_clams_good", 80, "Sprites/Goods/GrilledClamsIcon.png"),
-                  ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png")],
+                  ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png"),
+                  ("driftwood_catch", 112, "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon.png"),
+                  ("basking_deck", 112, "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon.png"),
+                  ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png")],
         "wonder": {"WonderCompletionImage": folk_wonder["WonderCompletionImage"],
                    "WonderLaunchSound": folk_wonder["WonderLaunchSound"],
                    "WonderCompletionFlavorLocKey": "Faction.Otters.WonderCompletionFlavor",

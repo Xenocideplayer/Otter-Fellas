@@ -265,6 +265,7 @@
   "FishingDockSpec": {
     "MaxContamination": 0.5
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

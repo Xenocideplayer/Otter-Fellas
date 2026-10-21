@@ -8,7 +8,7 @@
         "Amount": 40
       }
     ],
-    "ScienceCost": 0,
+    "ScienceCost": 60,
     "PlaceFinished": false,
     "FinishableWithBeaversOnSite": false,
     "DrawRangeBoundsOnIt": true
@@ -305,6 +305,7 @@
   "ConstructionSiteProgressVisualizerSpec": {
     "ProgressThresholds": []
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {

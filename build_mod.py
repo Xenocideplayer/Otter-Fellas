@@ -29,7 +29,7 @@ MODEL_DIR = sys.argv[4] if len(sys.argv) > 4 else None
 GAME_VERSION_DIR = "version-1.1"
 OUT = os.path.join(OUT_ROOT, GAME_VERSION_DIR)
 
-MOD_VERSION = "2.0.1"
+MOD_VERSION = "2.1.0"
 MOD_ID = "Otters.WaterFaction"
 FACTION_ID = "Otters"
 
@@ -38,6 +38,12 @@ written = []
 
 def load(path):
     with open(os.path.join(VANILLA, path + ".json"), encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def load_written(rel):
+    """A blueprint this build already wrote (rel as passed to write)."""
+    with open(os.path.join(OUT, rel), encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -65,9 +71,9 @@ OTTER_MATERIAL = {c: {"NormalMap": f"Characters/Otters/Textures/{n}Normal",
                       "MetallicMap": f"Characters/Otters/Textures/{n}Gloss"}
                   for c, n in (("BeaverAdult", "OtterAdult"), ("BeaverChild", "OtterChild"))}
 
-MOISTURE_DAILY_DELTA = -0.3          # full to bone dry in about 3.3 days without water
+MOISTURE_DAILY_DELTA = -0.45         # full to bone dry in a bit over 2 days without water
 MOISTURE_SOAK_PER_HOUR = 1.0         # an hour in the water refills it
-DRY_WORK_PENALTY = -0.15             # working speed while bone dry
+DRY_WORK_PENALTY = -0.2              # working speed while bone dry
 
 SCIENCE_DISCOUNTS = {                # Folktails blueprint -> science cost for otters
     "Buildings/Landscaping/Levee/Levee.Folktails.blueprint": 0,
@@ -80,25 +86,26 @@ SCIENCE_DISCOUNTS = {                # Folktails blueprint -> science cost for o
     "Buildings/Water/LargeWaterPump/LargeWaterPump.Folktails.blueprint": 200,
     "Buildings/Wellbeing/Shower/Shower.Folktails.blueprint": 0,
     "Buildings/Wellbeing/Lido/Lido.Folktails.blueprint": 150,
+    "Buildings/Landscaping/TerrainBlock/TerrainBlock.Folktails.blueprint": 500,   # vanilla 1000
 }
 MOISTURE_SOURCES = {                 # attractions that also refill otter moisture (points per hour)
-    "Buildings/Wellbeing/Shower/Shower.Folktails.blueprint": 1.5,
+    "Buildings/Wellbeing/Shower/Shower.Folktails.blueprint": 1.0,
     "Buildings/Wellbeing/Lido/Lido.Folktails.blueprint": 0.8,
     "Buildings/Wellbeing/DomedGarden/DomedGarden.Folktails.blueprint": 0.6,
 }
-CROP_GROWTH_DAYS = {                 # aquatic crops grow ~40% faster for otters
-    "NaturalResources/Crops/Cattail/Cattail.blueprint": 5.0,      # vanilla 8
-    "NaturalResources/Crops/Spadderdock/Spadderdock.blueprint": 7.5,  # vanilla 12
+CROP_GROWTH_DAYS = {                 # aquatic crops grow ~20% faster for otters (and 1.5x again in clean water)
+    "NaturalResources/Crops/Cattail/Cattail.blueprint": 6.5,      # vanilla 8
+    "NaturalResources/Crops/Spadderdock/Spadderdock.blueprint": 10.0,  # vanilla 12
 }
 DIG_SITE_HOURS = 12.0                # builder-hours to dig one block out by paw (slow on purpose)
 DIRT_PER_DUG_BLOCK = 1               # a terrain block costs 4 dirt, so digging returns a quarter
-FREE_FOLKTAILS_BUILDINGS = ["Buildings/Landscaping/TerrainBlock/TerrainBlock.Folktails.blueprint"]  # no science
+FREE_FOLKTAILS_BUILDINGS = []        # Folktails buildings otters get for no science
 GRILL = "Buildings/Food/Grill/Grill.Folktails.blueprint"   # otter copy also grills the otter foods
 
 # New aquatic crops: (template, model source, growth days, yield good, yield amount, cooked good, order)
 NEW_CROPS = [
-    ("WildRice", "NaturalResources/Crops/Wheat/Wheat.blueprint", 7.0, "WildRice", 3, "CookedWildRice", 7),
-    ("WaterTaro", "NaturalResources/Crops/Cassava/Cassava.blueprint", 9.0, "TaroRoot", 3, "RoastedTaro", 8),
+    ("WildRice", "NaturalResources/Crops/Wheat/Wheat.blueprint", 8.5, "WildRice", 3, "CookedWildRice", 7),
+    ("WaterTaro", "NaturalResources/Crops/Cassava/Cassava.blueprint", 10.0, "TaroRoot", 3, "RoastedTaro", 8),
 ]
 EXTRA_TEMPLATES = ["NaturalResources/Trees/Mangrove/Mangrove.blueprint"]   # Iron Teeth's water tree (shared)
 EXTRA_GOODS = ["MangroveFruit"]
@@ -106,7 +113,8 @@ EXTRA_NEEDS = ["MangroveFruit"]
 NATURAL_RESOURCES = "TemplateCollections/TemplateCollection.NaturalResources.Otters.blueprint"
 RIVER_HOLT = "Buildings/Housing/RiverHolt/RiverHolt.Otters.blueprint"
 BIG_RIVER_HOLT = "Buildings/Housing/BigRiverHolt/BigRiverHolt.Otters.blueprint"
-HOLT_MOISTURE_PER_HOUR = 0.5         # residents' fur stays wet while they sleep
+BIG_HOLT_SCIENCE = 150              # like the Double Lodge
+HOLT_MOISTURE_PER_HOUR = 0.15        # residents' fur dries out more slowly while they sleep
 
 # --- Faction separation -----------------------------------------------------------------------------------
 # Template collections (ids are what the FactionSpec lists; Timber Together reads them too).
@@ -144,13 +152,14 @@ FISH_MAX_CONTAMINATION = 0.5         # half badwater or worse: nothing bites
 # Splash Pool: a free log-framed swimming hole set into the river; fun for everyone, wet fur for otters.
 SPLASH_POOL = "Buildings/Wellbeing/SplashPool/SplashPool.Otters.blueprint"
 SPLASH_POOL_MOISTURE = 1.5           # moisture points per hour
+SPLASH_POOL_SCIENCE = 60
 # Artesian Well: water from deep underground, anywhere, even in droughts -- but it eats 750 hp and breaks down.
 ARTESIAN_WELL = "Buildings/Water/ArtesianWell/ArtesianWell.Otters.blueprint"
 WELL_POWER = 750
-WELL_WATER_PER_HOUR = 12.0           # cubic blocks of clean water per hour at full power (a water pump moves 0.6)
-WELL_BREAKDOWN_CHANCE = 0.02         # per running hour: on average a breakdown every ~50 working hours
+WELL_WATER_PER_HOUR = 6.0            # cubic blocks of clean water per hour at full power (a water pump moves 0.6)
+WELL_BREAKDOWN_CHANCE = 0.03         # per running hour: on average a breakdown every ~33 working hours
 WELL_REPAIR_HOURS = 6.0              # operator work-hours to get it running again
-WELL_SCIENCE = 600
+WELL_SCIENCE = 900
 WELL_DROUGHT_SPEED = 0.5             # pumps at half speed during droughts
 WELL_TUBE_PORTS = [(-1, 1, 0), (3, 1, 0), (1, 3, 0)]   # tiles by the left wall, right wall and back
 # Water tubes (the game's tube models) carry well water to Tube Outlets anywhere along the line.
@@ -187,7 +196,7 @@ TEXT = {
     "Building.OtterDigSite.DisplayName": "Dig Site",
     "Building.OtterDigSite.FlavorDescription": "\"Why blow it up when you can just dig?\"",
     "Building.ReedFilter.DisplayName": "Reed Filter",
-    "Building.ReedFilter.Description": "A water pump with a bed of reeds at its feet. Turns badwater at its intake "
+    "Building.ReedFilter.Description": "A pump station that drinks through a tied bundle of reeds. Turns badwater at its intake "
                                        "into clean water without lowering the river; cleans faster the dirtier the "
                                        "water is.",
     "Building.ReedFilter.FlavorDescription": "The reeds don't mind the taste.",
@@ -201,11 +210,11 @@ TEXT = {
                                          "nobody is standing on the spot.",
     "Building.RiverHolt.DisplayName": "River Holt",
     "Building.RiverHolt.Description": "A cosy otter den built out in the water. Must be placed with at least two "
-                                      "tiles in water. Residents' fur stays wet while they sleep.",
+                                      "tiles in water. Residents' fur dries out more slowly while they sleep.",
     "Building.RiverHolt.FlavorDescription": "Front door: the river.",
     "Building.BigRiverHolt.DisplayName": "Big River Holt",
     "Building.BigRiverHolt.Description": "A two-storey otter den out in the water for six. Must be placed with at "
-                                         "least three tiles in water. Residents' fur stays wet while they sleep.",
+                                         "least three tiles in water. Residents' fur dries out more slowly while they sleep.",
     "Building.BigRiverHolt.FlavorDescription": "Room for the whole raft.",
     "Building.RiverHolt.NeedsWater": "Must stand in water",
     "NaturalResource.WildRice.DisplayName": "Wild rice",
@@ -401,6 +410,16 @@ def labeled(spec, key, icon):
     spec["Icon"] = icon
 
 
+WATERPROOF_NOTE = " Waterproof: keeps working when the water rises over its door."
+WATERPROOF_KEYS = []
+
+
+def waterproof(bp):
+    """Never floods: the game's flood blocker (as on the Zipline Station) stops its door flooding it shut."""
+    bp["FloodableObjectBlockerSpec"] = {}
+    WATERPROOF_KEYS.append(bp["LabeledEntitySpec"]["DescriptionLocKey"])
+
+
 def build_dig_site():
     bp = copy.deepcopy(load("Buildings/Landscaping/Dynamite/Dynamite.Folktails.blueprint"))
     bp["BuildingSpec"].update({"SelectionSoundName": "Default", "BuildingCost": [], "ScienceCost": 0,
@@ -432,10 +451,14 @@ def build_reed_filter():
     if MODEL_DIR:
         bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Water/ReedFilter/ReedFilter.Otters.Model"
     bp["ReedFilterSpec"] = {"WaterPerCycle": 1.0, "MinimumContamination": 0.01}
+    if MODEL_DIR:  # the intake pipe into the river is a bundle of reeds, not wood
+        bp["ReedPipeSpec"] = {"TemplateName": "#OtterReedSegment",
+                              "PipeParentName": bp["WaterInputPipeSpec"]["PipeParentName"]}
     bp["TemplateSpec"]["TemplateName"] = "ReedFilter.Otters"
     bp["TemplateSpec"]["BackwardCompatibleTemplateNames"] = []
     bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 11
     labeled(bp["LabeledEntitySpec"], "ReedFilter", "Buildings/Water/ReedFilter/ReedFilterIcon")
+    waterproof(bp)
     write(REED_FILTER + ".json", order_specs(bp))
 
     write("Recipes/Recipe.OtterWaterFiltering.blueprint.json", {"RecipeSpec": {
@@ -519,12 +542,13 @@ def build_river_holts():
         bp = copy.deepcopy(load(source))
         name = path.split("/")[-1].replace(".blueprint", "")
         bp["TemplateSpec"].update({"TemplateName": name, "BackwardCompatibleTemplateNames": []})
-        bp["BuildingSpec"]["ScienceCost"] = 0
+        bp["BuildingSpec"]["ScienceCost"] = 0 if key == "RiverHolt" else BIG_HOLT_SCIENCE
         bp["DwellingSpec"]["SleepEffects"].append({"NeedId": "OtterMoisture", "PointsPerHour": HOLT_MOISTURE_PER_HOUR,
                                                    "SatisfyToMaxValue": False})
         bp["RiverHoltSpec"] = {"MinimumWaterTiles": min_tiles, "WarningLocKey": "Building.RiverHolt.NeedsWater"}
         bp["PlaceableBlockObjectSpec"]["ToolOrder"] = order
         labeled(bp["LabeledEntitySpec"], key, f"Buildings/Housing/{key}/{key}Icon")
+        waterproof(bp)
         write(path + ".json", order_specs(bp))
 
 
@@ -540,6 +564,7 @@ def build_fishing_dock():
         bp["Children"]["#Finished"]["TimbermeshSpec"]["Model"] = "Buildings/Food/FishingDock/FishingDock.Otters.Model"
     bp["PlaceableBlockObjectSpec"].update({"ToolGroupId": "Food", "ToolOrder": 12})
     labeled(bp["LabeledEntitySpec"], "FishingDock", "Buildings/Food/FishingDock/FishingDockIcon")
+    waterproof(bp)
     write(FISHING_DOCK + ".json", order_specs(bp))
 
     water = load("Recipes/Recipe.Water.blueprint")["RecipeSpec"]
@@ -577,7 +602,7 @@ def build_fishing_dock():
 def build_splash_pool():
     bp = copy.deepcopy(load("Buildings/Wellbeing/SwimmingPool/SwimmingPool.IronTeeth.blueprint"))
     bp["TemplateSpec"].update({"TemplateName": "SplashPool.Otters", "BackwardCompatibleTemplateNames": []})
-    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 40}], "ScienceCost": 0})
+    bp["BuildingSpec"].update({"BuildingCost": [{"Id": "Log", "Amount": 40}], "ScienceCost": SPLASH_POOL_SCIENCE})
     bp["AttractionSpec"]["Effects"] = [
         {"NeedId": "SplashPool", "PointsPerHour": 0.6, "SatisfyToMaxValue": False},
         {"NeedId": "OtterMoisture", "PointsPerHour": SPLASH_POOL_MOISTURE, "SatisfyToMaxValue": False}]
@@ -593,6 +618,7 @@ def build_splash_pool():
     bp["ConstructionSiteProgressVisualizerSpec"] = {"ProgressThresholds": []}
     bp["PlaceableBlockObjectSpec"]["ToolOrder"] = 15
     labeled(bp["LabeledEntitySpec"], "SplashPool", "Buildings/Wellbeing/SplashPool/SplashPoolIcon")
+    waterproof(bp)
     write(SPLASH_POOL + ".json", order_specs(bp))
 
     need = copy.deepcopy(load("Needs/Need.Beaver.SwimmingPool.blueprint"))
@@ -759,6 +785,7 @@ def build_otter_slide():
         "ConstructionBase2x2#nested": {"BlueprintPath": "ConstructionBases/ConstructionBase2x2/ConstructionBase2x2.blueprint"}}
     bp["ConstructionSiteProgressVisualizerSpec"] = {"ProgressThresholds": []}
     labeled(bp["LabeledEntitySpec"], "OtterSlide", "Buildings/Wellbeing/OtterSlide/OtterSlideIcon")
+    waterproof(bp)
     write(OTTER_SLIDE + ".json", order_specs(bp))
 
     need = copy.deepcopy(load("Needs/Need.Beaver.SwimmingPool.blueprint"))
@@ -1037,6 +1064,8 @@ def main():
     build_slipway()
     extras = run_extras()
     TEXT.update(extras.get("text") or {})
+    for key in WATERPROOF_KEYS:
+        TEXT[key] = TEXT[key].rstrip() + WATERPROOF_NOTE
     building_copies = build_building_copies(extras.get("grill_recipes") or (), set(extras.get("omit_folktails") or ()))
     build_characters()
     build_worker_outfits()

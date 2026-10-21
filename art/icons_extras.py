@@ -79,6 +79,36 @@ def clam_bed_no_water_symbol():
             + '<path d="M36 90 L76 66" fill="none" stroke-width="6"/>')
 
 
+def driftwood_catch():
+    # a V of floating logs between posts funnelling driftwood towards a little deck with a winch
+    return ('<path d="M8 40 h34 M14 40 v20 M36 40 v20"/>'                         # deck on posts
+            '<path d="M18 40 v-10 M32 40 v-10 M16 30 h18" stroke-width="2.4"/>'   # winch frame
+            '<circle cx="25" cy="30" r="4.5"/>'
+            '<path d="M29 32 Q48 44 56 58" stroke-width="1.8"/>'                  # rope to the boom
+            '<path d="M60 62 L100 32 M60 62 L104 84" stroke-width="7"/>'          # the boom logs
+            '<path d="M100 22 v18 M104 76 v18" stroke-width="2.6"/>'              # posts
+            '<path d="M70 56 l18 -6 M74 66 l20 3" stroke-width="5.5"/>'           # caught driftwood
+            '<path d="M8 76 q6 -5 12 0 t12 0 t12 0 t12 0" stroke-width="2.2"/>'
+            '<path d="M8 100 q6 -5 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" stroke-width="2.2"/>')
+
+
+def basking_deck():
+    # a sun over a low deck with a flat stone and a mat, an otter tail curling off the edge
+    return ('<circle cx="80" cy="26" r="11"/>'
+            '<path d="M80 6 v6 M80 40 v6 M60 26 h6 M94 26 h6 M66 12 l4 4 M90 36 l4 4 M94 12 l-4 4 M66 40 l4 -4" stroke-width="2.4"/>'
+            '<path d="M10 76 h92 M10 84 h92 M16 84 v16 M96 84 v16"/>'              # deck
+            '<path d="M22 76 q20 -18 46 0" fill="FILL"/>'                         # flat stone
+            '<path d="M72 76 v-4 h24 v4" stroke-width="2.4"/>'                    # mat
+            '<path d="M10 84 q-6 8 2 14" stroke-width="3"/>')
+
+
+def driftwood_no_current_symbol():
+    # a log over a flat (still) line: no current to bring driftwood
+    return ('<path d="M26 50 h60" fill="none" stroke-width="16" stroke-linecap="round" stroke="#BBA16C"/>'
+            '<path d="M24 78 h64" fill="none" stroke-width="5"/>'
+            '<path d="M36 92 L76 64" fill="none" stroke-width="6"/>')
+
+
 def render(name, size):
     body = globals()[name]()
     if size == 512:
@@ -94,4 +124,7 @@ ICONS = [("tube_valve", 112, "Buildings/Water/TubeValve/TubeValveIcon.png"),
          ("wellspring", 112, "Buildings/Monuments/Wellspring/WellspringIcon.png"),
          ("clams_good", 80, "Sprites/Goods/ClamsIcon.png"),
          ("grilled_clams_good", 80, "Sprites/Goods/GrilledClamsIcon.png"),
-         ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png")]
+         ("clam_bed_no_water_symbol", 512, "Sprites/StatusIcons/OtterClamBedNoWater.png"),
+         ("driftwood_catch", 112, "Buildings/Wood/DriftwoodCatch/DriftwoodCatchIcon.png"),
+         ("basking_deck", 112, "Buildings/Wellbeing/BaskingDeck/BaskingDeckIcon.png"),
+         ("driftwood_no_current_symbol", 512, "Sprites/StatusIcons/OtterDriftwoodNoCurrent.png")]

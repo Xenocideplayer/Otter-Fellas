@@ -267,6 +267,7 @@
   "ConstructionSiteProgressVisualizerSpec": {
     "ProgressThresholds": []
   },
+  "FloodableObjectBlockerSpec": {},
   "Children": {
     "#Finished": {
       "TimbermeshSpec": {
