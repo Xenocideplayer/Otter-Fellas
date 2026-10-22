@@ -1,4 +1,4 @@
-"""Icons for the Tube Valve, Clam Bed, clams and the Wellspring, in the same style as icons.py.
+"""Icons for the Tube Valve, Clam Bed, Wellspring, Driftwood Catch, Basking Deck, the Timber Tunnel set, clams, rice cakes and sushi, drawn with the helpers in icons.py.
 
 Every function returns an SVG body. Building icons are drawn on a 112 grid, goods on an 80 grid, status symbols
 for status_icon (112 grid, rendered at 512). render(name, size) turns any of them into a finished PIL image:
@@ -6,162 +6,188 @@ for status_icon (112 grid, rendered at 512). render(name, size) turns any of the
 """
 import math
 
-from icons import WAVES, line_icon, status_icon
-
-
-def _clam(x, y, s=1.0, fill=False, a=0):
-    """A clam shell seen from above, hinge at the bottom, centred at (x, y); s=1 is about 28 px wide."""
-    f = ' fill="FILL"' if fill else ""
-    ribs = "" if fill else "".join(
-        f'<path d="M0 8 L{12 * math.cos(math.radians(d)):.1f} {8 - 16 * math.sin(math.radians(d)):.1f}" stroke-width="1.8"/>'
-        for d in (40, 65, 90, 115, 140))
-    return (f'<g transform="translate({x} {y}) rotate({a}) scale({s})">'
-            f'<path d="M0 9 L-13 -1 Q-12 -13 0 -13 Q12 -13 13 -1 Z"{f}/>'
-            f'<path d="M-5 9 h10 l-2 4 h-6 z"{f}/>'
-            f'{ribs}</g>')
+from icons import (CUT, GOOD_STROKE, arrow, GOOD_THIN, THIN, box, cattail, deck, dots, door, drop, ell, flag, fish, good,
+                   ground, grp, hatch, lantern, line_icon, log, reed, ripples, scallop, solid, splash, status_icon,
+                   steam, swoosh, thin, water, waves, _arch)
 
 
 def tube_valve():
-    # a straight run of tube with a valve body and a hand wheel on top
-    return ('<path d="M10 66 h92 M10 88 h92"/>'
-            '<path d="M10 62 v30 M102 62 v30" stroke-width="4.4"/>'
-            '<path d="M44 66 v-12 h24 v12"/>'                                   # valve body
-            '<path d="M56 54 v-14"/>'                                             # stem
-            '<ellipse cx="56" cy="36" rx="24" ry="8"/>'                           # wheel rim
-            '<path d="M36 33 L76 39 M36 39 L76 33" stroke-width="2.4"/>'          # spokes
-            '<circle cx="56" cy="36" r="3.4" fill="FILL"/>'
-            '<path d="M24 77 q-4 5 -4 7 a4 4 0 0 0 8 0 q0 -2 -4 -7 z" fill="FILL" stroke-width="0"/>'
-            '<path d="M80 74 l8 6 l-8 6" stroke-width="2.6"/>'
-            '<path d="M14 100 h84" stroke-width="2.4"/>')
+    # a straight run of tube with banded joints, a valve bonnet and a hand wheel on top, a drop riding in the tube,
+    # standing on trestles over hatched ground
+    return ('<path d="M11 58 H101 M11 78 H101"/>'
+            '<path d="M22 54 V82 M90 54 V82" stroke-width="4.4"/>'
+            '<path d="M44 58 V48 H68 V58"/>' + thin("M44 53 H68")
+            + '<path d="M56 48 V34"/>'
+            '<ellipse cx="56" cy="30" rx="24" ry="8"/>'
+            + thin("M33 28 L79 32 M33 32 L79 28 M56 22 V38")
+            + dots(((56, 30),), 3.2)
+            + drop(30, 72, 4) + drop(80, 72, 4)
+            + '<path d="M30 78 V90 M82 78 V90"/>'
+            + ground(11, 101, 90))
 
 
 def clam_bed():
-    # stakes and net standing in the water over a bed of clams, a little walkway on the left
-    return ('<path d="M8 50 h30 M14 50 v22 M32 50 v22"/>'                         # walkway on posts
-            '<path d="M44 40 v40 M64 36 v44 M84 36 v44 M102 40 v40"/>'            # stakes
-            '<path d="M44 40 l-2 -5 l2 -3 l2 3 z M102 40 l-2 -5 l2 -3 l2 3 z" fill="FILL" stroke-width="1.6"/>'
-            '<path d="M44 46 L64 42 L84 42 L102 46 M44 58 L64 54 L84 54 L102 58" stroke-width="2"/>'
-            '<path d="M54 44 v14 M74 42 v13 M93 44 v13" stroke-width="1.6"/>'
-            + '<path d="M8 86 q6 -5 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0"/>'
-            + _clam(52, 100, 0.55, fill=True) + _clam(72, 102, 0.5, fill=True) + _clam(90, 100, 0.45, fill=True)
-            + '<path d="M8 108 h96" stroke-width="2.4"/>')
+    # a plank walk on posts, stakes and netting standing in the water, a bed of scallops on the hatched bottom
+    return (deck(11, 38, 44, 6, 9, posts=(15, 34), post_to=70)
+            + '<path d="M46 38 V82 M68 34 V82 M90 38 V82"/>'
+            + solid("M46 38 l-2.5 -5 l2.5 -4 l2.5 4 z M90 38 l-2.5 -5 l2.5 -4 l2.5 4 z")
+            + thin("M46 44 Q57 48 68 42 Q79 48 90 44 M46 56 Q57 60 68 54 Q79 60 90 56 M57 46 V58 M79 46 V58", 2.2)
+            + water(11, 101, 70, 0, 1, 12, 5.5)
+            + scallop(34, 84, 0.52, -8, n=4) + scallop(58, 86, 0.48, 6, n=4) + scallop(82, 84, 0.52, 10, n=4)
+            + ground(11, 101, 94, 6))
 
 
 def wellspring():
-    # the wonder: a log plinth with a door, a pool, a column and a bowl pouring water, a holt and pennant on top
-    return ('<path d="M12 100 h88 M16 100 v-20 h80 v20"/>'                        # plinth
-            '<path d="M50 100 v-12 q6 -6 12 0 v12"/>'                             # door
-            '<path d="M22 80 v-6 h68 v6"/>'                                       # pool ring
-            '<path d="M50 74 v-24 M62 74 v-24"/>'                                 # column
-            '<path d="M26 40 h60 l-20 12 h-20 z"/>'                               # bowl
-            '<path d="M26 40 q-8 4 -8 34 M86 40 q8 4 8 34" stroke-width="2.6"/>'  # streams
-            '<path d="M42 40 q0 -16 14 -16 q14 0 14 16"/>'                        # holt
-            '<path d="M56 24 v-14"/><path d="M56 10 l12 4 l-12 4 z" fill="FILL"/>'
-            '<path d="M51 40 v-6 q5 -5 10 0 v6" stroke-width="2.2"/>')
-
-
-def clams_good():
-    return _clam(30, 44, 1.2) + _clam(52, 52, 1.0, a=18)
-
-
-def grilled_clams_good():
-    # an opened clam on a little grill, steam rising
-    return ('<path d="M14 60 h52 M18 60 l-4 10 M62 60 l4 10" stroke-width="2.6"/>'
-            '<path d="M18 54 h44" stroke-width="2"/>'
-            + _clam(40, 44, 1.1)
-            + '<path d="M30 24 q-4 -5 0 -10 q4 -5 0 -10 M44 22 q-4 -5 0 -10 q4 -5 0 -10" stroke-width="2.4"/>')
-
-
-def clam_bed_no_water_symbol():
-    # a clam over a crossed-out wave: not enough clean water
-    return (_clam(56, 46, 1.25, fill=True).replace('fill="FILL"', 'fill="#BBA16C"')
-            + '<path d="M30 76 q6 -6 13 0 t13 0 t13 0 t13 0" fill="none" stroke-width="5"/>'
-            + '<path d="M36 90 L76 66" fill="none" stroke-width="6"/>')
+    # the wonder: a log plinth with a door, a pool on it, a banded column holding up a bowl that brims over and
+    # pours into the pool on both sides, a little holt with a pennant on top
+    return ('<path d="M14 100 V86 H98 V100"/>' + thin("M14 93 H46 M66 93 H98")
+            + door(56, 100, 14, 12)
+            + '<path d="M22 86 V76 H90 V86"/>' + thin("M22 81 H90", 2.2)
+            + '<path d="M50 76 V54 M62 76 V54"/>' + thin("M50 62 H62 M50 69 H62")
+            + '<path d="M28 44 H84 Q80 54 66 54 H46 Q32 54 28 44 Z"/>'
+            + thin("M28 45 Q18 48 22 74 M84 45 Q94 48 90 74", 2.8)
+            + thin("M17 74 l-3 -3 M27 74 l3 -3 M85 74 l-3 -3 M95 74 l3 -3", 2.2)
+            + '<path d="M44 44 Q44 30 56 30 Q68 30 68 44"/>' + thin("M48 38 l6 -3 M60 35 l6 3")
+            + door(56, 44, 8, 8)
+            + flag(56, 30, 14, 11))
 
 
 def driftwood_catch():
-    # a V of floating logs between posts funnelling driftwood towards a little deck with a winch
-    return ('<path d="M8 40 h34 M14 40 v20 M36 40 v20"/>'                         # deck on posts
-            '<path d="M18 40 v-10 M32 40 v-10 M16 30 h18" stroke-width="2.4"/>'   # winch frame
-            '<circle cx="25" cy="30" r="4.5"/>'
-            '<path d="M29 32 Q48 44 56 58" stroke-width="1.8"/>'                  # rope to the boom
-            '<path d="M60 62 L100 32 M60 62 L104 84" stroke-width="7"/>'          # the boom logs
-            '<path d="M100 22 v18 M104 76 v18" stroke-width="2.6"/>'              # posts
-            '<path d="M70 56 l18 -6 M74 66 l20 3" stroke-width="5.5"/>'           # caught driftwood
-            '<path d="M8 76 q6 -5 12 0 t12 0 t12 0 t12 0" stroke-width="2.2"/>'
-            '<path d="M8 100 q6 -5 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" stroke-width="2.2"/>')
+    # a little deck with a winch, its rope out to driftwood logs caught against a boom post in the river
+    return (deck(11, 40, 44, 6, 10, posts=(15, 36), post_to=74)
+            + '<path d="M18 44 V30 M34 44 V30"/>' + '<circle cx="26" cy="32" r="5"/>' + dots(((26, 32),), 1.6)
+            + thin("M26 32 l6 -7", 2.6)
+            + '<path d="M31 34 Q44 38 48 58" stroke-width="1.8"/>'
+            + '<path d="M98 30 V90"/>' + solid("M98 30 l-3 -5 l3 -4 l3 4 z")
+            + log(46, 66, 84, 66, 10) + log(56, 55, 86, 53, 9)
+            + thin("M64 51 l-5 -8 M61 46 l-6 -1", 2.6)
+            + water(11, 101, 80, 9, 2, 12, 5.5))
 
 
 def basking_deck():
-    # a sun over a low deck with a flat stone and a mat, an otter tail curling off the edge
-    return ('<circle cx="80" cy="26" r="11"/>'
-            '<path d="M80 6 v6 M80 40 v6 M60 26 h6 M94 26 h6 M66 12 l4 4 M90 36 l4 4 M94 12 l-4 4 M66 40 l4 -4" stroke-width="2.4"/>'
-            '<path d="M10 76 h92 M10 84 h92 M16 84 v16 M96 84 v16"/>'              # deck
-            '<path d="M22 76 q20 -18 46 0" fill="FILL"/>'                         # flat stone
-            '<path d="M72 76 v-4 h24 v4" stroke-width="2.4"/>'                    # mat
-            '<path d="M10 84 q-6 8 2 14" stroke-width="3"/>')
+    # a flat warm stone on a plank deck over the water, heat shimmering off it, the sun overhead
+    return ('<circle cx="80" cy="24" r="10"/>'
+            + thin("M80 6 v5 M80 37 v5 M62 24 h5 M93 24 h5 M67 11 l3.5 3.5 M90 34 l3.5 3.5 M93 11 l-3.5 3.5 M67 37 l3.5 -3.5")
+            + '<path d="M16 64 L20 55 L32 50 L52 48 L66 52 L72 64"/>'
+            + thin("M32 50 l4 7 l8 2 M52 48 l-2 6 M66 52 l-6 5")
+            + thin("M30 42 q-3 -4 0 -8 q3 -4 0 -8 M42 40 q-3 -4 0 -8 q3 -4 0 -8 M54 42 q-3 -4 0 -8 q3 -4 0 -8")
+            + scallop(88, 56, 0.42, 10, n=4)
+            + deck(11, 101, 64, 6, 11, posts=(16, 56, 96), post_to=84)
+            + water(11, 101, 88))
 
 
-def driftwood_no_current_symbol():
-    # a log over a flat (still) line: no current to bring driftwood
-    return ('<path d="M26 50 h60" fill="none" stroke-width="16" stroke-linecap="round" stroke="#BBA16C"/>'
-            '<path d="M24 78 h64" fill="none" stroke-width="5"/>'
-            '<path d="M36 92 L76 64" fill="none" stroke-width="6"/>')
+def _portal(cx, base, w, top):
+    """A timber tunnel mouth: two posts, a lintel with its ends showing, corner braces."""
+    hw = w / 2
+    return (f'<path d="M{cx - hw} {base} V{top} M{cx + hw} {base} V{top}"/>'
+            f'<path d="M{cx - hw - 6} {top - 2} H{cx + hw + 6}" stroke-width="4.4"/>'
+            + thin(f"M{cx - hw} {top + 12} L{cx - hw + 10} {top} M{cx + hw} {top + 12} L{cx + hw - 10} {top}"))
 
 
 def timber_tunnel():
-    # a slatted tunnel seen from the side: hoops with boards running along between them, a mouth at the front
-    return ('<path d="M14 92 V58 a14 18 0 0 1 28 0 V92" stroke-width="4.4"/>'
-            '<path d="M28 40 H90 M14 58 H96 M14 76 H96" stroke-width="2.6"/>'
-            '<path d="M56 40 v52 M76 40 v52" stroke-width="3.4"/>'
-            '<path d="M90 40 a10 18 0 0 1 10 18 V92" stroke-width="3.4"/>'
-            '<path d="M8 96 h96" stroke-width="2.4"/>')
+    # a timber-framed tunnel mouth dug into a grassy bank of hatched earth, a lantern hung by the opening
+    portal = box(30, 44, 82, 98, 3)
+    lamp = box(83, 50, 97, 74, 2)
+    bank = ell(56, 98, 45, 68, -4)
+    return ('<path d="M11 98 Q14 32 56 30 Q98 32 101 98"/>'
+            + _portal(56, 98, 40, 50)
+            + solid(_arch(56, 98, 28, 58) + " z")
+            + lantern(90, 48, 1.1)
+            + reed(30, 42, -4, 10) + reed(31, 42, 5, 9) + reed(80, 40, -3, 11) + reed(81, 40, 6, 8)
+            + hatch(lambda x, y: bank(x, y) and not portal(x, y) and not lamp(x, y) and y < 95, 12, 40, 100, 95)
+            + '<path d="M11 98 H101"/>')
 
 
 def timber_shaft():
-    # a slatted barrel standing up with a ladder inside, tunnel off to the side at the bottom
-    return ('<path d="M40 100 V22 M72 100 V22"/><path d="M48 100 V22 M64 100 V22" stroke-width="2"/>'
-            '<path d="M36 26 h40 M36 58 h40 M36 92 h40" stroke-width="4.4"/>'
-            '<path d="M48 40 h16 M48 72 h16" stroke-width="2.4"/>'
-            '<path d="M76 100 v-16 a10 12 0 0 1 20 0 v16" stroke-width="3"/>'
-            '<path d="M8 100 h96" stroke-width="2.4"/>')
+    # a plank-lined shaft dug straight down with a ladder in it, a timber head-frame and pulley over it, hatched
+    # earth either side, arrows up and down
+    return ('<path d="M11 36 H38 M74 36 H101"/>'
+            '<path d="M38 36 V100 M74 36 V100"/>'
+            + thin("M48 30 V100 M64 30 V100") + thin("M48 44 H64 M48 56 H64 M48 68 H64 M48 80 H64 M48 92 H64", 2.4)
+            + '<path d="M34 36 V14 M78 36 V14 M30 14 H82"/>' + thin("M34 26 L44 14 M78 26 L68 14")
+            + '<circle cx="56" cy="21" r="4.5" stroke-width="2.6"/>' + thin("M60.5 21 V30", 2)
+            + hatch(lambda x, y: not (35 <= x <= 77), 12, 40.5, 100, 100)
+            + arrow(21, 22, 0.9) + arrow(91, 22, 0.9, down=True))
 
 
 def sealed_timber_tunnel():
-    # a planked box with a tunnel mouth, water lapping against one side
-    return ('<path d="M22 96 V30 H90 V96 Z"/>'
-            '<path d="M22 52 H90 M22 74 H90" stroke-width="2"/>'
-            '<path d="M44 96 v-22 a12 15 0 0 1 24 0 v22" fill="FILL"/>'
-            '<path d="M6 64 q4 -4 8 0 t8 0 M6 80 q4 -4 8 0 t8 0" stroke-width="2.6"/>'
-            '<path d="M8 100 h96" stroke-width="2.4"/>')
+    # the timber tunnel mouth closed off by a braced plank door, the river lapping at the foot of the bank
+    portal = box(30, 38, 82, 88, 3)
+    bank = ell(56, 88, 45, 62, -4)
+    return ('<path d="M11 88 Q14 26 56 24 Q98 26 101 88"/>'
+            + _portal(56, 88, 40, 44)
+            + f'<path d="{_arch(56, 88, 28, 52)}"/>'
+            + thin("M49 88 V53 M56 88 V52 M63 88 V53")
+            + '<path d="M30 70 H82" stroke-width="5"/>' + dots(((36, 70), (76, 70)), 0.1)
+            + reed(30, 36, -4, 10) + reed(31, 36, 5, 9) + reed(80, 34, -3, 11) + reed(81, 34, 6, 8)
+            + hatch(lambda x, y: bank(x, y) and not portal(x, y) and y < 85, 12, 34, 100, 85)
+            + '<path d="M11 88 H101"/>' + water(11, 101, 95, 8, 1, 12, 5.5))
 
 
 def tunnel_lodge():
-    # a round log hall with a cone roof and tunnels off both sides
-    return ('<path d="M32 98 V58 H80 V98"/>'
-            '<path d="M32 68 H80 M32 78 H80 M32 88 H80" stroke-width="2"/>'
-            '<path d="M24 58 L56 22 L88 58 Z"/>'
-            '<path d="M48 98 v-16 a8 9 0 0 1 16 0 v16" fill="FILL"/>'
-            '<path d="M6 98 v-14 a9 11 0 0 1 18 0 v14 M88 98 v-14 a9 11 0 0 1 18 0 v14" stroke-width="3"/>'
-            '<path d="M56 22 v-12"/><path d="M56 10 l10 4 l-10 4 z" fill="FILL"/>')
+    # a round log hall with a thatched cone roof and a pennant, timber tunnel mouths opening off both sides
+    side = lambda cx: (f'<path d="{_arch(cx, 96, 18, 72)}"/>' + solid(_arch(cx, 96, 9, 78) + " z")
+                       + f'<path d="M{cx - 13} 72 H{cx + 13}" stroke-width="4"/>')
+    return ('<path d="M34 96 V62 M78 96 V62"/>'
+            + thin("M34 72 H78 M34 84 H48 M64 84 H78")
+            + '<path d="M26 64 L56 28 L86 64 Z"/>'
+            + thin("M56 34 L40 62 M56 34 L50 64 M56 34 L62 64 M56 34 L72 62")
+            + door(56, 96, 14, 18)
+            + side(20) + side(92)
+            + flag(56, 28, 14, 11)
+            + ground(11, 101, 96))
+
+
+def clams_good():
+    # two scallops with their ribs and hinge ears
+    return good(scallop(25, 46, 0.72, -14, base=GOOD_STROKE) + scallop(55, 36, 0.72, 14, base=GOOD_STROKE))
+
+
+def grilled_clams_good():
+    # an opened scallop on the half shell, the meat in the middle, on a little grill, steam rising
+    return good(scallop(40, 46, 1.0, 0, base=GOOD_STROKE, meat=True)
+                + '<path d="M10 62 H70"/>' + thin("M16 62 l-4 9 M64 62 l4 9 M24 67 H56", GOOD_THIN)
+                + steam(28, 22, 3, 12, 14, GOOD_THIN))
 
 
 def rice_cakes_good():
-    # a little stack of puffed rice cakes, the top one with grains showing
-    return ('<path d="M14 58 q0 -6 26 -6 q26 0 26 6 v6 q0 6 -26 6 q-26 0 -26 -6 z"/>'
-            '<path d="M18 46 q0 -6 22 -6 q22 0 22 6 v6 q0 4 -22 4 q-22 0 -22 -4 z"/>'
-            '<ellipse cx="40" cy="30" rx="20" ry="7"/><path d="M20 30 v6 q0 4 20 4 q20 0 20 -4 v-6"/>'
-            '<path d="M31 29 l3 -1 M41 27 l3 1 M46 32 l3 -1 M34 33 l3 0" stroke-width="2.4"/>')
+    # a stack of three puffed rice cakes, grains showing on the top one
+    grain = lambda x, y, a: f'<ellipse cx="{x}" cy="{y}" rx="1.7" ry="3" transform="rotate({a} {x} {y})" fill="FILL" stroke-width="0.8"/>'
+    return good('<ellipse cx="40" cy="24" rx="26" ry="9"/>'
+                + '<path d="M14 24 V31 Q14 40 40 40 Q66 40 66 31 V24"/>'
+                + '<path d="M13 38 Q11 40 11 43 V48 Q11 57 40 57 Q69 57 69 48 V43 Q69 40 67 38"/>'
+                + '<path d="M10 55 Q8 57 8 60 V64 Q8 73 40 73 Q72 73 72 64 V60 Q72 57 70 55"/>'
+                + grain(28, 22, 40) + grain(36, 26, -30) + grain(46, 21, 70) + grain(52, 26, 20) + grain(40, 19, -60)
+                + dots(((22, 35), (40, 37), (58, 35), (20, 52), (40, 54), (60, 52), (18, 68), (40, 70), (62, 68)), 1.7))
 
 
 def sushi_good():
-    # a maki roll and a nigiri: rice with a slice of fish on top, tied with a band of seaweed
-    return ('<ellipse cx="24" cy="30" rx="13" ry="6"/><path d="M11 30 v16 q0 6 13 6 q13 0 13 -6 v-16"/>'
-            '<ellipse cx="24" cy="30" rx="6" ry="2.6" fill="FILL"/>'
-            '<rect x="36" y="48" width="36" height="12" rx="5"/>'
-            '<path d="M33 48 q2 -9 20 -9 q16 0 22 7 q-2 3 -8 2 z"/>'
-            '<path d="M44 42 l4 5 M54 40 l4 6 M64 41 l3 5" stroke-width="2"/>'
-            '<path d="M54 44 v17" stroke-width="5"/>')
+    # a maki roll (seaweed round rice round fish) and a nigiri: rice with a striped slice of fish, tied with seaweed
+    return good('<ellipse cx="22" cy="28" rx="14" ry="6.5"/>'
+                + '<path d="M8 28 V46 Q8 53 22 53 Q36 53 36 46 V28"/>'
+                + '<ellipse cx="22" cy="28" rx="8.5" ry="3.6" stroke-width="2.4"/>'
+                + '<ellipse cx="22" cy="28" rx="4" ry="1.8" fill="FILL" stroke-width="1"/>'
+                + '<path d="M36 62 Q36 52 54 52 Q72 52 72 62 Q72 70 54 70 Q36 70 36 62 z"/>'
+                + '<path d="M33 54 Q36 42 54 42 Q70 42 76 50 Q72 56 56 54 Q42 54 33 54 z"/>'
+                + thin("M41 47 l4 6 M48 44 l4 9 M62 44 l4 8 M69 46 l3 5", 2.4)
+                + solid("M54 43 h5 v27 h-5 z"))
+
+
+def clam_bed_no_water_symbol():
+    # a scallop over a crossed-out wave: not enough clean water for the bed
+    return (scallop(56, 46, 1.15, fill=True, rib_color=CUT).replace('fill="FILL"', 'fill="#BBA16C"')
+            + '<path d="M32 78 q6 -6 12 0 t12 0 t12 0 t12 0" fill="none" stroke-width="5"/>'
+            + '<path d="M38 92 L74 66" fill="none" stroke-width="6"/>')
+
+
+def driftwood_no_current_symbol():
+    # a log over a flat (still) line, crossed out: no current to bring driftwood
+    return ('<path d="M34 40 H80 A8 11 0 0 1 80 62 H34 A8 11 0 0 1 34 40 Z" stroke-width="0"/>'
+            f'<ellipse cx="80" cy="51" rx="5" ry="7.5" fill="none" stroke="{CUT}" stroke-width="2.6"/>'
+            f'<circle cx="80" cy="51" r="1.8" fill="{CUT}" stroke-width="0"/>'
+            f'<path d="M40 46 h16 M48 56 h18" fill="none" stroke="{CUT}" stroke-width="2.6"/>'
+            '<path d="M28 76 h56" fill="none" stroke-width="5"/>'
+            '<path d="M38 90 L74 66" fill="none" stroke-width="6"/>')
 
 
 def render(name, size):
@@ -169,7 +195,7 @@ def render(name, size):
     if size == 512:
         return status_icon(body, 512)
     if size == 80:
-        return line_icon(body, 80, view=80, stroke=3.4)
+        return line_icon(body, 80, view=80, stroke=GOOD_STROKE)
     return line_icon(body, size)
 
 
